@@ -76,7 +76,7 @@ const Header = () => {
                     {/* Boton login/logout */}
                     {user ? 
                     <>
-                        <button onClick={logoutUser} className="bg-gray-to-yellow text-black rounded-lg p-2 flex items-center ease-in-out hover:bg-gray-300 hover:scale-110 transition-all m-2 hover:cursor-pointer">
+                        <button onClick={logoutUser} className="bg-lightgray-to-yellow text-black rounded-lg p-2 flex items-center ease-in-out hover:bg-gray-300 hover:scale-110 transition-all m-2 hover:cursor-pointer">
                             Cerrar sesión
                             <FontAwesomeIcon icon="fa-regular fa-circle-xmark" className='p-1'></FontAwesomeIcon>
                         </button>
