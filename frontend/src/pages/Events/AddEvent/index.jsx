@@ -22,7 +22,7 @@ const addEvent = () => {
 
     /* Elementos de creación con éxito */
     const navigate = useNavigate();
-    const [isSuccess, setIsSuccess] = useState(true);
+    const [isSuccess, setIsSuccess] = useState(false);
     const [progress, setProgress] = useState(100);
 
     useEffect(()=>{
@@ -559,10 +559,10 @@ const addEvent = () => {
                             </div>
 
                             <button type='submit'
-                                    className='bg-indigo-to-yellow text-white-to-black font-Bitcount text-2xl w-full my-5 py-3 rounded-2xl hover:scale-103 transition ease-in-out hover:cursor-pointer'
+                                    className={`bg-indigo-to-yellow text-white-to-black font-Bitcount text-2xl w-full my-5 py-3 rounded-2xl hover:scale-103 transition ease-in-out hover:cursor-pointer ${isSubmitting ? 'opacity-70' : ''}`}
                                     disabled={isSubmitting}
                             >
-                                {isSubmitting ? "Creando" : "Crear Evento"}
+                                {isSubmitting ? "Creando..." : "Crear Evento"}
                             </button>
                         </div>
                     </Form>

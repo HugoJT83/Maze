@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 const eventSuccess = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const [progress, setProgress] = useState(100);
+    
 
     const fromCreation = location.state?.fromCreation;
 
