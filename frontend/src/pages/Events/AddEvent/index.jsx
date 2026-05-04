@@ -1,5 +1,5 @@
 import { ErrorMessage, Field, Form, Formik } from 'formik'
-import React, { use, useState } from 'react'
+import React, { use, useEffect, useState } from 'react'
 import * as yup from 'yup'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -8,17 +8,45 @@ import { fas } from '@fortawesome/free-solid-svg-icons'
 import { far } from '@fortawesome/free-regular-svg-icons'
 import { INTERESTS_CONFIG } from '../../../constant/interestsConfig'
 import Interest from '../../auth/ProfileUser/components/Interest'
-import { data, Link } from 'react-router-dom'
+import { data, Link, Navigate, useNavigate } from 'react-router-dom'
 import Hourpicker from './components/Hourpicker'
 import Datepicker from './components/Datepicker'
 import Locationpicker from './components/Locationpicker'
 import Phoneinput from './components/Phoneinput'
 import EventImage from './components/EventImage'
+import { toast } from 'react-toastify'
+import { axiosClient } from '../../../utils/axiosClient'
 library.add(fas,far)
 
 const addEvent = () => {
 
-    const[loading,setLoading] = useState(false)
+    /* Elementos de creación con éxito */
+    const navigate = useNavigate();
+    const [isSuccess, setIsSuccess] = useState(true);
+    const [progress, setProgress] = useState(100);
+
+    useEffect(()=>{
+    
+            if(isSuccess){
+
+                const duration = 5000;
+                const intervalTime = 50;
+                const step = (intervalTime / duration) * 100;
+
+                const timer = setInterval(()=>{
+                    setProgress((prev)=>Math.max(prev-step, 0));
+                }, intervalTime);
+    
+                const timeout = setTimeout(() => {
+                    navigate('/dashboard');
+                }, duration);
+
+                return () => {
+                    clearInterval(timer);
+                    clearTimeout(timeout);
+                };
+            }
+        },[isSuccess, navigate])
 
     /* Mostrar información de forma condicional */
     const [focusedId,setFocusedId] = useState(null)
@@ -37,6 +65,7 @@ const addEvent = () => {
         setEditing(!editing)
     }
 
+    /* Valores iniciales de formulario */
     const [initialValues,setInitialValues] = useState({
         title:'',
         phone:'',
@@ -58,6 +87,7 @@ const addEvent = () => {
     /* Obtener intereses para validación */
     const validInterests = Object.keys(INTERESTS_CONFIG)
 
+    /* Esquema de validacion */
     const validationSchema = yup.object({
         title:yup.string()
         .required("El nombre es obligatorio")
@@ -66,7 +96,7 @@ const addEvent = () => {
         
         phone:yup.string()
         .required("Es obligatorio aportar un número de teléfono de referencia")
-        .matches(/^[0-9]{9}$/, "el número de teléfono debe contener 9 dígitos únicamente"),
+        .matches(/^(\+?34)?(6\d{2}|7[1-9]\d{1})\d{6}$/, "el número de teléfono debe contener 9 dígitos únicamente y poseer un formato válido"),
 
         description:yup.string()
         .required("La descripción es obligatoria")
@@ -154,11 +184,72 @@ const addEvent = () => {
         }
     )
 
-    const onSubmitHandler = async(values, helpers) =>{
+    /* Envio de datos */
+    const onSubmitHandler = async(values, {setSubmitting}) =>{
+
+        const formData = new FormData();
+
+        const cleanValues = {
+                    ...values,
+                    title: values.title?.trim(),
+                    description: values.title?.trim(),
+                    phone: "+34"+values.phone
+        }
+
+        const {images, ...eventData} = cleanValues;
+
+        formData.append("data", JSON.stringify(eventData));
+
+        images.forEach((imageFile) => {
+            formData.append("images", imageFile)
+        });
+        
+        try {
+            
+            const response = await axiosClient.post("/events/create-event",formData,{
+                headers:{
+                    "Content-Type": "multipart/form-data",
+                    'Authorization':'Bearer '+localStorage.getItem("token")
+                }
+            });
+
+            const data = await response.data;
+            
+            setIsSuccess(true);
+
+        } catch (error) {
+            toast.error(error.response?.data?.detail || error.message)
+        }
+        finally {
+            setSubmitting(false);
+        }
+    }
 
 
+    /* Renderizado de exito de creacion de evento */
+    if(isSuccess){
+        return (
+        <>
+            <div className='fixed top-0 left-0 bg-white w-full h-full items-center justify-center flex'>
+                <div className='w-1/3'>
+                    <div className='flex items-center my-5 flex-col md:flex-row text-center'>
+                        <FontAwesomeIcon icon="fa-regular fa-circle-check" className='text-indigo-to-yellow mx-2 text-3xl'></FontAwesomeIcon>
+                        <h1 className='text-xl font-Bitcount text-indigo-to-yellow'>¡Tu evento ha sido registrado correctamente!</h1>
+                    </div>
+                    <p className='md:text-justify text-center'>Este pasará a disposición de un administrador para verificar su contenido; recibirás una notificación tras la resolución, ¡Ya queda poco!</p>
+                    <div className="w-full h-3 bg-gray-200 my-4 rounded-full overflow-hidden">
+                        <div 
+                        className="h-full bg-indigo-to-yellow transition-all duration-75 ease-linear"
+                        style={{ width: `${progress}%` }}
+                        />
+                    </div>
+                </div>
+            </div>
+        </>
+        )
     }
   
+    /* Renderizado por defecto de formulario */
     return (
     <>
         {/* Contenedor principal */}
@@ -188,7 +279,7 @@ const addEvent = () => {
                 validationSchema={validationSchema}
                 onSubmit={onSubmitHandler}
             >
-            {({values,setFieldValue,setFieldTouched,setFieldError}) =>(
+            {({values,setFieldValue,setFieldTouched,setFieldError, isSubmitting}) =>(
 
             
                     <Form className='justify-center flex'>
@@ -459,15 +550,19 @@ const addEvent = () => {
                                     Acepto los 
                                     <Link to={'/'} target='_blank'> {/* Redirige a una página */}
                                         <span className='underline p-1 text-indigo-to-yellow rounded hover:cursor-pointer hover:text-white-to-black hover:bg-indigo-to-yellow transition ease-in-out'>
-                                            terminos y condiciones.
+                                            terminos y condiciones. <sup>*</sup>
                                         </span>
+                                        
                                     </Link>
                                 </label>
                                 <ErrorMessage name='terms' component={'p'} className='text-red-500'></ErrorMessage>
                             </div>
 
-                            <button type='submit' className='bg-indigo-to-yellow text-white-to-black font-Bitcount text-2xl w-full my-5 py-3 rounded-2xl hover:scale-103 transition ease-in-out hover:cursor-pointer  '>
-                                Crear Evento
+                            <button type='submit'
+                                    className='bg-indigo-to-yellow text-white-to-black font-Bitcount text-2xl w-full my-5 py-3 rounded-2xl hover:scale-103 transition ease-in-out hover:cursor-pointer'
+                                    disabled={isSubmitting}
+                            >
+                                {isSubmitting ? "Creando" : "Crear Evento"}
                             </button>
                         </div>
                     </Form>

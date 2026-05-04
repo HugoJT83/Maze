@@ -25,7 +25,7 @@ const AvatarComponent = () => {
           setLoading(true)
           const formData = new FormData();
           formData.append("avatar",acceptedFiles[0])
-
+          
           const response = await axiosClient.put("/auth/update-avatar",formData,{
             headers:{
               'Authorization':'Bearer '+localStorage.getItem('token')

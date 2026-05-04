@@ -11,19 +11,19 @@ library.add(fas,far)
 const Footer = () => {
   return (
     <>
-      <footer class="">
-        <div class="container py-24 mx-auto flex justify-between md:items-center lg:items-start md:flex-row md:flex-nowrap flex-wrap flex-col">
-          <div class="w-80 md:mx-0 mx-auto text-center md:text-left">
+      <footer>
+        <div className="container py-24 mx-auto flex justify-between md:items-center lg:items-start md:flex-row md:flex-nowrap flex-wrap flex-col">
+          <div className="w-80 md:mx-0 mx-auto text-center md:text-left">
             <Link to={'/'} className='flex items-center'>
               <img src={logo} alt=""  className='w-15 h-15'/>
               <span className='text-3xl font-Bitcount mt-2 ml-2 text-black-to-white'>Maze</span>
             </Link>
-            <p class="mt-2 text-sm text-gray-to-yellow">©{new Date().getFullYear()}, MAZE. Todos los derechos reservados.</p>
+            <p className="mt-2 text-sm text-gray-to-yellow">©{new Date().getFullYear()}, MAZE. Todos los derechos reservados.</p>
           </div>
-          <div class="flex grow justify-end flex-wrap md:pl-20 -mb-10 md:mt-0 mt-10 md:text-left text-center">
-            <div class="lg:w-1/4 md:w-1/2 w-full px-4">
-              <h2 class="tracking-widest text-sm mb-3">NAVEGACIÓN</h2>
-              <nav class="list-none mb-10">
+          <div className="flex grow justify-end flex-wrap md:pl-20 -mb-10 md:mt-0 mt-10 md:text-left text-center">
+            <div className="lg:w-1/4 md:w-1/2 w-full px-4">
+              <h2 className="tracking-widest text-sm mb-3">NAVEGACIÓN</h2>
+              <nav className="list-none mb-10">
                 <li className='my-1'>
                   <Link to={'/register'} className=' text-gray-to-yellow hover:text-indigo-to-yellow'>Registrarse</Link>
                 </li>
@@ -38,9 +38,9 @@ const Footer = () => {
                 </li>
               </nav>
             </div>
-            <div class="lg:w-1/4 md:w-1/2 w-full px-4">
-              <h2 class="tracking-widest text-sm mb-3">LEGAL</h2>
-              <nav class="list-none mb-10">
+            <div className="lg:w-1/4 md:w-1/2 w-full px-4">
+              <h2 className="tracking-widest text-sm mb-3">LEGAL</h2>
+              <nav className="list-none mb-10">
                 <li className='my-1'>
                   <Link to={'/legal'} className=' text-gray-to-yellow hover:text-indigo-to-yellow'>Aviso Legal</Link>
                 </li>

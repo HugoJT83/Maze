@@ -10,6 +10,7 @@ import { Dashboard } from "./pages/Dashboard";
 import ProtectedLayout from "./Layouts/ProtectedLayout";
 import ProfileUser from "./pages/auth/ProfileUser";
 import AddEvent from "./pages/Events/AddEvent";
+import eventSuccess from "./pages/Events/EventSuccess";
 
 const App = () => {
   return (

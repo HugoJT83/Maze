@@ -8,19 +8,11 @@ from pydantic import BaseModel, Field, field_validator
 from models.authModel import InterestsEnum
 
 class Location(BaseModel):
-    street: str = Field(...)
+    direction: str = Field(...)
     city: str = Field(...)
     province: str = Field(...)
-    postal_code: str = Field(...)
-    
-    @field_validator('postal_code')
-    @classmethod
-    def validate_postal_code(cls, value):
-        if not re.match(r'/^(?:0[1-9]|[1-4]\d|5[0-2])\d{3}$/', value):
-            raise ValueError('El código postal debe tener 5 dígitos adecuados')
-        return value
 
-    @field_validator('street','city','province')
+    @field_validator('direction','city','province')
     @classmethod
     def check_not_empty_whitespace(cls,value):
         if not value.strip():
@@ -34,15 +26,16 @@ class EventImage(BaseModel):
 
 
 class Event(BaseModel):
-    creator_id: str = Field(...)
+    
     title: str = Field(...)
     description: str = Field(...)
     phone: str = Field(...)
     creation_date: datetime = Field(default_factory=datetime.now)
-    event_date:datetime = Field(...)
+    starting_event_date:datetime = Field(...)
+    finish_event_date:datetime = Field(...)
     location: Location = Field(...)
     interests: List[InterestsEnum] = Field(default=[], max_items=3)
-    images: List[EventImage] = Field(...,min_items=1)
+    """ images: List[EventImage] = Field(...,min_items=1) """
     updated_at: datetime = Field(default_factory=datetime.now)
 
     
@@ -70,11 +63,18 @@ class Event(BaseModel):
             raise ValueError("La descripción debe ser mayor de 10 caracteres")
         return value
     
-    @field_validator('event_date')
+    @field_validator('starting_event_date')
     @classmethod
-    def check_future_date(cls, value):
+    def check_future_starting_date(cls, value):
         if value < datetime.now():
-            raise ValueError("la fecha del evento no puede ser anterior a la fecha actual.")
+            raise ValueError("la fecha de inicio del evento no puede ser anterior a la fecha actual.")
+        return value
+    
+    @field_validator('finish_event_date')
+    @classmethod
+    def check_future_finish_date(cls, value):
+        if value < datetime.now():
+            raise ValueError("la fecha final del evento no puede ser anterior a la fecha actual.")
         return value
     
     @field_validator('interests')
