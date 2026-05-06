@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 
-const Carousel = ({ images }) => {
+const ImageCarousel = ({ images }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
 
     useEffect(() => {
@@ -12,9 +12,9 @@ const Carousel = ({ images }) => {
     }, [images.length]);
 
     return (
-        <div className='w-full overflow-hidden rounded-lg'>
+        <div className='w-full max-w-2xl mx-auto overflow-hidden rounded-lg relative m-4'>
             <div
-                className='flex transition-transform duration-500 ease-in-out'
+                className='flex transition-transform duration-300 ease-in-out'
                 style={{ transform: `translateX(-${currentIndex * 100}%)` }}
             >
                 {images.map((image, index) => (
@@ -25,9 +25,8 @@ const Carousel = ({ images }) => {
                     />
                 ))}
             </div>
-
         </div>
     )
 }
 
-export default Carousel
+export default ImageCarousel

@@ -19,7 +19,6 @@ async def createEvent(data: str = Form(...), images: List[Annotated[UploadFile, 
     
     try:
         data_dict = json.loads(data)
-        
         event_model = Event(**data_dict)
     
         return await createEventController(event_model,images,userId)
