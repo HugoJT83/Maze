@@ -21,7 +21,7 @@ const ImageCarousel = ({ images }) => {
                     <img
                         key={index}
                         src={image}
-                        className='w-full flex object-cover'
+                        className='flex object-cover'
                     />
                 ))}
             </div>

@@ -29,12 +29,12 @@ const PlaceFilter = () => {
 
     return (
         <>
-            <div className='grid lg:grid-cols-3 grid-cols-1 lg:place-items-start items-center gap-10   '>
-                <div className='lg:text-left w-full my-auto'>
+            <div className='grid grid-cols-1 lg:grid-cols-3 items-center gap-3 '>
+                <div className=' w-full my-auto'>
                     <select
                         name="province"
                         id="city"
-                        className='w-60 border-2 rounded-2xl p-2 border-indigo-to-yellow'
+                        className='w-60 h-15 border-2 rounded-2xl p-2 border-indigo-to-yellow hover:cursor-pointer hover:scale-105 transition-all ease-in-out'
                         onChange={handleStateChange}
                     >
                         <option value="">Selecciona una provincia</option>
@@ -43,11 +43,11 @@ const PlaceFilter = () => {
                         ))}
                     </select>
                 </div>
-                <div className='lg:text-left w-full my-auto'>
+                <div className=' w-full my-auto'>
                     <select
                         name="city"
                         id="city"
-                        className='w-60 border-2 rounded-2xl p-2 border-indigo-to-yellow'
+                        className='w-60 h-15 border-2 rounded-2xl p-2 border-indigo-to-yellow hover:cursor-pointer hover:scale-105 transition-all ease-in-out'
                     >
                         <option value="">Selecciona una ciudad</option>
                         {cities.map((item) => (
@@ -55,8 +55,8 @@ const PlaceFilter = () => {
                         ))}
                     </select>
                 </div>
-                <div className='w-full my-auto'>
-                    <button className='bg-indigo-to-yellow text-white-to-black p-2 rounded-xl w-full hover:cursor-pointer hover:scale-110 transition-all ease-in-out'>
+                <div className=' w-full my-auto'>
+                    <button className='bg-indigo-to-yellow text-white-to-black p-2 rounded-xl w-60 h-15 hover:cursor-pointer hover:scale-105 transition-all ease-in-out'>
                         Buscar
                     </button>
                 </div>
