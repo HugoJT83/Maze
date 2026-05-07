@@ -87,7 +87,7 @@ const Home = () => {
         <div className=' text-center flex flex-col justify-between w-2/3'>
           <div className='lg:justify-items-end lg:text-end text-center justify-items-center'>
             <h1 className='text-5xl font-Bitcount text-indigo-to-yellow'>...O busca por zonas</h1>
-            <h2 className='text-2xl mb-8 opacity-70 text-indigo-to-yellow'>Indica provincia y ciudad y nosotros hacemos el resto</h2>
+            <h2 className='text-2xl mb-8 opacity-70 text-indigo-to-yellow'>Indica provincia y ciudad, y nosotros hacemos el resto</h2>
             <p className='my-2 text-lg lg:w-3/4  text-indigo-to-yellow'>Seas de donde seas y vayas a donde vayas, desde MAZE te ofrecemos cobertura total a nivel nacional para que vivas nuevas experiencias y conectes con otras personas.</p>
           </div>
 
@@ -98,8 +98,22 @@ const Home = () => {
         </div>
       </div >
 
-      {/* Sección 4 - Stats */}
+      {/* Sección 4 - Stats y About */}
       < div className='bg-lightgray-to-yellow lg:p-20 p-5 flex justify-around flex-wrap gap-10' >
+        <div className='w-full flex justify-center items-center text-center md:text-left flex-wrap'>
+          <div>
+            <h1 className='text-5xl font-Bitcount text-black'>Conócenos</h1>
+            <h2 className='text-2xl opacity-70 text-black'>Los datos detrás de MAZE</h2>
+          </div>
+
+          <div className='border-l-2 border-black h-20 mx-5 not-md:hidden'></div>
+
+          <button className='p-3 bg-white-to-black border-2 rounded-xl my-5 md:my-0  border-black text-black-to-white hover:cursor-pointer hover:scale-110 transition-all ease-in-out'>
+            Sobre nosotros
+          </button>
+
+        </div>
+
         <Counter text={'Eventos registrados'} targetCounter={100} />
         <Counter text={'Usuarios activos'} targetCounter={300} />
         <Counter text={'Entradas vendidas'} targetCounter={4000} />
