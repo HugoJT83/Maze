@@ -1,4 +1,6 @@
 
+from typing import Any
+from pydantic import model_validator
 from datetime import datetime
 import re
 from typing import List
@@ -24,6 +26,11 @@ class EventImage(BaseModel):
     image_uri:str
     public_id:str
 
+class LegalTerms(BaseModel):
+    termsAccepted: bool
+    acceptedAt: datetime = Field(default_factory=datetime.now)
+    termsVersion: str = "1.0"
+
 
 class Event(BaseModel):
     
@@ -35,8 +42,9 @@ class Event(BaseModel):
     finish_event_date:datetime = Field(...)
     location: Location = Field(...)
     interests: List[InterestsEnum] = Field(default=[], max_items=3)
-    """ images: List[EventImage] = Field(...,min_items=1) """
     updated_at: datetime = Field(default_factory=datetime.now)
+    terms:LegalTerms
+    status: str = Field(default="pending")
 
     
     @field_validator('phone')
@@ -83,4 +91,21 @@ class Event(BaseModel):
         if len(value) > 3:
             raise ValueError("Un evento solo puede contener como máximo 3 intereses")
         return value
+
+    @model_validator(mode="before")
+    @classmethod
+    def validate_terms(cls, data: Any) -> Any:
+        if isinstance(data,dict):
+            terms_value = data.get("terms")
+
+            if terms_value is not True:
+                raise ValueError("Es obligatorio aceptar terminos y condiciones");
+
+            data["terms"] = {
+                "termsAccepted": True,
+                "acceptedAt": datetime.now(),
+                "termsVersion":"1.0"
+            }
+            
+        return data
     
