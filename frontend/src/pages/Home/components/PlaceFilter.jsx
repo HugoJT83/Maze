@@ -34,7 +34,7 @@ const PlaceFilter = () => {
                     <select
                         name="province"
                         id="city"
-                        className='w-60 h-15 border-2 rounded-2xl p-2 border-indigo-to-yellow hover:cursor-pointer hover:scale-105 transition-all ease-in-out text-indigo-to-black'
+                        className='w-60 h-15 border-2 rounded-2xl p-2 border-indigo-to-yellow hover:cursor-pointer hover:scale-105 transition-all ease-in-out text-indigo-to-yellow'
                         onChange={handleStateChange}
                     >
                         <option value="">Selecciona una provincia</option>
@@ -47,7 +47,7 @@ const PlaceFilter = () => {
                     <select
                         name="city"
                         id="city"
-                        className='w-60 h-15 border-2 rounded-2xl p-2 border-indigo-to-yellow hover:cursor-pointer hover:scale-105 transition-all ease-in-out text-indigo-to-black'
+                        className='w-60 h-15 border-2 rounded-2xl p-2 border-indigo-to-yellow hover:cursor-pointer hover:scale-105 transition-all ease-in-out text-indigo-to-yellow'
                     >
                         <option value="">Selecciona una ciudad</option>
                         {cities.map((item) => (

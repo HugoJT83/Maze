@@ -108,9 +108,11 @@ const Home = () => {
 
           <div className='border-l-2 border-black h-20 mx-5 not-md:hidden'></div>
 
-          <button className='p-3 bg-white-to-black border-2 rounded-xl my-5 md:my-0  border-black text-black-to-white hover:cursor-pointer hover:scale-110 transition-all ease-in-out'>
-            Sobre nosotros
-          </button>
+          <Link to={'/about'}>
+            <button className='p-3 bg-white-to-black border-2 rounded-xl my-5 md:my-0  border-black text-black-to-white hover:cursor-pointer hover:scale-110 transition-all ease-in-out'>
+              Sobre nosotros
+            </button>
+          </Link>
 
         </div>
 
