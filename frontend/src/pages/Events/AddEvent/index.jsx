@@ -548,7 +548,7 @@ const addEvent = () => {
                                     />
                                     <label htmlFor="terms">
                                         Acepto los
-                                        <Link to={'/'} target='_blank'> {/* Redirige a una página */}
+                                        <Link to={'/terms'} target='_blank'> {/* Redirige a una página */}
                                             <span className='underline p-1 text-indigo-to-yellow rounded hover:cursor-pointer hover:text-white-to-black hover:bg-indigo-to-yellow transition ease-in-out'>
                                                 terminos y condiciones. <sup>*</sup>
                                             </span>

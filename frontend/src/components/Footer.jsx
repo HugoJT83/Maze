@@ -1,14 +1,19 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import logo from '../assets/app_logo.svg'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { fas } from '@fortawesome/free-solid-svg-icons'
 import { far } from '@fortawesome/free-regular-svg-icons'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 library.add(fas, far)
 
 const Footer = () => {
+
+  const scrollToTop = () => {
+    window.scrollTo(0, 0);
+  }
+
   return (
     <>
       <footer>
@@ -42,13 +47,13 @@ const Footer = () => {
               <h2 className="tracking-widest text-sm mb-3">LEGAL</h2>
               <nav className="list-none mb-10">
                 <li className='my-1'>
-                  <Link to={'/legal'} className=' text-gray-to-yellow hover:text-indigo-to-yellow'>Aviso Legal</Link>
+                  <Link to={'/legal'} onClick={scrollToTop()} className=' text-gray-to-yellow hover:text-indigo-to-yellow'>Aviso Legal</Link>
                 </li>
                 <li className='my-1'>
-                  <Link to={'/privacy-policy'} className=' text-gray-to-yellow hover:text-indigo-to-yellow'>Política de privacidad</Link>
+                  <Link to={'/privacy-policy'} onClick={scrollToTop()} className=' text-gray-to-yellow hover:text-indigo-to-yellow'>Política de privacidad</Link>
                 </li>
                 <li className='my-1'>
-                  <Link to={'/accessibility'} className=' text-gray-to-yellow hover:text-indigo-to-yellow'>Accesibilidad</Link>
+                  <Link to={'/accessibility'} onClick={scrollToTop()} className=' text-gray-to-yellow hover:text-indigo-to-yellow'>Accesibilidad</Link>
                 </li>
               </nav>
             </div>

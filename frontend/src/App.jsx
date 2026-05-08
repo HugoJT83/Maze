@@ -14,6 +14,7 @@ import CompanyDetails from "./pages/Legal/CompanyDetails";
 import PrivacyPolicy from "./pages/Legal/PrivacyPolicy";
 import Accesibility from "./pages/Legal/Accesibility";
 import { About } from "./pages/Legal/About";
+import Terms from "./pages/Legal/Terms";
 
 const App = () => {
   return (
@@ -27,6 +28,7 @@ const App = () => {
             <Route path='/dashboard' Component={Dashboard} />
             <Route path='/profile' Component={ProfileUser} />
             <Route path="/events/create-event" Component={AddEvent} />
+            <Route path="/terms" Component={Terms}></Route>
           </Route>
 
           {/* Rutas - Legal */}
@@ -35,6 +37,8 @@ const App = () => {
           <Route path="/accessibility" Component={Accesibility} />
           <Route path="/about" Component={About} />
         </Route>
+
+
 
         {/* Rutas de acceso a la app */}
         <Route Component={AuthLayout}>
