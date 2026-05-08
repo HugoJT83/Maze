@@ -18,7 +18,7 @@ const Footer = () => {
     <>
       <footer>
         <div className="container py-24 mx-auto flex justify-between md:items-center lg:items-start md:flex-row md:flex-nowrap flex-wrap flex-col">
-          <div className="w-80 md:mx-0 mx-auto text-center md:text-left">
+          <div className="w-80 md:mx-10 mx-auto text-center md:text-left">
             <Link to={'/'} className='flex items-center'>
               <img src={logo} alt="" className='w-15 h-15' />
               <span className='text-3xl font-Bitcount mt-2 ml-2 text-black-to-white'>Maze</span>

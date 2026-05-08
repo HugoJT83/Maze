@@ -40,8 +40,9 @@ const Accesibility = () => {
                             presentar dificultades para la navegación exclusiva mediante teclado o lectores de pantalla.
                         </li>
                         <li>
-                            <span className='font-bold'>Mapas y geolocalización:</span> Algunos elementos de interacción con mapas complejos pueden
-                            presentar dificultades para la navegación exclusiva mediante teclado o lectores de pantalla.
+                            <span className='font-bold'>Animaciones:</span> Componentes visuales como contadores numéricos pueden resultar
+                            distractores para ciertos usuarios, aunque se han implementado mecanismos para que su
+                            lectura sea clara.
                         </li>
 
                     </ul>
@@ -50,23 +51,23 @@ const Accesibility = () => {
                 <div className='w-full my-5'>
                     <h1 className='my-2 text-xl font-bold'>3. MEDIDAS ADOPTADAS</h1>
                     <ul className='list-disc pl-5'>
-                        <li>
+                        <li className='my-1'>
                             <span className='font-bold'>Estructura Semántica:</span> Uso correcto de etiquetas HTML5 para facilitar la navegación a
                             los lectores de pantalla.
                         </li>
-                        <li>
+                        <li className='my-1'>
                             <span className='font-bold'>Navegación por teclado:</span> Se han revisado los focos de los formularios de creación de
                             eventos y perfiles para asegurar que son operables sin ratón.
                         </li>
-                        <li>
+                        <li className='my-1'>
                             <span className='font-bold'>Contraste de Color:</span> Aplicación de paleta de color alternativa que cumple con
                             los ratios de contraste exigidos para texto y elementos de interfaz.
                         </li>
-                        <li>
+                        <li className='my-1'>
                             <span className='font-bold'>Estados de Carga:</span> Implementación de indicadores visuales y técnicos durante las
                             transiciones de rutas protegidas y procesos de subida de imágenes.
                         </li>
-                        <li>
+                        <li className='my-1'>
                             <span className='font-bold'>Textos Claros:</span> Uso de un lenguaje sencillo en los formularios y mensajes de éxito.
                         </li>
                     </ul>
