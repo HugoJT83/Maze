@@ -2,7 +2,7 @@ from config.env import ENVConfig
 
 from motor.motor_asyncio import AsyncIOMotorClient
 
-client = AsyncIOMotorClient(ENVConfig.MONGO_CONNECTION)
+client = AsyncIOMotorClient(ENVConfig.MONGO_CLOUD_CONNECTION)
 db = client[ENVConfig.MONGO_DB]
 
 
