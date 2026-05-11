@@ -1,11 +1,11 @@
-from fastapi import HTTPException
+from fastapi import BackgroundTasks, HTTPException
 
 from services import authService
 from services.authService import loginService, registerService
 from models.authModel import LoginUser, RegisterUser
 
-async def registerController(data: RegisterUser):
-        res_obj = await registerService(data)
+async def registerController(data: RegisterUser, background_tasks: BackgroundTasks):
+        res_obj = await registerService(data,background_tasks)
         return res_obj
     
 

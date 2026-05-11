@@ -4,7 +4,7 @@ import bson
 import cloudinary
 import cloudinary.uploader
 import config.CloudinaryConfig
-from fastapi import File, UploadFile
+from fastapi import BackgroundTasks, File, UploadFile
 
 from config import db
 from config.db import user_collection, profile_collection
@@ -15,8 +15,9 @@ import bcrypt
 import jwt
 from datetime import datetime, timedelta
 from config.env import ENVConfig
+from services.mailService import createAccountNotificationService
 
-async def registerService(data:RegisterUser):
+async def registerService(data:RegisterUser, background_tasks: BackgroundTasks):
     
     """ Comprueba si ya existe el usuario """
     check_exist = await user_collection.find_one({"email":data.email.lower()})
@@ -44,6 +45,10 @@ async def registerService(data:RegisterUser):
     """ Inserción del perfil en la colección de perfiles """
     await profile_collection.insert_one(user_p.dict())
     
+    background_tasks.add_task(
+        createAccountNotificationService,
+        user_data = user_data
+    )
     
     """ Se genera un token de almacenamiento local con el id de usuario """
     # token

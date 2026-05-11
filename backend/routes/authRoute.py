@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, File, Request, UploadFile
+from fastapi import APIRouter, BackgroundTasks, Depends, File, Request, UploadFile
 from controllers import authController
 from controllers.authController import loginController, registerController, updateDetailsController
 from typing import Annotated, Any 
@@ -11,8 +11,8 @@ router = APIRouter(prefix="/api/v1/auth", tags=['auth'])
 
 #register
 @router.post("/register")
-async def registerView(data: RegisterUser):
-    return await registerController(data)
+async def registerView(data: RegisterUser, background_tasks: BackgroundTasks):
+    return await registerController(data,background_tasks)
 
 #login
 @router.post("/login")

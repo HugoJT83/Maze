@@ -8,7 +8,7 @@ class ENVConfig:
     MONGO_DB = os.getenv("MONGO_DB","")
     MONGO_CLOUD_CONNECTION = os.getenv("MONGO_CLOUD_CONNECTION","")
     
-    JWT_AUTH_SCREATE = os.getenv("JTW_AUTH_SCREATE","!)($!)($&)/·$&")
+    JWT_AUTH_SCREATE = os.getenv("JTW_AUTH_SCREATE","!)($!)($&)/·$&23894923()/·)($/8534875&((&/!!$!$/!$/!$/!))")
     ALGORITHMS = "HS256"
     
     API_KEY_CLOUDINARY=os.getenv("API_KEY_CLOUDINARY","")

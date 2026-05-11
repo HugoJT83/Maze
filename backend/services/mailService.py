@@ -41,3 +41,20 @@ async def createEventNotificationService (event_data: dict, user_data: dict):
     except Exception as e:
         
         raise HTTPException(status_code=400, detail="Mail Error")
+
+async def createAccountNotificationService (user_data: dict):
+    message = MessageSchema(
+        subject="MAZE - Usuario creado",
+        recipients=[user_data["email"]],
+        template_body={
+            "username":user_data["name"],
+        },
+        subtype=MessageType.html
+    )
+    try:
+        fm = FastMail(conf)
+        await fm.send_message(message, template_name="account_created.html")
+        
+    except Exception as e:
+        
+        raise HTTPException(status_code=400, detail="Mail Error")
