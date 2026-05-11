@@ -54,9 +54,8 @@ async def createEventService(data: Event, images: List[Annotated[UploadFile,File
     
     background_tasks.add_task(
         createEventNotificationService,
-        email=check_exist["email"],
-        event_title=event_data["title"],
-        username=check_exist["name"]
+        event_data = event_data,
+        user_data = check_exist
         
     )
     

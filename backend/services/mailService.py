@@ -15,14 +15,22 @@ conf = ConnectionConfig(
     TEMPLATE_FOLDER= './templates'
 )
 
-async def createEventNotificationService (email:str, event_title:str, username: str):
+async def createEventNotificationService (event_data: dict, user_data: dict):
     message = MessageSchema(
         subject="MAZE - Evento Registrado",
-        recipients=[email],
+        recipients=[user_data["email"]],
         template_body={
-            "user":username,
-            "event_title":event_title,
-            "status":"pending"
+            "username":user_data["name"],
+            "phone":event_data["phone"],
+            "event_title":event_data["title"],
+            "creation_date":event_data["creation_date"].strftime("%y-%m-%d"),
+            "starting_event_date":event_data["starting_event_date"].strftime("%y-%m-%d"),
+            "start_hour":event_data["start_hour"],
+            "finish_hour":event_data["finish_hour"],
+            "finish_event_date":event_data["finish_event_date"].strftime("%y-%m-%d"),
+            "province": event_data["location"]["province"],
+            "city": event_data["location"]["city"],
+            "direction": event_data["location"]["direction"]
         },
         subtype=MessageType.html
     )

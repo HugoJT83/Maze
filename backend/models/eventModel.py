@@ -40,6 +40,8 @@ class Event(BaseModel):
     creation_date: datetime = Field(default_factory=datetime.now)
     starting_event_date:datetime = Field(...)
     finish_event_date:datetime = Field(...)
+    start_hour: str = Field(...)
+    finish_hour: str = Field(...)
     location: Location = Field(...)
     interests: List[InterestsEnum] = Field(default=[], max_items=3)
     updated_at: datetime = Field(default_factory=datetime.now)
