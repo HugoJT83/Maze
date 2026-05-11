@@ -42,3 +42,9 @@ Se requieren las siguientes dependencias para ejecutar el entorno virtual de Pyt
 ```
  
  
+6. Instalación de la librería de envío de correos:
+
+```
+    pip install fastapi-mail
+```
+ 
