@@ -16,8 +16,13 @@ async def registerView(data: RegisterUser, background_tasks: BackgroundTasks):
 
 #login
 @router.post("/login")
-async def loginView(data: LoginUser):
-    return await loginController(data)
+async def loginView(data: LoginUser,  background_tasks: BackgroundTasks):
+    return await loginController(data, background_tasks)
+
+@router.post("/verify-2fa")
+async def verify2FAview(data: dict):
+    return await authController.verify2FAController(data["email"],data["code"])
+
 
 #profile details
 @router.get("/profile")

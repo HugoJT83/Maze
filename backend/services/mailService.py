@@ -58,3 +58,21 @@ async def createAccountNotificationService (user_data: dict):
     except Exception as e:
         
         raise HTTPException(status_code=400, detail="Mail Error")
+    
+async def send2FACodeNotificationService (email: str, otp_code: str):
+    message = MessageSchema(
+        subject="MAZE - Verificación en dos pasos",
+        recipients=[email],
+        template_body={
+            "email": email,
+            "otp_code": otp_code
+        },
+        subtype= MessageType.html
+    )
+    try:
+        fm = FastMail(conf)
+        await fm.send_message(message,template_name="2fa_verification.html")
+        
+    except Exception as e:
+        
+        raise HTTPException(status_code=400, detail="Mail Error")

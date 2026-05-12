@@ -9,10 +9,13 @@ async def registerController(data: RegisterUser, background_tasks: BackgroundTas
         return res_obj
     
 
-async def loginController(data: LoginUser):    
-        res_obj = await loginService(data)
+async def loginController(data: LoginUser,  background_tasks: BackgroundTasks):    
+        res_obj = await loginService(data, background_tasks)
         return res_obj
 
+async def verify2FAController(email:str, code:str):
+        res_obj = await authService.verify2FAService(email,code)
+        return res_obj
         
 async def profileController(userId:str):
         res_obj = await authService.profileService(userId)

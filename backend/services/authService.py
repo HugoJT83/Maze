@@ -1,3 +1,4 @@
+import secrets
 from typing import Annotated
 
 import bson
@@ -15,7 +16,7 @@ import bcrypt
 import jwt
 from datetime import datetime, timedelta
 from config.env import ENVConfig
-from services.mailService import createAccountNotificationService
+from services.mailService import createAccountNotificationService, send2FACodeNotificationService
 
 async def registerService(data:RegisterUser, background_tasks: BackgroundTasks):
     
@@ -31,7 +32,6 @@ async def registerService(data:RegisterUser, background_tasks: BackgroundTasks):
     hash_string = bcrypt.hashpw(data.password.encode(),salt).decode()
     user_data = data.dict()
     user_data['password']=hash_string
-    """ del user_data['name'] """
     
     """ Insercion en la BD del usuario """
     user_data['email'] = data.email.lower()
@@ -63,7 +63,7 @@ async def registerService(data:RegisterUser, background_tasks: BackgroundTasks):
         "token":token
     }
     
-async def loginService(data: LoginUser):
+async def loginService(data: LoginUser, background_tasks: BackgroundTasks):
     check_exist = await user_collection.find_one({"email":data.email.lower()})
     
     if not check_exist:
@@ -73,14 +73,74 @@ async def loginService(data: LoginUser):
     if not is_match:
         raise HTTPException(status_code=400, detail="Invalid Credentials")
      
+    if check_exist.get("role") == "ADMIN":
+        otp_code = "".join(secrets.choice("0123456789") for _ in range(6))
+        expiration = datetime.utcnow() + timedelta(minutes = 10)
+        
+        await user_collection.update_one(
+            {"_id" : check_exist["_id"]},
+            {"$set": {
+                "two_factor_code": otp_code,
+                "two_factor_expires": expiration
+            }}
+        )
+        
+        background_tasks.add_task(
+            send2FACodeNotificationService,
+            check_exist["email"],
+            otp_code
+        )
+        
+        return {
+            "status":"2FA_REQUIRED",
+            "msg": "Verification code sent to email",
+            "email": check_exist["email"]
+        }
+        
+        
+        
      
     token = jwt.encode({
         "user_id":str(check_exist['_id']),
         "exp": datetime.utcnow()+timedelta(days=10),
         'iat':datetime.utcnow()
     }, ENVConfig.JWT_AUTH_SCREATE,algorithm="HS256")
+    
     return {
         "msg":"Successful login",
+        "token": token
+    }
+    
+async def verify2FAService (email:str, code: str):
+    
+    check_exist = await user_collection.find_one({"email":email.lower()})
+    
+    if not check_exist or "two_factor_code" not in check_exist:
+        raise HTTPException(status_code=400,detail="User doesn't exist or no 2FA process found")
+    
+    if check_exist["two_factor_code"] != code:
+        raise HTTPException(status_code=400, detail="Invalid verification code")
+    
+    if datetime.utcnow() > check_exist["two_factor_expires"]:
+        raise HTTPException(status_code=400, detail="Code expired")
+    
+    await user_collection.update_one(
+        {"_id": check_exist["_id"]},
+        {"$unset": {
+            "two_factor_code": "",
+             "two_factor_expires":""
+            
+        }}
+    )
+    
+    token = jwt.encode({
+        "user_id":str(check_exist['_id']),
+        "exp": datetime.utcnow()+timedelta(days=10),
+        'iat':datetime.utcnow()
+    }, ENVConfig.JWT_AUTH_SCREATE,algorithm="HS256")
+    
+    return {
+        "msg":"2FA verified",
         "token": token
     }
 
