@@ -75,7 +75,7 @@ async def loginService(data: LoginUser, background_tasks: BackgroundTasks):
      
     if check_exist.get("role") == "ADMIN":
         otp_code = "".join(secrets.choice("0123456789") for _ in range(6))
-        expiration = datetime.utcnow() + timedelta(minutes = 10)
+        expiration = datetime.utcnow() + timedelta(minutes = 2)
         
         await user_collection.update_one(
             {"_id" : check_exist["_id"]},

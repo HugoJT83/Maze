@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import AuthButton from '../../../components/ui/AuthButton'
 import { Formik, Form, Field, ErrorMessage } from 'formik'
@@ -25,6 +25,7 @@ const LoginUser = () => {
   const [is2FA, setIs2FA] = useState(false)
   const [tempEmail, setTempEmail] = useState('')
   const [otpCode, setOtpCode] = useState('')
+  const [timeLeft, setTimeLeft] = useState(120)
 
   const [isLoading, setIsLoading] = useState(false)
   const [isHide, setIsHide] = useState(true)
@@ -67,6 +68,34 @@ const LoginUser = () => {
     }
 
   }
+
+  useEffect(() => {
+    let timer;
+    let countdown;
+
+    if (is2FA) {
+      timer = setTimeout(() => {
+        toast.warn("Tiempo de verificación expirado");
+        navigate('/');
+      }, 120000);
+
+      countdown = setInterval(() => {
+        setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
+      }, 1000);
+    }
+
+    return () => {
+      if (timer) clearTimeout(timer);
+      if (countdown) clearInterval(countdown);
+    };
+
+  }, [is2FA, navigate])
+
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+  };
 
   const handleVerify2FA = async () => {
 
@@ -145,7 +174,6 @@ const LoginUser = () => {
 
                     </div>
 
-                    {/* <AuthButton text={"Iniciar Sesión"}></AuthButton> */}
                     <button type="submit" className="font-Bitcount hover:cursor-pointer text-white-to-black bg-indigo-to-yellow border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg">
                       <span>Iniciar Sesión</span>
                     </button>
@@ -169,7 +197,8 @@ const LoginUser = () => {
                   <>
                     {/* Código de verificación */}
                     <div className="relative mb-4">
-                      <label htmlFor="password" className="leading-7 text-sm text-gray-600">Introduce el código enviado a <span className='font-bold'>{tempEmail}.</span></label>
+                      <label htmlFor="password" className="leading-7 text-sm text-gray-600">Introduce el código enviado a <span className='font-bold'>{tempEmail}.</span></label> <br />
+                      <span className='font-bold'>Expira en: {formatTime(timeLeft)}</span>
                       <input
                         type="text"
                         maxLength={6}
