@@ -13,11 +13,13 @@ import { ROLE_TYPE } from '../../../constant/auth.constant'
 import { axiosClient } from '../../../utils/axiosClient'
 import { toast } from 'react-toastify'
 import { useAuthContext } from '../../../context/AuthContext'
+import { GoogleLogin } from '@react-oauth/google'
 library.add(fas, far)
 /* 
 Para añadir un fontawesome:
 <FontAwesomeIcon icon="fa-solid fa-house"></FontAwesomeIcon>
 */
+
 
 const LoginUser = () => {
 
@@ -67,6 +69,21 @@ const LoginUser = () => {
       toast.error(e.response.data.detail || e.message)
     }
 
+  }
+
+  const onGoogleSubmitHandler = async (credentialResponse) => {
+    try {
+      const response = await axiosClient.post("/auth/google-login", {
+        token: credentialResponse.credential
+      });
+
+      localStorage.setItem("token", response.data.token);
+      await fetchUserProfile();
+      navigate("/dashboard");
+    }
+    catch (e) {
+      toast.error(e.response.data.detail || e.message)
+    }
   }
 
   useEffect(() => {
@@ -138,7 +155,7 @@ const LoginUser = () => {
               </button>
             </Link>
 
-            <div className="container px-5 py-2 mx-auto flex flex-wrap items-center flex-col">
+            <div className="container px-5 pt-2 mx-auto flex flex-wrap items-center flex-col">
 
               {/* Texto de presentacion */}
               <div className='lg:w-3/5 md:w-1/2 flex justify-center'>
@@ -152,7 +169,7 @@ const LoginUser = () => {
               </div>
 
               {/* Crendenciales */}
-              <div className="lg:w-2/6 md:w-1/2 bg-gray-100 rounded-lg p-8 flex flex-col w-full mt-10 mb-10 md:mt-0">
+              <div className="lg:w-2/6 md:w-1/2 bg-gray-100 rounded-lg p-8 flex flex-col w-full mt-10 md:mt-0">
                 <h2 className="text-gray-900 text-lg font-medium title-font mb-5">
                   {!is2FA ? "Datos de usuario" : "Verificacion de Seguridad en 2 pasos"}
                 </h2>
@@ -233,6 +250,13 @@ const LoginUser = () => {
         )}
 
       </Formik>
+      <div className='justify-center items-center gap-2 m-2 flex flex-col'>
+        <p>Puedes iniciar sesión con Google(Si no tienes cuenta, podrás crear una):</p>
+        <GoogleLogin
+          onSuccess={onGoogleSubmitHandler()}
+          onError={() => toast.error("Error al conectar con Google")}
+        />
+      </div>
     </>
   )
 }
