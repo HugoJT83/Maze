@@ -33,7 +33,8 @@ class User(BaseModel):
     
     name: str = Field(...)
     email: EmailStr = Field(...)
-    password: str = Field(...,min_length=6)
+    password: Optional[str] = Field(...,min_length=6)
+    auth_method: Optional[str] = None
     role: Optional[RolesEnum]  = Field(default = RolesEnum.user)
     created_at:datetime = Field(default_factory=datetime.now)
     update_at:datetime = Field(default_factory=datetime.now)

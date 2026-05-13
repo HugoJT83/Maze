@@ -18,6 +18,9 @@ from datetime import datetime, timedelta
 from config.env import ENVConfig
 from services.mailService import createAccountNotificationService, send2FACodeNotificationService
 
+from google.oauth2 import id_token
+from google.auth.transport import requests
+
 async def registerService(data:RegisterUser, background_tasks: BackgroundTasks):
     
     """ Comprueba si ya existe el usuario """
@@ -97,9 +100,6 @@ async def loginService(data: LoginUser, background_tasks: BackgroundTasks):
             "email": check_exist["email"]
         }
         
-        
-        
-     
     token = jwt.encode({
         "user_id":str(check_exist['_id']),
         "exp": datetime.utcnow()+timedelta(days=10),
@@ -124,8 +124,10 @@ async def verify2FAService (email:str, code: str):
     if datetime.utcnow() > check_exist["two_factor_expires"]:
         raise HTTPException(status_code=400, detail="Code expired")
     
+    userId = check_exist["_id"];
+    
     await user_collection.update_one(
-        {"_id": check_exist["_id"]},
+        {"_id": bson.ObjectId(userId)},
         {"$unset": {
             "two_factor_code": "",
              "two_factor_expires":""
@@ -143,6 +145,58 @@ async def verify2FAService (email:str, code: str):
         "msg":"2FA verified",
         "token": token
     }
+    
+async def googleLoginService(token: str, background_tasks: BackgroundTasks):
+    try:
+        idinfo = id_token.verify_oauth2_token(
+            token,
+            requests.Request(),
+            ENVConfig.GOOGLEAUTH_CLIENT
+        )
+        
+        email = idinfo["email"].lower();
+        
+        check_exist = await user_collection.find_one({"email":email})
+        
+        #Crea un usuario si no existe
+        if not check_exist:
+            new_user_data =  authModel.User(
+                name=idinfo.get('name',email.split('@')[0]),
+                email=email,
+                auth_method="google",
+                role="USER"
+            )
+            
+            doc = await user_collection.insert_one(new_user_data)
+            user_id = str(doc.inserted_id)
+
+            user_p = authModel.UserProfile(
+                user_id=user_id,
+                name=new_user_data["name"],
+                avatar= {"image_uri": idinfo.get("picture"), "public_id":None}
+            )
+            
+            await profile_collection.insert_one(user_p.dict())
+        else:
+            user_id = str(check_exist["_id"])
+            
+        token = jwt.encode({
+            "user_id":str(doc.inserted_id),
+            "exp": datetime.utcnow()+timedelta(days=10),
+            'iat':datetime.utcnow()
+        }, ENVConfig.JWT_AUTH_SCREATE,algorithm="HS256")
+        
+        return {
+            "msg": "Successful Google Login",
+            "token": token
+        }
+    except Exception as e:
+        if e is ValueError:
+            raise HTTPException(status_code=401, detail="Invalid Google Token")
+        else:
+            raise HTTPException(status_code=400, detail=str(e))
+    
+    
 
 async def profileService(userId: str):
     """ Comprueba que existe el usuario """

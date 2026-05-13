@@ -16,6 +16,10 @@ async def loginController(data: LoginUser,  background_tasks: BackgroundTasks):
 async def verify2FAController(email:str, code:str):
         res_obj = await authService.verify2FAService(email,code)
         return res_obj
+
+async def googleLoginController(token: str, background_tasks: BackgroundTasks):
+        res_obj = authService.googleLoginService( token, background_tasks)
+        return res_obj
         
 async def profileController(userId:str):
         res_obj = await authService.profileService(userId)

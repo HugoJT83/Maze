@@ -25,3 +25,5 @@ class ENVConfig:
     GMAIL_PASSWORD = os.getenv("GMAIL_PASSWORD","")
     GMAIL_FROM = os.getenv("GMAIL_FROM","")
     GMAIL_PORT = os.getenv("GMAIL_PORT","")
+    
+    GOOGLEAUTH_CLIENT=os.getenv("GOOGLEAUTH_CLIENT","")

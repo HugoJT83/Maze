@@ -19,10 +19,15 @@ async def registerView(data: RegisterUser, background_tasks: BackgroundTasks):
 async def loginView(data: LoginUser,  background_tasks: BackgroundTasks):
     return await loginController(data, background_tasks)
 
+#verificacion 2FA
 @router.post("/verify-2fa")
 async def verify2FAview(data: dict):
     return await authController.verify2FAController(data["email"],data["code"])
 
+#login con Google
+@router.post("/google-login")
+async def googleLoginView(data: dict, background_tasks: BackgroundTasks):
+    return await authController.googleLoginController(data["token"], background_tasks)
 
 #profile details
 @router.get("/profile")
