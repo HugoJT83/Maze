@@ -139,37 +139,39 @@ const LoginUser = () => {
 
   return (
     <>
-      <Formik
-        validationSchema={ValidationSchema}
-        onSubmit={onSubmitHandler}
-        initialValues={initialValues}
-      >
-        {({ isSubmitting }) => (
-          <Form className="text-gray-600 body-font">
+      {/* Volver */}
+      <Link to={'/'}>
+        <button className='m-3 font-Bitcount hover:cursor-pointer text-white-to-black bg-indigo-to-yellow border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg'>
+          <FontAwesomeIcon icon='fa-solid fa-arrow-left' className='pr-2'></FontAwesomeIcon>
+          Volver
+        </button>
+      </Link>
 
-            {/* Volver */}
-            <Link to={'/'}>
-              <button className='m-3 font-Bitcount hover:cursor-pointer text-white-to-black bg-indigo-to-yellow border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg'>
-                <FontAwesomeIcon icon='fa-solid fa-arrow-left' className='pr-2'></FontAwesomeIcon>
-                Volver
-              </button>
-            </Link>
+      <div className='lg:grid grid-cols-1'>
 
-            <div className="container px-5 pt-2 mx-auto flex flex-wrap items-center flex-col">
+        {/* Texto de presentacion */}
+        <div className='flex flex-wrap justify-center col-span-2 my-auto mx-2'>
+          <div className=" md:pr-16 lg:pr-0 pr-0 text-center pt-2">
+            <h1 className="title-font font-medium text-2xl text-black-to-white font-Bitcount">Encuentra eventos de tu interés y conecta</h1>
+            <p className="leading-relaxed text-black-to-white mt-4">Accede a tus eventos publicados, o maneja los eventos a los que estás apuntado.</p>
+          </div>
+          <div class="m-5">
+            <FontAwesomeIcon icon='fa-regular fa-lightbulb' class="w-full max-w-10 max-h-fit text-black-to-white"></FontAwesomeIcon>
+          </div>
+        </div>
 
-              {/* Texto de presentacion */}
-              <div className='lg:w-3/5 md:w-1/2 flex justify-center'>
-                <div className=" md:pr-16 lg:pr-0 pr-0 text-center mb-10 pt-2">
-                  <h1 className="title-font font-medium text-2xl text-black-to-white font-Bitcount">Encuentra eventos de tu interés y conecta</h1>
-                  <p className="leading-relaxed text-black-to-white mt-4">Accede a tus eventos publicados, o maneja los eventos a los que estás apuntado.</p>
-                </div>
-                <div class="m-5">
-                  <FontAwesomeIcon icon='fa-regular fa-lightbulb' class="w-full max-w-10 max-h-fit text-black-to-white"></FontAwesomeIcon>
-                </div>
-              </div>
+
+        < Formik
+          validationSchema={ValidationSchema}
+          onSubmit={onSubmitHandler}
+          initialValues={initialValues}
+        >
+          {({ isSubmitting }) => (
+            <Form className="text-gray-600 body-font m-4 lg:w-1/2 sm:mx-auto">
+
 
               {/* Crendenciales */}
-              <div className="lg:w-2/6 md:w-1/2 bg-gray-100 rounded-lg p-8 flex flex-col w-full mt-10 md:mt-0">
+              <div className=" bg-lightgray-to-yellow rounded-lg p-8 flex flex-col mt-10 md:mt-0">
                 <h2 className="text-gray-900 text-lg font-medium title-font mb-5">
                   {!is2FA ? "Datos de usuario" : "Verificacion de Seguridad en 2 pasos"}
                 </h2>
@@ -236,26 +238,24 @@ const LoginUser = () => {
                     </button>
                   </>
                 )}
-
                 {/* Rol (testing) */}
-                <div className='hidden'>
-                  <Field as="select" name="role" id="role">
-                    <option value="USER"></option>
-                    <option value="ADMIN" selected></option>
-                  </Field>
-                </div>
+                {/* <div className='hidden'>
+                    <Field as="select" name="role" id="role">
+                      <option value="USER"></option>
+                      <option value="ADMIN" selected></option>
+                    </Field>
+                  </div> */}
               </div>
-            </div>
-          </Form>
-        )}
-
-      </Formik>
-      <div className='justify-center items-center gap-2 m-2 flex flex-col'>
-        <p>Puedes iniciar sesión con Google(Si no tienes cuenta, podrás crear una):</p>
-        <GoogleLogin
-          onSuccess={onGoogleSubmitHandler()}
-          onError={() => toast.error("Error al conectar con Google")}
-        />
+              <div className='justify-items-center flex-col rounded-lg text-center bg-lightgray-to-yellow p-5 my-3'>
+                <p className='my-2'><span className='font-bold'>Puedes iniciar sesión con Google:</span><br />(Si no tienes cuenta, podrás crear una):</p>
+                <GoogleLogin
+                  onSuccess={onGoogleSubmitHandler()}
+                  onError={() => toast.error("Error al conectar con Google")}
+                />
+              </div>
+            </Form>
+          )}
+        </Formik >
       </div>
     </>
   )
