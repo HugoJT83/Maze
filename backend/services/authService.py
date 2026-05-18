@@ -169,11 +169,18 @@ async def googleLoginService(token: str, background_tasks: BackgroundTasks):
             
             doc = await user_collection.insert_one(dict_user_data)
             user_id = str(doc.inserted_id)
+            user_avatar = idinfo.get("picture","")
 
+
+            if not user_avatar or "profile/picture/0" in user_avatar:
+                avatar_uri = None
+            else:
+                avatar_uri = user_avatar
+                
             user_p = authModel.UserProfile(
                 user_id=user_id,
                 name=dict_user_data["name"],
-                avatar= {"image_uri": idinfo.get("picture"), "public_id":None}
+                avatar= {"image_uri": avatar_uri, "public_id":None}
             )
             
             await profile_collection.insert_one(user_p.dict())
@@ -191,7 +198,7 @@ async def googleLoginService(token: str, background_tasks: BackgroundTasks):
             "token": token
         }
     except Exception as e:
-        if e is ValueError:
+        if isinstance(e,ValueError):
             raise HTTPException(status_code=401, detail="Invalid Google Token")
         else:
             raise HTTPException(status_code=400, detail=str(e))
