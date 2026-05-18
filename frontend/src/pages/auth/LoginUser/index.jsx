@@ -82,7 +82,7 @@ const LoginUser = () => {
       navigate("/dashboard");
     }
     catch (e) {
-      toast.error(e.response.data.detail || e.message)
+      toast.error(e.response?.data?.detail || e.message || "Error de veríficación de Google")
     }
   }
 

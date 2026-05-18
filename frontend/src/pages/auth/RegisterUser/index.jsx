@@ -52,6 +52,21 @@ const RegisterUser = () => {
 
   }
 
+  const onGoogleSubmitHandler = async (credentialResponse) => {
+    try {
+      const response = await axiosClient.post("/auth/google-login", {
+        token: credentialResponse.credential
+      });
+
+      localStorage.setItem("token", response.data.token);
+      await fetchUserProfile();
+      navigate("/dashboard");
+    }
+    catch (e) {
+      toast.error(e.response?.data?.detail || e.message || "Error de veríficación de Google")
+    }
+  }
+
   const initialValues = {
     name: '',
     email: '',
@@ -137,7 +152,7 @@ const RegisterUser = () => {
               <div className='w-full justify-items-center text-center bg-lightgray-to-yellow rounded-lg p-5 my-5'>
                 <p className='my-2'><span className='font-bold'>Puedes usar tu cuenta de Google:</span></p>
                 <GoogleLogin
-                  onSuccess={console.log("hola")}
+                  onSuccess={(response) => onGoogleSubmitHandler(response)}
                   onError={() => toast.error("Error al conectar con Google")}
                 />
               </div>

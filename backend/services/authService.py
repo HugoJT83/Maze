@@ -154,10 +154,9 @@ async def googleLoginService(token: str, background_tasks: BackgroundTasks):
             ENVConfig.GOOGLEAUTH_CLIENT
         )
         
-        email = idinfo["email"].lower();
-        
+        email = idinfo["email"].lower();      
         check_exist = await user_collection.find_one({"email":email})
-        
+        print(check_exist)
         #Crea un usuario si no existe
         if not check_exist:
             new_user_data =  authModel.User(
@@ -166,13 +165,14 @@ async def googleLoginService(token: str, background_tasks: BackgroundTasks):
                 auth_method="google",
                 role="USER"
             )
+            dict_user_data = new_user_data.dict()
             
-            doc = await user_collection.insert_one(new_user_data)
+            doc = await user_collection.insert_one(dict_user_data)
             user_id = str(doc.inserted_id)
 
             user_p = authModel.UserProfile(
                 user_id=user_id,
-                name=new_user_data["name"],
+                name=dict_user_data["name"],
                 avatar= {"image_uri": idinfo.get("picture"), "public_id":None}
             )
             
@@ -181,7 +181,7 @@ async def googleLoginService(token: str, background_tasks: BackgroundTasks):
             user_id = str(check_exist["_id"])
             
         token = jwt.encode({
-            "user_id":str(doc.inserted_id),
+            "user_id":user_id,
             "exp": datetime.utcnow()+timedelta(days=10),
             'iat':datetime.utcnow()
         }, ENVConfig.JWT_AUTH_SCREATE,algorithm="HS256")
