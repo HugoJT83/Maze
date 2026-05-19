@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import { toast } from 'react-toastify'
 import { axiosClient } from '../../../utils/axiosClient'
+import EventUnit from './components/eventUnit'
 
 const myEvents = () => {
 
@@ -24,7 +25,10 @@ const myEvents = () => {
     }, [])
 
     return (
-        <div>myEvents</div>
+        <div>
+            <EventUnit></EventUnit>
+        </div>
+
     )
 }
 

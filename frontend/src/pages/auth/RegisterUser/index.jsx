@@ -34,10 +34,14 @@ const RegisterUser = () => {
   const onSubmitHandler = async (values, helpers) => {
 
     try {
-      const response = await axiosClient.post("/auth/register", values)
+      const response = await axiosClient.post("/auth/register", values, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+
       const data = response.data
 
-      console.log(data)
       toast.success(data.msg)
       localStorage.setItem("token", data.token)
 
@@ -156,7 +160,6 @@ const RegisterUser = () => {
                   onError={() => toast.error("Error al conectar con Google")}
                 />
               </div>
-
             </div>
           </Form>
         </Formik>

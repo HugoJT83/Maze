@@ -40,6 +40,8 @@ const Header = () => {
         setCurrentIcon(interests[randomIndex]);
     };
 
+    const localProfilePic = localStorage.getItem("google_profile_pic");
+    const avatarSrc = user?.auth_method === "google" ? localProfilePic : user?.avatar || samplePhoto
 
     return (
         <>
@@ -95,7 +97,7 @@ const Header = () => {
                             <>
                                 <Link to={'/profile'}>
                                     <div className='bg-white w-15 h-15 rounded-full ml-5 mr-5 hover:border-3 border-indigo-to-yellow'>
-                                        <img src={user?.avatar ?? samplePhoto} alt="" className='w-full h-full object-cover rounded-full' />
+                                        <img src={avatarSrc} alt="" className='w-full h-full object-cover rounded-full' />
                                     </div>
                                 </Link>
                             </> :

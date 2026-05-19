@@ -38,6 +38,11 @@ export const AuthContextProvider = ({ children }) => {
         }
       })
       const data = await response.data
+
+      console.log(data);
+      if (data && data.auth_method === "google" && data.avatar) {
+        localStorage.setItem("google_profile_pic", data.avatar)
+      }
       dispatch(setUser(data))
 
     } catch (error) {

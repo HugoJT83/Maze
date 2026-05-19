@@ -12,12 +12,12 @@ router = APIRouter(prefix="/api/v1/auth", tags=['auth'])
 #register
 @router.post("/register")
 async def registerView(data: RegisterUser, background_tasks: BackgroundTasks):
-    return await registerController(data,background_tasks)
+    return await authController.registerController(data,background_tasks)
 
 #login
 @router.post("/login")
 async def loginView(data: LoginUser,  background_tasks: BackgroundTasks):
-    return await loginController(data, background_tasks)
+    return await authController.loginController(data, background_tasks)
 
 #verificacion 2FA
 @router.post("/verify-2fa")

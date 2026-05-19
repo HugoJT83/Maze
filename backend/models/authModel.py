@@ -52,7 +52,7 @@ class User(BaseModel):
                 raise ValueError("Password is obligatory for non-Google Accounts")
             if len(self.password) <8:
                 raise ValueError("Password must be at least 6 characters")
-        
+        return self
     
 
 class Address(BaseModel):

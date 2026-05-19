@@ -33,7 +33,7 @@ async def registerService(data:RegisterUser, background_tasks: BackgroundTasks):
     salt = bcrypt.gensalt()
     # print(salt)
     hash_string = bcrypt.hashpw(data.password.encode(),salt).decode()
-    user_data = data.dict()
+    user_data = data.model_dump()
     user_data['password']=hash_string
     
     """ Insercion en la BD del usuario """
