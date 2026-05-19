@@ -184,6 +184,11 @@ async def googleLoginService(token: str, background_tasks: BackgroundTasks):
             )
             
             await profile_collection.insert_one(user_p.dict())
+            
+            background_tasks.add_task(
+                createAccountNotificationService,
+                user_data = dict_user_data
+            )
         else:
             user_id = str(check_exist["_id"])
             

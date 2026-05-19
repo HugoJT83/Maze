@@ -47,7 +47,6 @@ class Event(BaseModel):
     updated_at: datetime = Field(default_factory=datetime.now)
     terms:LegalTerms
     status: str = Field(default="pending")
-
     
     @field_validator('phone')
     @classmethod
@@ -98,9 +97,9 @@ class Event(BaseModel):
     @classmethod
     def validate_terms(cls, data: Any) -> Any:
         if isinstance(data,dict):
-            terms_value = data.get("terms")
+            terms_obj = data.get("terms")
 
-            if terms_value is not True:
+            if terms_obj["termsAccepted"] is not True:
                 raise ValueError("Es obligatorio aceptar terminos y condiciones");
 
             data["terms"] = {

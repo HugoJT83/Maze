@@ -78,6 +78,13 @@ async def createEventService(data: Event, images: List[Annotated[UploadFile,File
         raise HTTPException(status_code=500,detail="Event Creation error:"+f"{e}")
     
     
+async def getEventsByUserService (creator_id: str):
+    check_user_exist = await user_collection.find_one({"_id":bson.ObjectId(creator_id)})
+    if not check_user_exist:
+        raise HTTPException(status_code=404, detail="user not found")
     
+    events = events_collection.find({"creator_id":creator_id})
+    events_docs = await events.to_list(length=None)
     
+    return [Event(**doc) for doc in events_docs]
     

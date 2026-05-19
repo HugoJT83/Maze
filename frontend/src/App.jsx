@@ -15,6 +15,7 @@ import PrivacyPolicy from "./pages/Legal/PrivacyPolicy";
 import Accesibility from "./pages/Legal/Accesibility";
 import { About } from "./pages/Legal/About";
 import Terms from "./pages/Legal/Terms";
+import myEvents from "./pages/Events/MyEvents";
 
 const App = () => {
   return (
@@ -28,7 +29,9 @@ const App = () => {
             <Route path='/dashboard' Component={Dashboard} />
             <Route path='/profile' Component={ProfileUser} />
             <Route path="/events/create-event" Component={AddEvent} />
-            <Route path="/terms" Component={Terms}></Route>
+            <Route path="/terms" Component={Terms} />
+            <Route path="/my-events" Component={myEvents} />
+
           </Route>
 
           {/* Rutas - Legal */}
