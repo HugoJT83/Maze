@@ -3,14 +3,14 @@ from typing import Annotated, List
 import bson
 from fastapi import BackgroundTasks, File, HTTPException, UploadFile
 
-from models.eventModel import Event, EventImage
+from models.eventModel import EventCreate, EventResponse, EventImage
 from config.db import events_collection,user_collection,profile_collection
 import cloudinary
 import cloudinary.uploader
 
 from services.mailService import createEventNotificationService
 
-async def createEventService(data: Event, images: List[Annotated[UploadFile,File()]], userId: str, background_tasks: BackgroundTasks):
+async def createEventService(data: EventCreate, images: List[Annotated[UploadFile,File()]], userId: str, background_tasks: BackgroundTasks):
     check_exist = await user_collection.find_one({"_id":bson.ObjectId(userId)},{
         "password":0
     })
@@ -86,5 +86,5 @@ async def getEventsByUserService (creator_id: str):
     events = events_collection.find({"creator_id":creator_id})
     events_docs = await events.to_list(length=None)
     
-    return [Event(**doc) for doc in events_docs]
+    return [EventResponse(**doc) for doc in events_docs]
     

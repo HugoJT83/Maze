@@ -1,6 +1,7 @@
 
-from typing import Any
-from pydantic import model_validator
+from typing import Annotated, Any
+from bson import ObjectId
+from pydantic import BeforeValidator, model_validator
 from datetime import datetime
 import re
 from typing import List
@@ -32,7 +33,7 @@ class LegalTerms(BaseModel):
     termsVersion: str = "1.0"
 
 
-class Event(BaseModel):
+""" class Event(BaseModel):
     
     title: str = Field(...)
     description: str = Field(...)
@@ -99,7 +100,12 @@ class Event(BaseModel):
         if isinstance(data,dict):
             terms_obj = data.get("terms")
 
-            if terms_obj["termsAccepted"] is not True:
+            if isinstance(terms_obj,dict):
+                is_accepted = terms_obj.get("termsAccepted")
+            else:
+                is_accepted = terms_obj
+                
+            if is_accepted is not True:
                 raise ValueError("Es obligatorio aceptar terminos y condiciones");
 
             data["terms"] = {
@@ -109,4 +115,67 @@ class Event(BaseModel):
             }
             
         return data
+    
+    """ 
+    
+class EventBase(BaseModel):
+    title: str = Field(...)
+    description: str = Field(...)
+    phone: str = Field(...)
+    creation_date: datetime = Field(default_factory=datetime.now)
+    start_hour: str = Field(...)
+    finish_hour: str = Field(...)
+    location: Location = Field(...)
+    interests: List[InterestsEnum] = Field(default=[], max_items=3)
+    updated_at: datetime = Field(default_factory=datetime.now)
+    status: str = Field(default="pending")
+    
+    
+class EventCreate(EventBase):
+    starting_event_date:datetime = Field(...)
+    finish_event_date:datetime = Field(...)
+    terms:LegalTerms
+    
+    @field_validator('starting_event_date')
+    @classmethod
+    def check_future_starting_date(cls, value):
+        if value < datetime.now():
+            raise ValueError("la fecha de inicio del evento no puede ser anterior a la fecha actual.")
+        return value
+    
+    @field_validator('finish_event_date')
+    @classmethod
+    def check_future_finish_date(cls, value):
+        if value < datetime.now():
+            raise ValueError("la fecha final del evento no puede ser anterior a la fecha actual.")
+        return value
+    
+    @model_validator(mode="before")
+    @classmethod
+    def validate_terms(cls, data: Any) -> Any:
+        if isinstance(data,dict):
+            terms_obj = data.get("terms")
+
+            if isinstance(terms_obj,dict):
+                is_accepted = terms_obj.get("termsAccepted")
+            else:
+                is_accepted = terms_obj
+                
+            if is_accepted is not True:
+                raise ValueError("Es obligatorio aceptar terminos y condiciones");
+
+            data["terms"] = {
+                "termsAccepted": True,
+                "acceptedAt": datetime.now(),
+                "termsVersion":"1.0"
+            }
+            
+        return data
+
+PyObjectId = Annotated[str, BeforeValidator(str)]
+
+class EventResponse(EventBase):
+    id: PyObjectId = Field(alias="_id")
+    starting_event_date: datetime
+    finish_event_date: datetime
     

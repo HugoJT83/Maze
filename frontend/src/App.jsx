@@ -16,6 +16,7 @@ import Accesibility from "./pages/Legal/Accesibility";
 import { About } from "./pages/Legal/About";
 import Terms from "./pages/Legal/Terms";
 import myEvents from "./pages/Events/MyEvents";
+import EventDetailPage from "./pages/Events/EventDetailPage";
 
 const App = () => {
   return (
@@ -31,7 +32,7 @@ const App = () => {
             <Route path="/events/create-event" Component={AddEvent} />
             <Route path="/terms" Component={Terms} />
             <Route path="/my-events" Component={myEvents} />
-
+            <Route path="/my-events/:id" Component={EventDetailPage} />
           </Route>
 
           {/* Rutas - Legal */}

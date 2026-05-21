@@ -8,10 +8,11 @@ from fastapi import APIRouter, BackgroundTasks, Depends, File, Form, HTTPExcepti
 from controllers import eventController
 from controllers.eventController import createEventController
 from middleware.VerifyToken import verifyToken
-from models.eventModel import Event
 import bcrypt
 import jwt
 import bson
+
+from models.eventModel import EventCreate
 
 router = APIRouter(prefix="/api/v1/events", tags=['event'])
 
@@ -24,7 +25,7 @@ async def createEvent(
     
     try:
         data_dict = json.loads(data)
-        event_model = Event(**data_dict)
+        event_model = EventCreate(**data_dict)
     
         return await eventController.createEventController(event_model,images,userId, background_tasks)
 
