@@ -31,29 +31,35 @@ const myEvents = () => {
     }, [])
 
     return (
-        <div className='justify-items-center'>
-            {events.length > 0 ?
-                (
-                    events.map((event) => (
-                        <EventUnit key={event.id || event._id} eventData={event} />
-                    ))
-                )
-                :
-                (
-                    <>
-                        <div className='flex flex-col text-center my-30'>
-                            <h1 className='mx-auto my-2 text-5xl font-Bitcount'>Nada por aquí...</h1>
-                            <p className='text-gray-to-yellow'>
-                                Parece que no tienes eventos publicados. ¡Prueba a publicar un evento y empieza a conocer gente!
-                            </p>
-                            <Link to={"/events/create-event"} className='justify-items-center'>
-                                <p className='my-3 bg-indigo-to-yellow text-white-to-black w-40 p-2 rounded-xl hover:scale-110 transition-all'>Crear un evento</p>
-                            </Link>
-                        </div>
-                    </>
-                )}
-        </div>
-
+        <>
+            <div className='my-10 lg:mx-10'>
+                <h1 className='text-indigo-to-yellow text-6xl font-Bitcount text-center'>Tus eventos:</h1>
+            </div>
+            <div className='flex flex-col content-center items-center'>
+                {events.length > 0 ?
+                    (
+                        events.map((event) => (
+                            <EventUnit key={event.id || event._id} eventData={event} />
+                        ))
+                    )
+                    :
+                    (
+                        <>
+                            <div className='flex flex-col text-center my-30'>
+                                <h1 className='mx-auto my-2 text-5xl font-Bitcount'>Nada por aquí...</h1>
+                                <p className='text-gray-to-yellow'>
+                                    Parece que no tienes eventos publicados. ¡Prueba a publicar un evento y empieza a conocer gente!
+                                </p>
+                                <div className='flex justify-center hover:cursor-pointer'>
+                                    <Link to={"/events/create-event"}>
+                                        <p className='my-3 bg-indigo-to-yellow text-white-to-black w-40 p-2 rounded-xl hover:scale-110 transition-all'>Crear un evento</p>
+                                    </Link>
+                                </div>
+                            </div>
+                        </>
+                    )}
+            </div>
+        </>
     )
 }
 

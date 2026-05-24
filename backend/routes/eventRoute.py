@@ -37,4 +37,31 @@ async def createEvent(
 @router.get("/my-events")
 async def getUserEvents(userId: str = Depends(verifyToken)):
     return await eventController.getEventsByUserController(userId)
+
+@router.get("/pending")
+async def getPendingEvents(page: int = 1, limit: int = 5, userId: str = Depends(verifyToken)):
+    return await eventController.getPendingEventsController(userId, page, limit)
+
+@router.get("/{id}")
+async def getEventById(id: str, userId: str = Depends(verifyToken)):
+    return await eventController.getEventByIdController(id)
+
+@router.delete("/delete-event/{id}")
+async def deleteEvent(id:str, userId: str = Depends(verifyToken)):
+    return await eventController.deleteEventController(id, userId)
+    
+
+
+@router.get("/manage/{id}")
+async def getEventManagementDetail(id: str, userId: str = Depends(verifyToken)):
+    return await eventController.getEventManagementDetailController(id, userId)
+
+@router.put("/approve/{id}")
+async def approveEvent(id: str, userId: str = Depends(verifyToken)):
+    return await eventController.approveEventController(id, userId)
+
+@router.put("/deny/{id}")
+async def denyEvent(id: str, data: dict, background_tasks: BackgroundTasks, userId: str = Depends(verifyToken)):
+    justification = data.get("justification", "")
+    return await eventController.denyEventController(id, justification, userId, background_tasks)
     

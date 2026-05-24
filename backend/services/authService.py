@@ -27,6 +27,8 @@ async def registerService(data:RegisterUser, background_tasks: BackgroundTasks):
     check_exist = await user_collection.find_one({"email":data.email.lower()})
     
     if check_exist:
+        if check_exist.get("auth_method") == "google":
+            raise HTTPException(status_code=400, detail="Esta cuenta ya está registrada con Google. Por favor, inicia sesión con Google.")
         raise HTTPException(status_code=400,detail="User already exists")
     
     """ Encriptacion de la contraseña """
@@ -72,6 +74,9 @@ async def loginService(data: LoginUser, background_tasks: BackgroundTasks):
     if not check_exist:
         raise HTTPException(status_code=400,detail="User doesn't exist")
     
+    if check_exist.get("auth_method") == "google" or not check_exist.get("password"):
+        raise HTTPException(status_code=400, detail="Esta cuenta está registrada con Google. Por favor, inicia sesión con Google.")
+     
     is_match = bcrypt.checkpw(data.password.encode(), check_exist['password'].encode())
     if not is_match:
         raise HTTPException(status_code=400, detail="Invalid Credentials")
@@ -177,10 +182,12 @@ async def googleLoginService(token: str, background_tasks: BackgroundTasks):
             else:
                 avatar_uri = user_avatar
                 
+            avatar_data = {"image_uri": avatar_uri, "public_id": None} if avatar_uri else None
+            
             user_p = authModel.UserProfile(
                 user_id=user_id,
                 name=dict_user_data["name"],
-                avatar= {"image_uri": avatar_uri, "public_id":None}
+                avatar=avatar_data
             )
             
             await profile_collection.insert_one(user_p.dict())
@@ -190,7 +197,7 @@ async def googleLoginService(token: str, background_tasks: BackgroundTasks):
                 user_data = dict_user_data
             )
         else:
-            user_id = str(check_exist["_id"])
+            user_id = str(check_exist.get("_id"))
             
         token = jwt.encode({
             "user_id":user_id,
@@ -275,7 +282,7 @@ async def UpdateDetailsService(data: UpdateDetails, userId:str):
             "name":data.name,
             "description":data.description,
             "interests": data.interests,
-            "address":data.address.dict(),
+            "address":data.address.dict() if data.address else None,
             "update_at":datetime.now()
         }
     })

@@ -5,8 +5,15 @@ import { far } from '@fortawesome/free-regular-svg-icons'
 library.add(fas, far)
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { useAuthContext } from '../../context/AuthContext'
 
 export const Dashboard = () => {
+
+
+
+  const { user } = useAuthContext();
+  const isAdmin = user?.role === "ADMIN"
+
   return (
 
     <>
@@ -46,17 +53,33 @@ export const Dashboard = () => {
 
 
             {/* Contenedor 3 - administrar eventos */}
+
             <div className="p-4 lg:w-1/4">
-              <Link to={'/my-events'}>
-                <div className="h-full bg-lightgray-to-yellow bg-opacity-75 px-8 pt-16 pb-24 rounded-lg overflow-hidden text-center relative transition ease-in-out hover:scale-105 hover:bg-indigo-to-yellow hover:text-white-to-black hover:cursor-pointer">
-                  <FontAwesomeIcon icon="fa-solid fa-list-check" className='text-6xl m-3' />
-                  <h1 className="title-font sm:text-2xl text-xl font-medium mb-3 font-Bitcount mt-2">Mis eventos</h1>
-                  <p className="leading-relaxed mb-3">
-                    Gestiona lo que necesites. Aquí podrás
-                    <span className='font-bold'> consultar los eventos a los que estás apuntado,</span> así como aquellos que has publicado.
-                  </p>
-                </div>
-              </Link>
+              {isAdmin ?
+                (
+                  <Link to={'/manage-events'}>
+                    <div className="h-full bg-lightgray-to-yellow bg-opacity-75 px-8 pt-16 pb-24 rounded-lg overflow-hidden text-center relative transition ease-in-out hover:scale-105 hover:bg-indigo-to-yellow hover:text-white-to-black hover:cursor-pointer">
+                      <FontAwesomeIcon icon="fa-solid fa-screwdriver-wrench" className='text-6xl m-3' />
+                      <h1 className="title-font sm:text-2xl text-xl font-medium mb-3 font-Bitcount mt-2">Panel de control</h1>
+                      <p className="leading-relaxed mb-3">
+                        Obtén datos de la aplicación todo en una misma sección. Aprueba eventos, mira estadísticas y otras herramientas.
+                      </p>
+                    </div>
+                  </Link>
+
+                ) :
+                (<Link to={'/my-events'}>
+                  <div className="h-full bg-lightgray-to-yellow bg-opacity-75 px-8 pt-16 pb-24 rounded-lg overflow-hidden text-center relative transition ease-in-out hover:scale-105 hover:bg-indigo-to-yellow hover:text-white-to-black hover:cursor-pointer">
+                    <FontAwesomeIcon icon="fa-solid fa-list-check" className='text-6xl m-3' />
+                    <h1 className="title-font sm:text-2xl text-xl font-medium mb-3 font-Bitcount mt-2">Mis eventos</h1>
+                    <p className="leading-relaxed mb-3">
+                      Gestiona lo que necesites. Aquí podrás
+                      <span className='font-bold'> consultar los eventos a los que estás apuntado,</span> así como aquellos que has publicado.
+                    </p>
+                  </div>
+                </Link>
+                )}
+
             </div>
 
             {/* Contenedor 4 - Mi perfil*/}

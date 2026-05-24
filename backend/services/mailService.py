@@ -76,3 +76,20 @@ async def send2FACodeNotificationService (email: str, otp_code: str):
     except Exception as e:
         
         raise HTTPException(status_code=400, detail="Mail Error")
+
+async def sendEventDenialNotificationService(email: str, username: str, event_title: str, justification: str):
+    message = MessageSchema(
+        subject="MAZE - Evento Rechazado",
+        recipients=[email],
+        template_body={
+            "username": username,
+            "event_title": event_title,
+            "justification": justification
+        },
+        subtype=MessageType.html
+    )
+    try:
+        fm = FastMail(conf)
+        await fm.send_message(message, template_name="event_denied.html")
+    except Exception as e:
+        raise HTTPException(status_code=400, detail="Mail Error")

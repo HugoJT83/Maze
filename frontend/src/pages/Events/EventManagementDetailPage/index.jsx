@@ -11,17 +11,20 @@ import {
     faClock,
     faMapPin,
     faPhone,
-    faUsers,
     faFileAlt,
     faChevronLeft,
     faChevronRight,
     faInfoCircle,
     faCheckCircle,
-    faExclamationTriangle
+    faExclamationTriangle,
+    faCircleUser,
+    faThumbsUp,
+    faThumbsDown,
+    faEnvelope,
+    faTimesCircle
 } from '@fortawesome/free-solid-svg-icons'
-import ConfirmationModal from '../../../components/ConfirmationModal'
 
-const EventDetailPage = () => {
+const EventManagementDetailPage = () => {
     const { id } = useParams()
     const navigate = useNavigate()
 
@@ -30,45 +33,19 @@ const EventDetailPage = () => {
     const [error, setError] = useState(null)
     const [currentImageIndex, setCurrentImageIndex] = useState(0)
 
-
-    const [isDeleting, setIsDeleting] = useState(false);
-    const [showModal, setShowModal] = useState(false);
-    const handleDelete = async () => {
-        try {
-            setIsDeleting(true);
-            const token = localStorage.getItem("token")
-
-            const response = await axiosClient.delete(`/events/delete-event/${id}`, {
-                headers: {
-                    Authorization: 'Bearer ' + token
-                }
-            });
-
-            if (response.data.status == "success") {
-                toast.success(response.data.message || "Evento borrado con exito");
-                setShowModal(false);
-                navigate("/my-events");
-            }
-        }
-        catch (error) {
-            toast.error(error.response?.data?.detail || "No se pudo eliminar el evento");
-            setShowModal(false);
-        }
-        finally {
-            setIsDeleting(false);
-        }
-    }
+    const [isProcessing, setIsProcessing] = useState(false)
+    const [justification, setJustification] = useState("")
 
     const fetchEventDetails = async () => {
         try {
             setLoading(true)
             setError(null)
-            const response = await axiosClient.get(`/events/${id}`, {
+            const response = await axiosClient.get(`/events/manage/${id}`, {
                 headers: {
                     Authorization: 'Bearer ' + localStorage.getItem("token")
                 }
             })
-            console.log("Detalles del evento:", response.data)
+            console.log("Detalles de moderación del evento:", response.data)
             setEvent(response.data)
         } catch (err) {
             console.error(err)
@@ -88,6 +65,57 @@ const EventDetailPage = () => {
             setLoading(false)
         }
     }, [id])
+
+    const handleApprove = async () => {
+        try {
+            setIsProcessing(true)
+            const token = localStorage.getItem("token")
+            const response = await axiosClient.put(`/events/approve/${id}`, {}, {
+                headers: {
+                    Authorization: 'Bearer ' + token
+                }
+            })
+
+            if (response.data.status === "success") {
+                toast.success(response.data.msg || "Evento aprobado con éxito")
+                navigate("/manage-events")
+            }
+        } catch (err) {
+            console.error(err)
+            toast.error(err.response?.data?.detail || "No se pudo aprobar el evento")
+        } finally {
+            setIsProcessing(false)
+        }
+    }
+
+    const handleDeny = async () => {
+        if (!justification.trim()) {
+            toast.error("La justificación es obligatoria para denegar el evento")
+            return
+        }
+
+        try {
+            setIsProcessing(true)
+            const token = localStorage.getItem("token")
+            const response = await axiosClient.put(`/events/deny/${id}`, {
+                justification: justification.trim()
+            }, {
+                headers: {
+                    Authorization: 'Bearer ' + token
+                }
+            })
+
+            if (response.data.status === "success") {
+                toast.success(response.data.msg || "Evento rechazado con éxito y creador notificado")
+                navigate("/manage-events")
+            }
+        } catch (err) {
+            console.error(err)
+            toast.error(err.response?.data?.detail || "No se pudo denegar el evento")
+        } finally {
+            setIsProcessing(false)
+        }
+    }
 
     const formattedDate = (dateString) => {
         if (!dateString) return "No definida"
@@ -127,9 +155,9 @@ const EventDetailPage = () => {
                     <FontAwesomeIcon icon={faExclamationTriangle} className="text-red-500 text-5xl mb-4" />
                     <h2 className="text-2xl font-bold text-white-to-black mb-2">¡Ups! Algo salió mal</h2>
                     <p className="text-gray-to-yellow mb-6">{error}</p>
-                    <Link to="/my-events" className="inline-flex items-center justify-center gap-2 bg-indigo-to-yellow text-white-to-black font-semibold py-3 px-6 rounded-2xl hover:scale-105 active:scale-95 transition-all duration-200 w-full shadow-lg">
+                    <Link to="/manage-events" className="inline-flex items-center justify-center gap-2 bg-indigo-to-yellow text-white-to-black font-semibold py-3 px-6 rounded-2xl hover:scale-105 active:scale-95 transition-all duration-200 w-full shadow-lg">
                         <FontAwesomeIcon icon={faArrowLeft} />
-                        Volver a mis eventos
+                        Volver a moderación
                     </Link>
                 </div>
             </div>
@@ -149,7 +177,8 @@ const EventDetailPage = () => {
         interests = [],
         phone = "+34000000000",
         status = "pending",
-        images = []
+        images = [],
+        creator_data = {}
     } = event
 
     const {
@@ -163,11 +192,11 @@ const EventDetailPage = () => {
             {/* Header / Botón de retroceso */}
             <div className="max-w-6xl mx-auto mb-8 flex justify-between items-center">
                 <button
-                    onClick={() => navigate('/my-events')}
+                    onClick={() => navigate('/manage-events')}
                     className="flex items-center gap-2 text-white-to-black bg-indigo-to-yellow p-2 rounded-lg transition-all font-medium hover:scale-105 hover:cursor-pointer active:scale-95 duration-200"
                 >
                     <FontAwesomeIcon icon={faArrowLeft} />
-                    <span>Volver a Tus Eventos</span>
+                    <span>Volver a Moderación</span>
                 </button>
 
                 <div className="flex items-center gap-2">
@@ -177,7 +206,7 @@ const EventDetailPage = () => {
                         : "bg-indigo-to-yellow/10 text-indigo-to-yellow border border-indigo-to-yellow/20"
                         }`}>
                         <FontAwesomeIcon icon={status === "accepted" ? faCheckCircle : faInfoCircle} />
-                        {status === "accepted" ? "Aceptado" : "Pendiente de Aprobación"}
+                        {status === "accepted" ? "Aceptado" : "Pendiente de Moderación"}
                     </span>
                 </div>
             </div>
@@ -232,7 +261,6 @@ const EventDetailPage = () => {
                                 )}
                             </>
                         ) : (
-                            /* Fallback Premium si no hay imágenes */
                             <div className="absolute inset-0 bg-gradient-to-tr from-indigo-950/40 via-slate-900/20 to-yellow-950/20 flex flex-col items-center justify-center p-8 text-center">
                                 <div className="w-20 h-20 rounded-full bg-indigo-to-yellow/10 flex items-center justify-center mb-4 text-indigo-to-yellow border border-indigo-to-yellow/20">
                                     <FontAwesomeIcon icon={faFileAlt} className="text-4xl" />
@@ -258,27 +286,101 @@ const EventDetailPage = () => {
                         </div>
                     </div>
 
-                    <div className='flex not-md:flex-wrap bg-lightgray-to-black p-6 rounded-lg border border-gray-to-yellow/10'>
-                        <button
-                            onClick={() => setShowModal(true)}
-                            disabled={isDeleting}
-                            className={`bg-red-500 p-6 rounded-lg text-white w-100 transition-all ${isDeleting ? 'opacity-50 cursor-not-allowed' : 'hover:cursor-pointer hover:scale-110'}`}>Quiero borrar el evento</button>
-                        <div className='px-4 text-gray-to-yellow text-justify'>
-                            <p className='font-bold'>*IMPORTANTE: <br /></p>
-                            <p className=''>Si decides cancelar el evento, se eliminará la revisión de la lista de eventos pendientes del administrador. Si el evento estuviera aprobado, se enviará un correo a los asistentes informando del cambio.</p>
+                    {/* PANEL DE MODERACIÓN (Reemplaza el contenedor de borrado) */}
+                    <div className="bg-lightgray-to-black p-6 rounded-lg border border-gray-to-yellow/10 flex flex-col gap-6">
+                        <h3 className="text-xl font-bold text-indigo-to-yellow uppercase tracking-wider border-b border-gray-to-yellow/20 pb-3 mb-1">
+                            Acciones de Moderación
+                        </h3>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {/* Aceptar Evento */}
+                            <div className="bg-green-500/5 border border-green-500/20 p-5 rounded-2xl flex flex-col justify-between items-start gap-4">
+                                <div>
+                                    <h4 className="font-bold text-green-500 flex items-center gap-2 text-lg">
+                                        <FontAwesomeIcon icon={faThumbsUp} />
+                                        Aprobar Evento
+                                    </h4>
+                                    <p className="text-sm text-gray-to-yellow mt-2 text-justify">
+                                        El evento pasará a estar publicado de manera oficial y visible para toda la comunidad en la plataforma.
+                                    </p>
+                                </div>
+                                <button
+                                    onClick={handleApprove}
+                                    disabled={isProcessing}
+                                    className={`w-full py-3.5 bg-green-600 hover:bg-green-500 text-white font-bold rounded-xl transition-all shadow-md ${isProcessing ? 'opacity-50 cursor-not-allowed' : 'hover:scale-[1.02] active:scale-95 hover:cursor-pointer'
+                                        }`}
+                                >
+                                    {isProcessing ? 'Procesando...' : 'Aprobar Publicación'}
+                                </button>
+                            </div>
+
+                            {/* Denegar Evento */}
+                            <div className="bg-red-500/5 border border-red-500/20 p-5 rounded-2xl flex flex-col justify-between items-start gap-4">
+                                <div className="w-full">
+                                    <h4 className="font-bold text-red-500 flex items-center gap-2 text-lg">
+                                        <FontAwesomeIcon icon={faThumbsDown} />
+                                        Denegar Evento
+                                    </h4>
+                                    <p className="text-sm text-gray-to-yellow mt-2 mb-3 text-justify">
+                                        El evento se eliminará permanentemente. Es obligatorio introducir una justificación válida que se le enviará al autor.
+                                    </p>
+
+                                    <textarea
+                                        value={justification}
+                                        onChange={(e) => setJustification(e.target.value)}
+                                        placeholder="Introduce el motivo del rechazo del evento (ej: Contiene vocabulario inapropiado, etc.)"
+                                        rows="3"
+                                        disabled={isProcessing}
+                                        className="w-full p-3 rounded-xl bg-white-to-black text-black-to-white border border-gray-to-yellow/20 text-sm focus:outline-none focus:border-indigo-to-yellow resize-none"
+                                    />
+                                </div>
+                                <button
+                                    onClick={handleDeny}
+                                    disabled={isProcessing || !justification.trim()}
+                                    className={`w-full py-3.5 bg-red-600 hover:bg-red-500 text-white font-bold rounded-xl transition-all shadow-md ${isProcessing || !justification.trim() ? 'opacity-40 cursor-not-allowed' : 'hover:scale-[1.02] active:scale-95 hover:cursor-pointer'
+                                        }`}
+                                >
+                                    {isProcessing ? 'Procesando...' : 'Denegar e Informar al Usuario'}
+                                </button>
+                            </div>
                         </div>
                     </div>
 
-                    <ConfirmationModal
-                        isOpen={showModal}
-                        onClose={() => setShowModal(false)}
-                        onConfirm={handleDelete}
-                        isDeleting={isDeleting}
-                    />
                 </div>
 
-                {/* COLUMNA DERECHA: Ficha técnica del evento (4 columnas) */}
+                {/* COLUMNA DERECHA: Ficha técnica del evento y Datos del Creador */}
                 <div className="lg:col-span-4 flex flex-col gap-6">
+
+                    {/* TARJETA DEL CREADOR (Nuevo requisito #3) */}
+                    <div className="bg-lightgray-to-black p-6 rounded-lg border border-gray-to-yellow/10 hover:scale-[1.01] transition-transform duration-300">
+                        <h3 className="text-lg font-bold text-indigo-to-yellow uppercase tracking-wider border-b border-gray-to-yellow/20 pb-3 mb-4 flex items-center gap-2">
+                            <FontAwesomeIcon icon={faCircleUser} />
+                            Creador del Evento
+                        </h3>
+                        <div className="flex flex-col gap-4">
+                            <div className="flex items-center gap-4">
+                                <div className="w-16 h-16 rounded-full overflow-hidden bg-indigo-to-yellow/10 flex items-center justify-center border border-indigo-to-yellow/20 shadow-inner flex-shrink-0">
+                                    {creator_data?.avatar ? (
+                                        <img src={creator_data.avatar} alt={creator_data.name} className="w-full h-full object-cover" />
+                                    ) : (
+                                        <FontAwesomeIcon icon={faCircleUser} className="text-indigo-to-yellow text-4xl" />
+                                    )}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-base font-bold text-black-to-white truncate">{creator_data?.name || "Cargando..."}</p>
+                                    <p className="text-xs text-gray-to-yellow truncate flex items-center gap-1.5 mt-0.5">
+                                        <FontAwesomeIcon icon={faEnvelope} className="text-indigo-to-yellow/70" />
+                                        {creator_data?.email || "Sin email"}
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="bg-indigo-to-yellow/5 border border-indigo-to-yellow/10 p-3.5 rounded-xl">
+                                <p className="text-xs text-indigo-to-yellow leading-relaxed text-justify">
+                                    Esta información es visible exclusivamente para administradores para propósitos de verificación del usuario publicante y moderación.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
 
                     {/* Cuadro de Horarios y Fechas */}
                     <div className="bg-lightgray-to-black p-6 rounded-lg border border-gray-to-yellow/10 hover:scale-[1.01] transition-transform duration-300">
@@ -366,23 +468,11 @@ const EventDetailPage = () => {
                                 </a>
                             </div>
 
-                            {status === "accepted" ? (
-                                <div className="border-t border-gray-to-yellow/10 pt-3 mt-1 flex flex-col gap-2">
-                                    <span className="text-xs text-gray-to-yellow uppercase font-semibold flex items-center gap-1">
-                                        <FontAwesomeIcon icon={faUsers} className="text-indigo-to-yellow" />
-                                        Asistentes del evento
-                                    </span>
-                                    <p className="text-sm text-gray-to-yellow">
-                                        Una vez aprobado el evento, podrás ver a los usuarios registrados e interesados en la plataforma principal de la app.
-                                    </p>
-                                </div>
-                            ) : (
-                                <div className="bg-indigo-to-yellow/5 border border-indigo-to-yellow/10 p-4 rounded-2xl mt-1">
-                                    <p className="text-xs text-indigo-to-yellow font-medium text-justify">
-                                        Este evento se encuentra en revisión. Los detalles completos de asistencia y reservas estarán disponibles en cuanto el administrador valide la publicación.
-                                    </p>
-                                </div>
-                            )}
+                            <div className="bg-indigo-to-yellow/5 border border-indigo-to-yellow/10 p-4 rounded-2xl mt-1">
+                                <p className="text-xs text-indigo-to-yellow font-medium text-justify">
+                                    Este evento se encuentra en revisión. Valida que los datos de contacto y la información general cumplan con los términos de servicio antes de proceder.
+                                </p>
+                            </div>
                         </div>
                     </div>
 
@@ -393,4 +483,4 @@ const EventDetailPage = () => {
     )
 }
 
-export default EventDetailPage
+export default EventManagementDetailPage

@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import StaticInterest from './StaticInterest';
 
-const EventUnit = ({ eventData }) => {
+const EventUnit = ({ eventData, customNavigatePath }) => {
 
     const navigate = useNavigate();
 
@@ -26,6 +26,8 @@ const EventUnit = ({ eventData }) => {
         accepted_users = 0,
         interested_users = 0
     } = eventData || {};
+
+    const eventId = eventData?.id || eventData?._id || _id;
 
     const formattedDate = function (date) {
         const newDate = date ?
@@ -69,7 +71,7 @@ const EventUnit = ({ eventData }) => {
                     <div className='p-3 w-full'>
                         <h1 className='font-bold border-b-2 py-1 border-gray-to-yellow'>Temáticas indicadas</h1>
                         {/* bucle intereses */}
-                        <div className='grid grid-cols-3 p-3'>
+                        <div className='grid grid-cols-3 py-3'>
                             {interests.map((interestName, index) => (
                                 <StaticInterest key={index} interestName={interestName} />
                             ))}
@@ -95,10 +97,10 @@ const EventUnit = ({ eventData }) => {
                 </div>
 
                 {/* acciones */}
-                <div className='flex items-center mx-auto'>
+                <div className='flex items-center content-end'>
                     <button
-                        onClick={() => navigate(`/my-events/${_id}`)}
-                        className='bg-indigo-to-yellow rounded-2xl h-full my-2 text-white-to-black'>Más detalles</button>
+                        onClick={() => navigate(customNavigatePath ? `${customNavigatePath}/${eventId}` : `/my-events/${eventId}`)}
+                        className='bg-indigo-to-yellow rounded-2xl h-full my-2 text-white-to-black hover:cursor-pointer not-md:p-2 hover:scale-105 active:scale-95 transition-all duration-200'>Más detalles</button>
                 </div>
             </div>
         </>

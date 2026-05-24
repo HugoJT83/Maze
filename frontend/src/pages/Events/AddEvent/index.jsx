@@ -192,7 +192,7 @@ const addEvent = () => {
         const cleanValues = {
             ...values,
             title: values.title?.trim(),
-            description: values.title?.trim(),
+            description: values.description?.trim(),
             phone: "+34" + values.phone
         }
 

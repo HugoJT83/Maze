@@ -47,4 +47,14 @@ Se requieren las siguientes dependencias para ejecutar el entorno virtual de Pyt
 ```
     pip install fastapi-mail
 ```
- 
+
+7. Instalación certificados SSL
+```
+    pip install certifi
+```
+
+8. Autentificación de Google
+```
+    pip install google-auth
+    pip install google-auth[requirements]
+```

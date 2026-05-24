@@ -17,6 +17,8 @@ import { About } from "./pages/Legal/About";
 import Terms from "./pages/Legal/Terms";
 import myEvents from "./pages/Events/MyEvents";
 import EventDetailPage from "./pages/Events/EventDetailPage";
+import EventManager from "./pages/Events/EventManager";
+import EventManagementDetailPage from "./pages/Events/EventManagementDetailPage";
 
 const App = () => {
   return (
@@ -33,6 +35,8 @@ const App = () => {
             <Route path="/terms" Component={Terms} />
             <Route path="/my-events" Component={myEvents} />
             <Route path="/my-events/:id" Component={EventDetailPage} />
+            <Route path="/manage-events" Component={EventManager} />
+            <Route path="/manage-events/:id" Component={EventManagementDetailPage} />
           </Route>
 
           {/* Rutas - Legal */}

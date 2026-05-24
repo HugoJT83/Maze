@@ -85,10 +85,10 @@ const Home = () => {
         </div>
 
         <div className=' text-center flex flex-col justify-between w-2/3'>
-          <div className='lg:justify-items-end lg:text-end text-center justify-items-center'>
+          <div className='justify-items-end text-end'>
             <h1 className='text-5xl font-Bitcount text-indigo-to-yellow'>...O busca por zonas</h1>
             <h2 className='text-2xl mb-8 opacity-70 text-indigo-to-yellow'>Indica provincia y ciudad, y nosotros hacemos el resto</h2>
-            <p className='my-2 text-lg lg:w-3/4  text-indigo-to-yellow'>Seas de donde seas y vayas a donde vayas, desde MAZE te ofrecemos cobertura total a nivel nacional para que vivas nuevas experiencias y conectes con otras personas.</p>
+            <p className='my-2 text-lg  text-indigo-to-yellow'>Seas de donde seas y vayas a donde vayas, desde MAZE te ofrecemos cobertura total a nivel nacional para que vivas nuevas experiencias y conectes con otras personas.</p>
           </div>
 
 

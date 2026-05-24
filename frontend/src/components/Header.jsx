@@ -40,8 +40,7 @@ const Header = () => {
         setCurrentIcon(interests[randomIndex]);
     };
 
-    const localProfilePic = localStorage.getItem("google_profile_pic");
-    const avatarSrc = user?.auth_method === "google" ? localProfilePic : user?.avatar || samplePhoto
+    const avatarSrc = user?.avatar || samplePhoto
 
     return (
         <>

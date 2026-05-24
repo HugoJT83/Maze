@@ -75,7 +75,7 @@ const RegisterUser = () => {
     name: '',
     email: '',
     password: '',
-    role: ROLE_TYPE.USER
+    role: ROLE_TYPE.USER //cambiar aqui para asignar rol
   }
 
   return (
@@ -153,7 +153,7 @@ const RegisterUser = () => {
                   </div>
                 </div>
               </div>
-              <div className='w-full justify-items-center text-center bg-lightgray-to-yellow rounded-lg p-5 my-5'>
+              <div className='flex flex-col w-full items-center content-center justify-center text-center bg-lightgray-to-yellow rounded-lg p-5 my-5'>
                 <p className='my-2'><span className='font-bold'>Puedes usar tu cuenta de Google:</span></p>
                 <GoogleLogin
                   onSuccess={(response) => onGoogleSubmitHandler(response)}

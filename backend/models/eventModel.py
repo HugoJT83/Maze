@@ -32,91 +32,6 @@ class LegalTerms(BaseModel):
     acceptedAt: datetime = Field(default_factory=datetime.now)
     termsVersion: str = "1.0"
 
-
-""" class Event(BaseModel):
-    
-    title: str = Field(...)
-    description: str = Field(...)
-    phone: str = Field(...)
-    creation_date: datetime = Field(default_factory=datetime.now)
-    starting_event_date:datetime = Field(...)
-    finish_event_date:datetime = Field(...)
-    start_hour: str = Field(...)
-    finish_hour: str = Field(...)
-    location: Location = Field(...)
-    interests: List[InterestsEnum] = Field(default=[], max_items=3)
-    updated_at: datetime = Field(default_factory=datetime.now)
-    terms:LegalTerms
-    status: str = Field(default="pending")
-    
-    @field_validator('phone')
-    @classmethod
-    def validate_phone(cls, value):
-        clean_phone = re.sub(r'[\s\-]', '', value) #limpia espacios o guiones
-        
-        if not re.match(r'^(\+?34)?(6\d{2}|7[1-9]\d{1})\d{6}$',clean_phone):
-            raise ValueError("El número de teléfono debe ser válido")
-        return value
-    
-    
-    @field_validator('title')
-    @classmethod
-    def validate_title(cls, value):
-        if len(value)<3:
-            raise ValueError("El título debe ser mayor de 3 caracteres")
-        return value
-    
-    @field_validator('description')
-    @classmethod
-    def validate_description(cls, value):
-        if len(value)<10:
-            raise ValueError("La descripción debe ser mayor de 10 caracteres")
-        return value
-    
-    @field_validator('starting_event_date')
-    @classmethod
-    def check_future_starting_date(cls, value):
-        if value < datetime.now():
-            raise ValueError("la fecha de inicio del evento no puede ser anterior a la fecha actual.")
-        return value
-    
-    @field_validator('finish_event_date')
-    @classmethod
-    def check_future_finish_date(cls, value):
-        if value < datetime.now():
-            raise ValueError("la fecha final del evento no puede ser anterior a la fecha actual.")
-        return value
-    
-    @field_validator('interests')
-    @classmethod
-    def validate_interests_length(cls,value):
-        if len(value) > 3:
-            raise ValueError("Un evento solo puede contener como máximo 3 intereses")
-        return value
-
-    @model_validator(mode="before")
-    @classmethod
-    def validate_terms(cls, data: Any) -> Any:
-        if isinstance(data,dict):
-            terms_obj = data.get("terms")
-
-            if isinstance(terms_obj,dict):
-                is_accepted = terms_obj.get("termsAccepted")
-            else:
-                is_accepted = terms_obj
-                
-            if is_accepted is not True:
-                raise ValueError("Es obligatorio aceptar terminos y condiciones");
-
-            data["terms"] = {
-                "termsAccepted": True,
-                "acceptedAt": datetime.now(),
-                "termsVersion":"1.0"
-            }
-            
-        return data
-    
-    """ 
     
 class EventBase(BaseModel):
     title: str = Field(...)
@@ -178,4 +93,6 @@ class EventResponse(EventBase):
     id: PyObjectId = Field(alias="_id")
     starting_event_date: datetime
     finish_event_date: datetime
+    images: List[EventImage] = Field(default=[])
+    creator_id: str = Field(default="")
     

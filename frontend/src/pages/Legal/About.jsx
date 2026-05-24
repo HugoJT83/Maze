@@ -57,7 +57,7 @@ export const About = () => {
             <div className='lg:pt-20 lg:px-40 pt-10 px-8 flex not-sm:flex-wrap-reverse'>
                 <div className='w-full justify-items-center my-auto not-sm:my-5'>
                     <img src={'/imgs/creator_photo.webp'} className='rounded-full h-30 w-30' />
-                    <div className='flex justify-around gap-5 my-2'>
+                    <div className='flex my-2'>
                         <a href="https://linkedin.com/in/hugo-jariod-tomas-15a39b3b2" target='_blank'>
                             <FontAwesomeIcon icon={"fa-brands fa-linkedin"} className='text-2xl'></FontAwesomeIcon>
                         </a>

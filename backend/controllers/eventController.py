@@ -19,4 +19,28 @@ async def getEventsByUserController(user_id: str):
                 return res_obj
         
         return []
+
+async def getEventByIdController(event_id: str):
+        res_obj = await eventService.getEventByIdService(event_id)
+        return res_obj 
+
+async def deleteEventController(id: str, userId: str):
+        res_obj = await eventService.deleteEventService(id, userId)
+        return res_obj 
+
+async def getPendingEventsController(adminUserId: str, page: int = 1, limit: int = 5):
+        res_obj = await eventService.getPendingEventsService(adminUserId, page, limit)
+        return res_obj
+
+async def getEventManagementDetailController(event_id: str, adminUserId: str):
+        res_obj = await eventService.getEventManagementDetailService(event_id, adminUserId)
+        return res_obj
+
+async def approveEventController(event_id: str, adminUserId: str):
+        res_obj = await eventService.approveEventService(event_id, adminUserId)
+        return res_obj
+
+async def denyEventController(event_id: str, justification: str, adminUserId: str, background_tasks: BackgroundTasks):
+        res_obj = await eventService.denyEventService(event_id, justification, adminUserId, background_tasks)
+        return res_obj
         

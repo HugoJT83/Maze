@@ -47,6 +47,11 @@ export const AuthContextProvider = ({ children }) => {
 
     } catch (error) {
       toast.error(error.response?.data?.detail || error.message)
+      if (error.response?.status === 401) {
+        localStorage.removeItem("token")
+        localStorage.removeItem("google_profile_pic")
+        dispatch(removeUser())
+      }
     } finally {
       if (isInitialLoad) setLoading(false)
     }
@@ -70,6 +75,7 @@ export const AuthContextProvider = ({ children }) => {
    */
   const logoutUser = () => {
     localStorage.removeItem("token")
+    localStorage.removeItem("google_profile_pic")
     dispatch(removeUser())
     toast.success("Sesión cerrada correctamente")
     navigate("/")
