@@ -122,7 +122,7 @@ const EventDetailPage = () => {
 
     if (error) {
         return (
-            <div className="min-h-screen flex flex-col justify-center items-center bg-black-to-white p-6">
+            <div className="min-h-screen flex flex-col justify-center items-center bg-white-to-black p-6">
                 <div className="bg-lightgray-to-black p-8 rounded-3xl shadow-xl max-w-md w-full text-center border-2 border-red-500/20">
                     <FontAwesomeIcon icon={faExclamationTriangle} className="text-red-500 text-5xl mb-4" />
                     <h2 className="text-2xl font-bold text-white-to-black mb-2">¡Ups! Algo salió mal</h2>
@@ -171,8 +171,8 @@ const EventDetailPage = () => {
                 </button>
 
                 <div className="flex items-center gap-2">
-                    <span className="text-xs uppercase tracking-widest text-gray-to-yellow font-semibold">Estado:</span>
-                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${status === "accepted"
+                    <span className="text-xs uppercase text-gray-to-yellow font-semibold">Estado:</span>
+                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold ${status === "accepted"
                         ? "bg-green-500/10 text-green-500 border border-green-500/20"
                         : "bg-indigo-to-yellow/10 text-indigo-to-yellow border border-indigo-to-yellow/20"
                         }`}>
@@ -232,7 +232,7 @@ const EventDetailPage = () => {
                                 )}
                             </>
                         ) : (
-                            /* Fallback Premium si no hay imágenes */
+                            /* Fallback si no hay imágenes */
                             <div className="absolute inset-0 bg-gradient-to-tr from-indigo-950/40 via-slate-900/20 to-yellow-950/20 flex flex-col items-center justify-center p-8 text-center">
                                 <div className="w-20 h-20 rounded-full bg-indigo-to-yellow/10 flex items-center justify-center mb-4 text-indigo-to-yellow border border-indigo-to-yellow/20">
                                     <FontAwesomeIcon icon={faFileAlt} className="text-4xl" />
@@ -249,7 +249,7 @@ const EventDetailPage = () => {
                             "{title}"
                         </h1>
                         <div className="border-t border-gray-to-yellow/20 pt-6">
-                            <h3 className="text-lg font-bold text-indigo-to-yellow uppercase tracking-wider mb-3">
+                            <h3 className="text-lg font-bold text-indigo-to-yellow uppercase mb-3">
                                 Descripción del evento
                             </h3>
                             <p className="text-black-to-white leading-relaxed whitespace-pre-line text-base text-justify">
@@ -282,7 +282,7 @@ const EventDetailPage = () => {
 
                     {/* Cuadro de Horarios y Fechas */}
                     <div className="bg-lightgray-to-black p-6 rounded-lg border border-gray-to-yellow/10 hover:scale-[1.01] transition-transform duration-300">
-                        <h3 className="text-lg font-bold text-indigo-to-yellow uppercase tracking-wider border-b border-gray-to-yellow/20 pb-3 mb-4 flex items-center gap-2">
+                        <h3 className="text-lg font-bold text-indigo-to-yellow uppercase border-b border-gray-to-yellow/20 pb-3 mb-4 flex items-center gap-2">
                             <FontAwesomeIcon icon={faCalendarDays} />
                             ¿Cuándo ocurre?
                         </h3>
@@ -316,7 +316,7 @@ const EventDetailPage = () => {
 
                     {/* Ubicación Geográfica */}
                     <div className="bg-lightgray-to-black p-6 rounded-lg border border-gray-to-yellow/10 hover:scale-[1.01] transition-transform duration-300">
-                        <h3 className="text-lg font-bold text-indigo-to-yellow uppercase tracking-wider border-b border-gray-to-yellow/20 pb-3 mb-4 flex items-center gap-2">
+                        <h3 className="text-lg font-bold text-indigo-to-yellow uppercase border-b border-gray-to-yellow/20 pb-3 mb-4 flex items-center gap-2">
                             <FontAwesomeIcon icon={faMapPin} />
                             ¿Dónde es?
                         </h3>
@@ -338,7 +338,7 @@ const EventDetailPage = () => {
 
                     {/* Temáticas asociadas */}
                     <div className="bg-lightgray-to-black p-6 rounded-lg border border-gray-to-yellow/10">
-                        <h3 className="text-lg font-bold text-indigo-to-yellow uppercase tracking-wider border-b border-gray-to-yellow/20 pb-3 mb-4 flex items-center gap-2">
+                        <h3 className="text-lg font-bold text-indigo-to-yellow uppercase border-b border-gray-to-yellow/20 pb-3 mb-4 flex items-center gap-2">
                             Temáticas indicadas
                         </h3>
                         {interests && interests.length > 0 ? (
@@ -354,7 +354,7 @@ const EventDetailPage = () => {
 
                     {/* Datos de contacto y asistencia */}
                     <div className="bg-lightgray-to-black p-6 rounded-lg border border-gray-to-yellow/10">
-                        <h3 className="text-lg font-bold text-indigo-to-yellow uppercase tracking-wider border-b border-gray-to-yellow/20 pb-3 mb-4 flex items-center gap-2">
+                        <h3 className="text-lg font-bold text-indigo-to-yellow uppercase border-b border-gray-to-yellow/20 pb-3 mb-4 flex items-center gap-2">
                             <FontAwesomeIcon icon={faPhone} />
                             Contacto y Registro
                         </h3>

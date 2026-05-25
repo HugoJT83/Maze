@@ -7,6 +7,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { GetCountries, GetState, GetCity } from 'react-country-state-city';
 import Interest from '../../auth/ProfileUser/components/Interest';
 import { INTERESTS_CONFIG } from '../../../constant/interestsConfig';
+import { axiosClient } from '../../../utils/axiosClient';
 
 // Fix Leaflet marker icons issue in React
 delete L.Icon.Default.prototype._getIconUrl;
@@ -28,24 +29,24 @@ const EventSearchPage = () => {
   const [userLocation, setUserLocation] = useState(null);
   const [mapCenter, setMapCenter] = useState(MADRID_COORDS);
   const [events, setEvents] = useState([]);
-  
+
   // UI States
   const [viewMode, setViewMode] = useState('map'); // 'map' or 'list'
-  
+
   // Filters
   const [radius, setRadius] = useState(50); // 50km default
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [selectedInterests, setSelectedInterests] = useState([]);
-  
+
   // City/Province Filters
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
   const [countryid, setCountryid] = useState(null);
-  
+
   const [selectedProvinceName, setSelectedProvinceName] = useState('');
   const [selectedCityName, setSelectedCityName] = useState('');
-  
+
   // Pagination
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -153,7 +154,7 @@ const EventSearchPage = () => {
   // Fetch events when location or filters change
   useEffect(() => {
     if (!userLocation) return;
-    
+
     const fetchEvents = async () => {
       setLoading(true);
       try {
@@ -168,12 +169,12 @@ const EventSearchPage = () => {
         if (selectedInterests.length > 0) {
           params.append('interests', selectedInterests.join(','));
         }
-        
-        const currentLimit = viewMode === 'map' ? 100 : limit; 
+
+        const currentLimit = viewMode === 'map' ? 100 : limit;
         params.append('page', page);
         params.append('limit', currentLimit);
 
-        const response = await axios.get(`http://localhost:8000/api/v1/events/search?${params.toString()}`);
+        const response = await axiosClient.get(`/events/search?${params.toString()}`);
         setEvents(response.data.events || []);
         setTotalPages(response.data.total_pages || 1);
       } catch (error) {
@@ -182,7 +183,7 @@ const EventSearchPage = () => {
         setLoading(false);
       }
     };
-    
+
     fetchEvents();
   }, [userLocation, radius, startDate, endDate, selectedInterests, selectedProvinceName, selectedCityName, page, viewMode, limit]);
 
@@ -193,42 +194,42 @@ const EventSearchPage = () => {
   return (
     <div className="flex flex-col md:flex-row h-[calc(100vh-64px)]">
       {/* Sidebar Filters */}
-      <div className="w-full md:w-1/3 lg:w-1/4 p-6 bg-white shadow-lg overflow-y-auto">
-        <h2 className="text-2xl font-bold mb-6 font-Bitcount">Filtros de Búsqueda</h2>
-        
+      <div className="w-full md:w-1/3 lg:w-1/4 p-6 bg-white-to-black shadow-lg overflow-y-auto">
+        <h2 className="text-2xl text-indigo-to-yellow mb-6 font-Bitcount">Filtros de Búsqueda</h2>
+
         <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-2">Ubicación</label>
+          <label className="block font-medium text-indigo-to-yellow mb-2">Ubicación</label>
           <select
-              className="w-full mb-3 p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-sm"
-              onChange={handleStateChange}
-              value={selectedProvinceName}
+            className="w-full mb-3 p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+            onChange={handleStateChange}
+            value={selectedProvinceName}
           >
-              <option value="">Selecciona una provincia</option>
-              {states.map((item) => (
-                  <option key={item.id} value={item.name}>{item.name}</option>
-              ))}
+            <option value="">Selecciona una provincia</option>
+            {states.map((item) => (
+              <option key={item.id} value={item.name}>{item.name}</option>
+            ))}
           </select>
           <select
-              className="w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-sm"
-              onChange={handleCityChange}
-              disabled={cities.length === 0}
-              value={selectedCityName}
+            className="w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+            onChange={handleCityChange}
+            disabled={cities.length === 0}
+            value={selectedCityName}
           >
-              <option value="">Selecciona una ciudad</option>
-              {cities.map((item) => (
-                  <option key={item.id} value={item.name}>{item.name}</option>
-              ))}
+            <option value="">Selecciona una ciudad</option>
+            {cities.map((item) => (
+              <option key={item.id} value={item.name}>{item.name}</option>
+            ))}
           </select>
-          
+
           <div className="mt-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block font-medium text-indigo-to-yellow mb-2">
               Radio de búsqueda: {radius} km
             </label>
-            <input 
-              type="range" 
-              min="1" 
-              max="500" 
-              value={radius} 
+            <input
+              type="range"
+              min="1"
+              max="500"
+              value={radius}
               onChange={(e) => { setRadius(e.target.value); setPage(1); }}
               className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
             />
@@ -236,9 +237,9 @@ const EventSearchPage = () => {
         </div>
 
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-2">Fecha Inicio</label>
-          <input 
-            type="date" 
+          <label className="block font-medium text-indigo-to-yellow mb-2">Fecha Inicio</label>
+          <input
+            type="date"
             value={startDate}
             onChange={(e) => { setStartDate(e.target.value); setPage(1); }}
             className="w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
@@ -246,9 +247,9 @@ const EventSearchPage = () => {
         </div>
 
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-2">Fecha Fin</label>
-          <input 
-            type="date" 
+          <label className="block font-medium text-indigo-to-yellow mb-2">Fecha Fin</label>
+          <input
+            type="date"
             value={endDate}
             onChange={(e) => { setEndDate(e.target.value); setPage(1); }}
             className="w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
@@ -256,10 +257,10 @@ const EventSearchPage = () => {
         </div>
 
         <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Temáticas (Máximo 3)
+          <label className="block font-medium text-indigo-to-yellow mb-2">
+            Temáticas (Indica un máximo de 3)
           </label>
-          <div className="grid grid-cols-3 gap-4 mt-2">
+          <div className="grid grid-cols-3 gap-4 mt-2 p-5">
             {Object.keys(INTERESTS_CONFIG).map((key) => {
               const interest = INTERESTS_CONFIG[key];
               const isSelected = selectedInterests.includes(key);
@@ -276,24 +277,24 @@ const EventSearchPage = () => {
             })}
           </div>
         </div>
-        
+
         {loading && <p className="text-indigo-600 font-semibold">Buscando eventos...</p>}
-        {!loading && <p className="text-gray-600">{events.length} eventos en esta página.</p>}
+        {!loading && <p className="text-gray-600 text-center">{events.length} eventos en esta página.</p>}
       </div>
 
       {/* Main Content Area (Tabs + Map/List) */}
       <div className="w-full md:w-2/3 lg:w-3/4 flex flex-col relative z-0 bg-gray-50">
-        
+
         {/* Tabs */}
-        <div className="flex border-b border-gray-200 bg-white px-4 py-2">
-          <button 
-            className={`px-4 py-2 font-medium text-sm rounded-t-lg transition-colors ${viewMode === 'map' ? 'bg-indigo-600 text-white' : 'text-gray-600 hover:bg-gray-100'}`}
+        <div className="flex border-b border-gray-200 bg-white-to-black px-4 py-2">
+          <button
+            className={`px-4 py-2 font-medium text-sm rounded-t-lg transition-colors ${viewMode === 'map' ? 'bg-indigo-to-yellow text-white-to-black' : 'text-black-to-white hover:bg-gray-to-yellow/60'}`}
             onClick={() => { setViewMode('map'); setPage(1); }}
           >
             Vista Mapa
           </button>
-          <button 
-            className={`px-4 py-2 font-medium text-sm rounded-t-lg transition-colors ml-2 ${viewMode === 'list' ? 'bg-indigo-600 text-white' : 'text-gray-600 hover:bg-gray-100'}`}
+          <button
+            className={`px-4 py-2 font-medium text-sm rounded-t-lg transition-colors ml-2 ${viewMode === 'list' ? 'bg-indigo-to-yellow text-white-to-black' : 'text-black-to-white hover:bg-gray-to-yellow/60'}`}
             onClick={() => { setViewMode('list'); setPage(1); }}
           >
             Vista Lista
@@ -302,11 +303,11 @@ const EventSearchPage = () => {
 
         {/* Dynamic View Content */}
         <div className="flex-1 overflow-hidden relative">
-          
+
           {viewMode === 'map' && (
-            <MapContainer 
-              center={[mapCenter.lat, mapCenter.lng]} 
-              zoom={10} 
+            <MapContainer
+              center={[mapCenter.lat, mapCenter.lng]}
+              zoom={10}
               minZoom={5}
               maxBounds={SPAIN_BOUNDS}
               maxBoundsViscosity={1.0}
@@ -316,7 +317,7 @@ const EventSearchPage = () => {
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               />
-              
+
               <Circle center={[userLocation.lat, userLocation.lng]} radius={radius * 1000} pathOptions={{ fillColor: 'blue', color: 'blue', fillOpacity: 0.1 }} />
               <Marker position={[userLocation.lat, userLocation.lng]}>
                 <Popup>Tu Ubicación</Popup>
@@ -376,7 +377,7 @@ const EventSearchPage = () => {
               {/* Pagination Controls */}
               {totalPages > 1 && (
                 <div className="flex justify-center items-center mt-8 space-x-4">
-                  <button 
+                  <button
                     onClick={() => setPage(Math.max(1, page - 1))}
                     disabled={page === 1}
                     className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
@@ -384,7 +385,7 @@ const EventSearchPage = () => {
                     Anterior
                   </button>
                   <span className="font-semibold text-gray-700">Página {page} de {totalPages}</span>
-                  <button 
+                  <button
                     onClick={() => setPage(Math.min(totalPages, page + 1))}
                     disabled={page === totalPages}
                     className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
