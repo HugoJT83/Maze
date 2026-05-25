@@ -43,6 +43,7 @@ const InterestCarousel = () => {
                         return (
                             <InterestFilter
                                 key={key}
+                                interestKey={key}
                                 interest={config.icon}
                                 label={config.label}
                             />

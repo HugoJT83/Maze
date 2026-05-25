@@ -14,6 +14,7 @@ class Location(BaseModel):
     direction: str = Field(...)
     city: str = Field(...)
     province: str = Field(...)
+    coordinates: List[float] = Field(default=[], description="[longitude, latitude]")
 
     @field_validator('direction','city','province')
     @classmethod

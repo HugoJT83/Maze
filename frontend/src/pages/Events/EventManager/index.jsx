@@ -75,7 +75,7 @@ const EventManager = () => {
                             Revisa, aprueba o deniega los nuevos eventos solicitados por los usuarios antes de su publicación pública.
                         </p>
                     </div>
-                    <div className="bg-lightgray-to-black border border-gray-to-yellow/10 px-6 py-3 rounded-2xl text-center shadow-md">
+                    <div className="bg-lightgray-to-black border border-gray-to-yellow/10 px-6 py-3 rounded-2xl text-center">
                         <span className="text-xs text-gray-to-yellow uppercase font-semibold tracking-wider block">Pendientes</span>
                         <span className="text-3xl font-bold font-Bitcount text-indigo-to-yellow">{totalEvents}</span>
                     </div>
@@ -126,7 +126,7 @@ const EventManager = () => {
                         )}
                     </>
                 ) : (
-                    <div className="flex flex-col text-center my-20 max-w-md bg-lightgray-to-black p-8 rounded-3xl border border-gray-to-yellow/10 shadow-xl">
+                    <div className="flex flex-col text-center my-20 max-w-md bg-lightgray-to-black p-8 rounded-3xl border border-gray-to-yellow/10">
                         <div className="w-16 h-16 rounded-full bg-indigo-to-yellow/10 flex items-center justify-center mx-auto mb-4 text-indigo-to-yellow">
                             <FontAwesomeIcon icon={faInbox} className="text-3xl" />
                         </div>

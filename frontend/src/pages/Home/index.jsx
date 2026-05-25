@@ -47,7 +47,7 @@ const Home = () => {
                 <button className='p-4 rounded-xl hover:cursor-pointer hover:scale-110 transition-all ease-in-out bg-indigo-to-yellow text-white-to-black'>Regisrarse ahora</button>
               </Link>
 
-              <Link to={'/events'}>
+              <Link to={'/event-search'}>
                 <button className='p-4 rounded-xl hover:cursor-pointer hover:scale-110 transition-all ease-in-out bg-white-to-black border-2 border-indigo-to-yellow text-indigo-to-yellow'>Buscar eventos</button>
               </Link>
             </div>

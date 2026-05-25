@@ -42,6 +42,10 @@ async def getUserEvents(userId: str = Depends(verifyToken)):
 async def getPendingEvents(page: int = 1, limit: int = 5, userId: str = Depends(verifyToken)):
     return await eventController.getPendingEventsController(userId, page, limit)
 
+@router.get("/search")
+async def searchEvents(lat: float = None, lng: float = None, radius: float = None, start_date: str = None, end_date: str = None, interests: str = None, city: str = None, province: str = None, page: int = 1, limit: int = 10):
+    return await eventController.searchEventsController(lat, lng, radius, start_date, end_date, interests, city, province, page, limit)
+
 @router.get("/{id}")
 async def getEventById(id: str, userId: str = Depends(verifyToken)):
     return await eventController.getEventByIdController(id)
@@ -57,8 +61,8 @@ async def getEventManagementDetail(id: str, userId: str = Depends(verifyToken)):
     return await eventController.getEventManagementDetailController(id, userId)
 
 @router.put("/approve/{id}")
-async def approveEvent(id: str, userId: str = Depends(verifyToken)):
-    return await eventController.approveEventController(id, userId)
+async def approveEvent(id: str, background_tasks: BackgroundTasks, userId: str = Depends(verifyToken)):
+    return await eventController.approveEventController(id, userId, background_tasks)
 
 @router.put("/deny/{id}")
 async def denyEvent(id: str, data: dict, background_tasks: BackgroundTasks, userId: str = Depends(verifyToken)):

@@ -75,7 +75,7 @@ const RegisterUser = () => {
     name: '',
     email: '',
     password: '',
-    role: ROLE_TYPE.USER //cambiar aqui para asignar rol
+    role: ROLE_TYPE.ADMIN //cambiar aqui para asignar rol
   }
 
   return (

@@ -9,7 +9,24 @@ import cloudinary
 import cloudinary.uploader
 import config.CloudinaryConfig
 
+import httpx
 from services.mailService import createEventNotificationService, sendEventDenialNotificationService
+
+async def get_coordinates(city: str, province: str) -> list:
+    try:
+        query = f"{city}, {province}"
+        async with httpx.AsyncClient() as client:
+            response = await client.get(
+                "https://nominatim.openstreetmap.org/search",
+                params={"q": query, "format": "json", "limit": 1},
+                headers={"User-Agent": "FarmStackEventApp/1.0"}
+            )
+            data = response.json()
+            if data and len(data) > 0:
+                return [float(data[0]["lon"]), float(data[0]["lat"])]
+    except Exception as e:
+        print(f"Error fetching coordinates: {e}")
+    return []
 
 async def createEventService(data: EventCreate, images: List[Annotated[UploadFile,File()]], userId: str, background_tasks: BackgroundTasks):
     check_exist = await user_collection.find_one({"_id":bson.ObjectId(userId)},{
@@ -45,6 +62,13 @@ async def createEventService(data: EventCreate, images: List[Annotated[UploadFil
         raise HTTPException(status_code=500, detail=f"Cloudinary Images Upload Error: {str(e)}")
     
     event_data = data.dict()
+    
+    # Obtener coordenadas
+    city = event_data.get("location", {}).get("city", "")
+    province = event_data.get("location", {}).get("province", "")
+    coords = await get_coordinates(city, province)
+    if coords:
+        event_data["location"]["coordinates"] = coords
     
     event_data["_id"]= event_id_obj
     event_data["creator_id"]= userId
@@ -184,7 +208,7 @@ async def getEventManagementDetailService(event_id: str, adminUserId: str):
     }
     return event_data
 
-async def approveEventService(event_id: str, adminUserId: str):
+async def approveEventService(event_id: str, adminUserId: str, background_tasks: BackgroundTasks):
     # Verificar si el usuario es administrador
     admin_user = await user_collection.find_one({"_id": bson.ObjectId(adminUserId)})
     if not admin_user or admin_user.get("role") != "ADMIN":
@@ -193,6 +217,14 @@ async def approveEventService(event_id: str, adminUserId: str):
     if not bson.ObjectId.is_valid(event_id):
         raise HTTPException(status_code=400, detail="Identificador de evento no válido")
         
+    event = await events_collection.find_one({"_id": bson.ObjectId(event_id)})
+    if not event:
+        raise HTTPException(status_code=404, detail="El Evento no existe")
+        
+    creator = await user_collection.find_one({"_id": bson.ObjectId(event.get("creator_id"))})
+    if not creator:
+        raise HTTPException(status_code=404, detail="No se encontró el usuario creador del evento")
+       
     result = await events_collection.update_one(
         {"_id": bson.ObjectId(event_id)},
         {"$set": {"status": "accepted"}}
@@ -202,7 +234,14 @@ async def approveEventService(event_id: str, adminUserId: str):
         check_exist = await events_collection.find_one({"_id": bson.ObjectId(event_id)})
         if not check_exist:
             raise HTTPException(status_code=404, detail="El Evento no existe")
-            
+    
+    background_tasks.add_task(
+        sendEventDenialNotificationService,
+        email=creator["email"],
+        username=creator.get("name", "Usuario"),
+        event_title=event.get("title", "Sin título"),
+    )
+    
     return {
         "msg": "Evento aprobado con éxito",
         "status": "success"
@@ -261,5 +300,57 @@ async def denyEventService(event_id: str, justification: str, adminUserId: str, 
     }
     
 
-
+async def searchEventsService(lat: float = None, lng: float = None, radius_km: float = None, start_date: str = None, end_date: str = None, interests: str = None, city: str = None, province: str = None, page: int = 1, limit: int = 10):
+    await events_collection.create_index([("location.coordinates", "2dsphere")])
+    
+    query = {"status": "accepted"}
+    
+    if lat is not None and lng is not None and radius_km is not None:
+        query["location.coordinates"] = {
+            "$geoWithin": {
+                "$centerSphere": [
+                    [lng, lat],
+                    radius_km / 6378.1
+                ]
+            }
+        }
+        
+    if city:
+        query["location.city"] = {"$regex": city, "$options": "i"}
+        
+    if province:
+        query["location.province"] = {"$regex": province, "$options": "i"}
+    
+    if interests:
+        interests_list = interests.split(",")
+        query["interests"] = {"$in": interests_list}
+        
+    if start_date or end_date:
+        date_query = {}
+        if start_date:
+            date_query["$gte"] = start_date # Assuming ISO datetime string format
+        if end_date:
+            date_query["$lte"] = end_date
+        query["starting_event_date"] = date_query
+        
+    total_events = await events_collection.count_documents(query)
+    total_pages = (total_events + limit - 1) // limit
+    skip = (page - 1) * limit
+    
+    cursor = events_collection.find(query).skip(skip).limit(limit)
+    events_docs = await cursor.to_list(length=None)
+    
+    # Convert ObjectIds to strings
+    events_list = []
+    for doc in events_docs:
+        doc["id"] = str(doc["_id"])
+        events_list.append(EventResponse(**doc))
+        
+    return {
+        "events": events_list,
+        "total_events": total_events,
+        "page": page,
+        "limit": limit,
+        "total_pages": total_pages
+    }
     

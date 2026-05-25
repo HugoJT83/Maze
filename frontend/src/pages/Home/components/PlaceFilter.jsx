@@ -33,7 +33,7 @@ const PlaceFilter = () => {
                 <div className=' w-full my-auto'>
                     <select
                         name="province"
-                        id="city"
+                        id="province"
                         className='w-60 h-15 border-2 rounded-2xl p-2 border-indigo-to-yellow hover:cursor-pointer hover:scale-105 transition-all ease-in-out text-indigo-to-yellow'
                         onChange={handleStateChange}
                     >
@@ -56,7 +56,25 @@ const PlaceFilter = () => {
                     </select>
                 </div>
                 <div className=' w-full my-auto'>
-                    <button className='bg-indigo-to-yellow text-white-to-black p-2 rounded-xl w-60 h-15 hover:cursor-pointer hover:scale-105 transition-all ease-in-out'>
+                    <button 
+                        onClick={() => {
+                            let url = '/event-search?';
+                            const selectedProvinceName = states.find(s => s.id === parseInt(countryid))?.name || states.find(s => s.id === parseInt(document.getElementById('province').value))?.name || '';
+                            const provinceSelect = document.getElementById('province');
+                            const citySelect = document.getElementById('city');
+                            
+                            const pName = provinceSelect.options[provinceSelect.selectedIndex]?.text;
+                            const cName = citySelect.options[citySelect.selectedIndex]?.text;
+                            
+                            if (provinceSelect.value) {
+                                url += `province=${encodeURIComponent(pName)}&`;
+                            }
+                            if (citySelect.value) {
+                                url += `city=${encodeURIComponent(cName)}`;
+                            }
+                            navigate(url);
+                        }}
+                        className='bg-indigo-to-yellow text-white-to-black p-2 rounded-xl w-60 h-15 hover:cursor-pointer hover:scale-105 transition-all ease-in-out'>
                         Buscar
                     </button>
                 </div>

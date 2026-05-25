@@ -25,7 +25,7 @@ export const Dashboard = () => {
 
             {/* Contenedor 1 - Ver eventos */}
             <div className="p-4 lg:w-1/4">
-              <Link to={'/events'}>
+              <Link to={'/event-search'}>
                 <div className="h-full bg-lightgray-to-yellow bg-opacity-75 px-8 pt-16 pb-24 rounded-lg overflow-hidden text-center relative transition ease-in-out hover:scale-105 hover:bg-indigo-to-yellow hover:text-white-to-black hover:cursor-pointer">
                   <FontAwesomeIcon icon="fa-solid fa-magnifying-glass-location" className='text-6xl m-3' />
                   <h1 className="sm:text-2xl text-xl font-medium mb-3 font-Bitcount mt-2">Ver eventos disponibles</h1>

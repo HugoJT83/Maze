@@ -16,7 +16,7 @@ conf = ConnectionConfig(
 )
 
 async def createEventNotificationService (event_data: dict, user_data: dict):
-    message = MessageSchema(
+    """ message = MessageSchema(
         subject="MAZE - Evento Registrado",
         recipients=[user_data["email"]],
         template_body={
@@ -40,10 +40,10 @@ async def createEventNotificationService (event_data: dict, user_data: dict):
         
     except Exception as e:
         
-        raise HTTPException(status_code=400, detail="Mail Error")
+        raise HTTPException(status_code=400, detail="Mail Error") """
 
 async def createAccountNotificationService (user_data: dict):
-    message = MessageSchema(
+    """ message = MessageSchema(
         subject="MAZE - Usuario creado",
         recipients=[user_data["email"]],
         template_body={
@@ -57,7 +57,7 @@ async def createAccountNotificationService (user_data: dict):
         
     except Exception as e:
         
-        raise HTTPException(status_code=400, detail="Mail Error")
+        raise HTTPException(status_code=400, detail="Mail Error") """
     
 async def send2FACodeNotificationService (email: str, otp_code: str):
     message = MessageSchema(
@@ -78,7 +78,7 @@ async def send2FACodeNotificationService (email: str, otp_code: str):
         raise HTTPException(status_code=400, detail="Mail Error")
 
 async def sendEventDenialNotificationService(email: str, username: str, event_title: str, justification: str):
-    message = MessageSchema(
+    """ message = MessageSchema(
         subject="MAZE - Evento Rechazado",
         recipients=[email],
         template_body={
@@ -92,4 +92,21 @@ async def sendEventDenialNotificationService(email: str, username: str, event_ti
         fm = FastMail(conf)
         await fm.send_message(message, template_name="event_denied.html")
     except Exception as e:
-        raise HTTPException(status_code=400, detail="Mail Error")
+        raise HTTPException(status_code=400, detail="Mail Error") """
+    
+async def sendEventApprovalNotificationService(email: str, username: str, event_title: str):
+   
+   """  message = MessageSchema(
+        subject="MAZE - Evento Aprobado",
+        recipients=[email],
+        template_body={
+            "username": username,
+            "event_title": event_title,
+        },
+        subtype=MessageType.html
+    )
+    try:
+        fm = FastMail(conf)
+        await fm.send_message(message, template_name="event_approved.html")
+    except Exception as e:
+        raise HTTPException(status_code=400, detail="Mail Error") """

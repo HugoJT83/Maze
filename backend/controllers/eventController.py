@@ -36,11 +36,14 @@ async def getEventManagementDetailController(event_id: str, adminUserId: str):
         res_obj = await eventService.getEventManagementDetailService(event_id, adminUserId)
         return res_obj
 
-async def approveEventController(event_id: str, adminUserId: str):
-        res_obj = await eventService.approveEventService(event_id, adminUserId)
+async def approveEventController(event_id: str, adminUserId: str,  background_tasks: BackgroundTasks):
+        res_obj = await eventService.approveEventService(event_id, adminUserId, background_tasks)
         return res_obj
 
 async def denyEventController(event_id: str, justification: str, adminUserId: str, background_tasks: BackgroundTasks):
         res_obj = await eventService.denyEventService(event_id, justification, adminUserId, background_tasks)
         return res_obj
-        
+
+async def searchEventsController(lat: float = None, lng: float = None, radius: float = None, start_date: str = None, end_date: str = None, interests: str = None, city: str = None, province: str = None, page: int = 1, limit: int = 10):
+        res_obj = await eventService.searchEventsService(lat, lng, radius, start_date, end_date, interests, city, province, page, limit)
+        return res_obj
