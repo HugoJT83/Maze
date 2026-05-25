@@ -67,3 +67,8 @@ body {
     font-weight: bold;
     font-style: normal;
 }
+
+/* Correcciones de estilo e idoneidad para Leaflet */
+.leaflet-container {
+    font-family: var(--font-main) !important;
+}

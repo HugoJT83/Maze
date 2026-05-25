@@ -44,7 +44,7 @@ const Home = () => {
 
             <div className='flex justify-center gap-6 my-10'>
               <Link to={'/register'}>
-                <button className='p-4 rounded-xl hover:cursor-pointer hover:scale-110 transition-all ease-in-out bg-indigo-to-yellow text-white-to-black'>Regisrarse ahora</button>
+                <button className='p-4 rounded-xl hover:cursor-pointer hover:scale-110 transition-all ease-in-out bg-indigo-to-yellow text-white-to-black'>Registrarse ahora</button>
               </Link>
 
               <Link to={'/event-search'}>
