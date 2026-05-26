@@ -41,8 +41,17 @@ const EventSearchPage = () => {
 
   // Filters
   const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
   const [useRadius, setUseRadius] = useState(false);
   const [radius, setRadius] = useState(50); // 50km default
+
+  // Debounce for search query
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [selectedInterests, setSelectedInterests] = useState([]);
@@ -209,8 +218,8 @@ const EventSearchPage = () => {
         if (selectedInterests.length > 0) {
           params.append('interests', selectedInterests.join(','));
         }
-        if (searchQuery.trim()) {
-          params.append('keywords', searchQuery.trim());
+        if (debouncedSearchQuery.trim()) {
+          params.append('keywords', debouncedSearchQuery.trim());
         }
 
         const currentLimit = viewMode === 'map' ? 100 : limit;
@@ -228,7 +237,7 @@ const EventSearchPage = () => {
     };
 
     fetchEvents();
-  }, [userLocation, useRadius, radius, startDate, endDate, selectedInterests, selectedProvinceName, selectedCityName, searchQuery, page, viewMode, limit]);
+  }, [userLocation, useRadius, radius, startDate, endDate, selectedInterests, selectedProvinceName, selectedCityName, debouncedSearchQuery, page, viewMode, limit]);
 
   if (loading && events.length === 0) {
     return <div className="min-h-screen flex items-center justify-center text-indigo-to-yellow font-Bitcount text-xl bg-white-to-black">Cargando eventos...</div>;
@@ -251,7 +260,7 @@ const EventSearchPage = () => {
                 setSearchQuery(e.target.value);
                 setPage(1);
               }}
-              className="w-full p-2.5 pl-9 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm transition-all bg-white text-gray-800 shadow-sm placeholder-gray-400 font-sans"
+              className="w-full p-2.5 pl-9 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all bg-white-to-black text-indigo-to-yellow placeholder-gray-400"
             />
             <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
               <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -278,7 +287,7 @@ const EventSearchPage = () => {
         <div className="mb-6">
           <label className="block font-medium text-indigo-to-yellow mb-2">Ubicación</label>
           <select
-            className="w-full mb-3 p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+            className="w-full mb-3 p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-sm bg-white-to-black"
             onChange={handleStateChange}
             value={selectedProvinceName}
           >
@@ -288,7 +297,7 @@ const EventSearchPage = () => {
             ))}
           </select>
           <select
-            className="w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+            className="w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-sm bg-white-to-black"
             onChange={handleCityChange}
             disabled={cities.length === 0}
             value={selectedCityName}

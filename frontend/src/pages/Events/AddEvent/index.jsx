@@ -9,6 +9,7 @@ import { far } from '@fortawesome/free-regular-svg-icons'
 import { INTERESTS_CONFIG } from '../../../constant/interestsConfig'
 import Interest from '../../auth/ProfileUser/components/Interest'
 import { data, Link, Navigate, useNavigate } from 'react-router-dom'
+import { useAuthContext } from '../../../context/AuthContext'
 import Hourpicker from './components/Hourpicker'
 import Datepicker from './components/Datepicker'
 import Locationpicker from './components/Locationpicker'
@@ -22,6 +23,7 @@ const addEvent = () => {
 
     /* Elementos de creación con éxito */
     const navigate = useNavigate();
+    const { user } = useAuthContext();
     const [isSuccess, setIsSuccess] = useState(false);
     const [progress, setProgress] = useState(100);
 
@@ -81,7 +83,10 @@ const addEvent = () => {
         },
         interests: [],
         images: [],
-        terms: false
+        terms: false,
+        max_capacity: '',
+        max_tickets_per_person: '',
+        ticket_price: ''
     })
 
     /* Obtener intereses para validación */
@@ -135,6 +140,22 @@ const addEvent = () => {
         images: yup.array()
             .min(1, "Al menos una imagen es obligatoria")
             .max(5, "No se pueden añadir más de 5 imágenes").required("Añadir imágenes es obligatorio"),
+
+        max_capacity: yup.number()
+            .typeError("Debe ser un número válido")
+            .required("El aforo máximo es obligatorio")
+            .min(0, "El aforo no puede ser negativo")
+            .max(100, "El aforo máximo permitido es 100 personas"),
+
+        max_tickets_per_person: user?.stripe_account_id ? yup.number()
+            .typeError("Debe ser un número válido")
+            .required("El máximo de entradas por persona es obligatorio")
+            .min(1, "Debe ser al menos 1") : yup.number().nullable(),
+
+        ticket_price: user?.stripe_account_id ? yup.number()
+            .typeError("Debe ser un número válido")
+            .required("El precio de venta es obligatorio")
+            .min(0, "El precio no puede ser negativo") : yup.number().nullable(),
 
         terms: yup.boolean()
             .oneOf([true], "Debes aceptar los términos y condiciones para publicar eventos.")
@@ -525,6 +546,19 @@ const addEvent = () => {
                                     </div>
                                 </div>
 
+                                {/* Aforo Máximo */}
+                                <div className='p-2 text-center md:text-left'>
+                                    <h1 htmlFor="max_capacity" className='font-Bitcount text-2xl text-indigo-to-yellow'>Aforo Máximo<sup>*</sup></h1>
+                                    <Field
+                                        type="number"
+                                        name="max_capacity"
+                                        id="max_capacity"
+                                        className="bg-white-to-black rounded border-2 p-1 border-indigo-to-yellow w-full md:w-1/2"
+                                        placeholder="Máximo de personas permitidas (0-100)"
+                                    />
+                                    <ErrorMessage name='max_capacity' component={'p'} className='text-red-500' />
+                                </div>
+
                                 {/* Imágenes */}
                                 <div className='p-2'>
                                     <h1 className='font-Bitcount text-2xl text-indigo-to-yellow'>Imágenes<sup>*</sup></h1>
@@ -536,6 +570,49 @@ const addEvent = () => {
                                         setFieldTouched={setFieldTouched}
                                     />
                                     <ErrorMessage name='images' component={'p'} className='text-red-500'></ErrorMessage>
+                                </div>
+
+                                {/* Monetización */}
+                                <div className='p-2'>
+                                    {!user?.stripe_account_id ? (
+                                        <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4">
+                                            <p className="text-yellow-700 font-bold">¿Quieres Monetizar tu evento?</p>
+                                            <p className="text-sm text-yellow-600">
+                                                Para vender entradas, configura primero los datos de facturación en tu perfil de usuario.
+                                            </p>
+                                        </div>
+                                    ) : (
+                                        <div className="bg-indigo-50 border-2 border-indigo-200 rounded p-4 mb-4">
+                                            <h1 className='font-Bitcount text-2xl text-indigo-to-yellow mb-2'>Datos de Venta</h1>
+                                            
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <div>
+                                                    <label htmlFor="max_tickets_per_person" className="block text-indigo-900 font-bold mb-1">Entradas máx. por persona<sup>*</sup></label>
+                                                    <Field
+                                                        type="number"
+                                                        name="max_tickets_per_person"
+                                                        id="max_tickets_per_person"
+                                                        className="bg-white-to-black rounded border-2 p-1 border-indigo-to-yellow w-full"
+                                                        placeholder="Ej: 2"
+                                                    />
+                                                    <ErrorMessage name='max_tickets_per_person' component={'p'} className='text-red-500 text-sm mt-1' />
+                                                </div>
+                                                
+                                                <div>
+                                                    <label htmlFor="ticket_price" className="block text-indigo-900 font-bold mb-1">Precio de venta (€)<sup>*</sup></label>
+                                                    <Field
+                                                        type="number"
+                                                        step="0.01"
+                                                        name="ticket_price"
+                                                        id="ticket_price"
+                                                        className="bg-white-to-black rounded border-2 p-1 border-indigo-to-yellow w-full"
+                                                        placeholder="Ej: 10.50"
+                                                    />
+                                                    <ErrorMessage name='ticket_price' component={'p'} className='text-red-500 text-sm mt-1' />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
 
                                 {/* Terminos y condiciones */}

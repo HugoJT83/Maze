@@ -70,6 +70,7 @@ class UserProfile(BaseModel):
     address: Optional[Address] = None
     created_events: List[str] = Field(default=[])
     joined_events: List[str] = Field(default = [])
+    stripe_account_id: Optional[str] = None
     
     created_at:datetime = Field(default_factory=datetime.now)
     update_at:datetime = Field(default_factory=datetime.now)
@@ -96,6 +97,7 @@ class UpdateDetails(BaseModel):
     description: Optional[str] = ""
     interests: List[InterestsEnum] = Field(default=[], max_items=4)
     address: Optional[Address] = None
+    stripe_account_id: Optional[str] = None
     
     @field_validator('interests')
     @classmethod

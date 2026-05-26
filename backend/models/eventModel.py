@@ -45,6 +45,9 @@ class EventBase(BaseModel):
     interests: List[InterestsEnum] = Field(default=[], max_items=3)
     updated_at: datetime = Field(default_factory=datetime.now)
     status: str = Field(default="pending")
+    max_capacity: int = Field(...)
+    max_tickets_per_person: Optional[int] = None
+    ticket_price: Optional[float] = None
     
     
 class EventCreate(EventBase):
