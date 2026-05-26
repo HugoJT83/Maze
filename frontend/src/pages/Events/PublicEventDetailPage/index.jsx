@@ -19,12 +19,11 @@ import {
     faCheckCircle,
     faExclamationTriangle,
     faTicket,
-    faCheck,
-    faTimes
+    faShoppingCart,
+    faPaperPlane
 } from '@fortawesome/free-solid-svg-icons'
-import ConfirmationModal from '../../../components/ConfirmationModal'
 
-const EventDetailPage = () => {
+const PublicEventDetailPage = () => {
     const { id } = useParams()
     const navigate = useNavigate()
 
@@ -33,37 +32,9 @@ const EventDetailPage = () => {
     const [error, setError] = useState(null)
     const [currentImageIndex, setCurrentImageIndex] = useState(0)
 
-    const [tickets, setTickets] = useState([])
-    const [ticketsLoading, setTicketsLoading] = useState(false)
-
-
-    const [isDeleting, setIsDeleting] = useState(false);
-    const [showModal, setShowModal] = useState(false);
-    const handleDelete = async () => {
-        try {
-            setIsDeleting(true);
-            const token = localStorage.getItem("token")
-
-            const response = await axiosClient.delete(`/events/delete-event/${id}`, {
-                headers: {
-                    Authorization: 'Bearer ' + token
-                }
-            });
-
-            if (response.data.status == "success") {
-                toast.success(response.data.message || "Evento borrado con exito");
-                setShowModal(false);
-                navigate("/my-events");
-            }
-        }
-        catch (error) {
-            toast.error(error.response?.data?.detail || "No se pudo eliminar el evento");
-            setShowModal(false);
-        }
-        finally {
-            setIsDeleting(false);
-        }
-    }
+    // Ticket Status
+    const [ticketData, setTicketData] = useState(null)
+    const [ticketLoading, setTicketLoading] = useState(false)
 
     const fetchEventDetails = async () => {
         try {
@@ -74,11 +45,8 @@ const EventDetailPage = () => {
                     Authorization: 'Bearer ' + localStorage.getItem("token")
                 }
             })
-            console.log("Detalles del evento:", response.data)
             setEvent(response.data)
-            if (response.data.status === "accepted") {
-                fetchTickets()
-            }
+            await checkTicketStatus()
         } catch (err) {
             console.error(err)
             const errMsg = err.response?.data?.detail || err.message || "Error al obtener los detalles del evento"
@@ -89,34 +57,16 @@ const EventDetailPage = () => {
         }
     }
 
-    const fetchTickets = async () => {
+    const checkTicketStatus = async () => {
         try {
-            setTicketsLoading(true)
-            const response = await axiosClient.get(`/tickets/event/${id}`, {
+            const response = await axiosClient.get(`/tickets/my-ticket/${id}`, {
                 headers: {
                     Authorization: 'Bearer ' + localStorage.getItem("token")
                 }
             })
-            setTickets(response.data.tickets || [])
-        } catch (error) {
-            console.error("Error al obtener tickets:", error)
-            toast.error("No se pudo cargar la lista de asistentes")
-        } finally {
-            setTicketsLoading(false)
-        }
-    }
-
-    const handleUpdateTicketStatus = async (ticketId, newStatus) => {
-        try {
-            await axiosClient.put(`/tickets/${ticketId}/status`, { status: newStatus }, {
-                headers: {
-                    Authorization: 'Bearer ' + localStorage.getItem("token")
-                }
-            })
-            toast.success(`Solicitud ${newStatus === 'accepted' ? 'aceptada' : 'denegada'} correctamente`)
-            fetchTickets()
-        } catch (error) {
-            toast.error("Error al actualizar el estado de la solicitud")
+            setTicketData(response.data)
+        } catch (err) {
+            console.error("Error comprobando el ticket:", err)
         }
     }
 
@@ -151,6 +101,41 @@ const EventDetailPage = () => {
         }
     }
 
+    const handleRequestJoin = async () => {
+        try {
+            setTicketLoading(true)
+            const response = await axiosClient.post(`/tickets/request/${id}`, {}, {
+                headers: {
+                    Authorization: 'Bearer ' + localStorage.getItem("token")
+                }
+            })
+            toast.success(response.data.message || "Solicitud enviada")
+            await checkTicketStatus()
+        } catch (err) {
+            toast.error(err.response?.data?.detail || "Error al solicitar unirse")
+        } finally {
+            setTicketLoading(false)
+        }
+    }
+
+    const handleBuyTicket = async () => {
+        try {
+            setTicketLoading(true)
+            const response = await axiosClient.post(`/stripe/create-checkout-session/${id}`, {}, {
+                headers: {
+                    Authorization: 'Bearer ' + localStorage.getItem("token")
+                }
+            })
+            if (response.data.checkout_url) {
+                window.location.href = response.data.checkout_url
+            }
+        } catch (err) {
+            toast.error(err.response?.data?.detail || "Error al iniciar el pago")
+        } finally {
+            setTicketLoading(false)
+        }
+    }
+
     if (loading) {
         return (
             <div className="min-h-screen flex flex-col justify-center items-center p-6">
@@ -167,10 +152,10 @@ const EventDetailPage = () => {
                     <FontAwesomeIcon icon={faExclamationTriangle} className="text-red-500 text-5xl mb-4" />
                     <h2 className="text-2xl font-bold text-white-to-black mb-2">¡Ups! Algo salió mal</h2>
                     <p className="text-gray-to-yellow mb-6">{error}</p>
-                    <Link to="/my-events" className="inline-flex items-center justify-center gap-2 bg-indigo-to-yellow text-white-to-black font-semibold py-3 px-6 rounded-2xl hover:scale-105 active:scale-95 transition-all duration-200 w-full shadow-lg">
+                    <button onClick={() => navigate(-1)} className="inline-flex items-center justify-center gap-2 bg-indigo-to-yellow text-white-to-black font-semibold py-3 px-6 rounded-2xl hover:scale-105 active:scale-95 transition-all duration-200 w-full shadow-lg">
                         <FontAwesomeIcon icon={faArrowLeft} />
-                        Volver a mis eventos
-                    </Link>
+                        Volver atrás
+                    </button>
                 </div>
             </div>
         )
@@ -202,20 +187,17 @@ const EventDetailPage = () => {
     } = location
 
     const isPaidEvent = ticket_price !== null && ticket_price !== undefined && ticket_price > 0;
-    const pendingTickets = tickets.filter(t => t.status === 'pending');
-    const acceptedTickets = tickets.filter(t => t.status === 'accepted');
-    const paidTickets = tickets.filter(t => t.status === 'paid');
 
     return (
         <div className="min-h-screen bg-white-to-black text-white-to-black py-8 px-4 sm:px-6 lg:px-12">
             {/* Header / Botón de retroceso */}
             <div className="max-w-6xl mx-auto mb-8 flex justify-between items-center">
                 <button
-                    onClick={() => navigate('/my-events')}
+                    onClick={() => navigate(-1)}
                     className="flex items-center gap-2 text-white-to-black bg-indigo-to-yellow p-2 rounded-lg transition-all font-medium hover:scale-105 hover:cursor-pointer active:scale-95 duration-200"
                 >
                     <FontAwesomeIcon icon={faArrowLeft} />
-                    <span>Volver a Tus Eventos</span>
+                    <span>Volver atrás</span>
                 </button>
 
                 <div className="flex items-center gap-2">
@@ -225,7 +207,7 @@ const EventDetailPage = () => {
                         : "bg-indigo-to-yellow/10 text-indigo-to-yellow border border-indigo-to-yellow/20"
                         }`}>
                         <FontAwesomeIcon icon={status === "accepted" ? faCheckCircle : faInfoCircle} />
-                        {status === "accepted" ? "Aceptado" : "Pendiente de Aprobación"}
+                        {status === "accepted" ? "Confirmado" : "En Revisión"}
                     </span>
                 </div>
             </div>
@@ -252,14 +234,12 @@ const EventDetailPage = () => {
                                         <button
                                             onClick={prevImage}
                                             className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-3 rounded-full hover:scale-110 active:scale-90 transition-all duration-200 backdrop-blur-md"
-                                            aria-label="Imagen anterior"
                                         >
                                             <FontAwesomeIcon icon={faChevronLeft} />
                                         </button>
                                         <button
                                             onClick={nextImage}
                                             className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-3 rounded-full hover:scale-110 active:scale-90 transition-all duration-200 backdrop-blur-md"
-                                            aria-label="Siguiente imagen"
                                         >
                                             <FontAwesomeIcon icon={faChevronRight} />
                                         </button>
@@ -270,9 +250,7 @@ const EventDetailPage = () => {
                                                 <button
                                                     key={idx}
                                                     onClick={() => setCurrentImageIndex(idx)}
-                                                    className={`w-2 h-2 rounded-full transition-all duration-300 ${idx === currentImageIndex ? "bg-indigo-to-yellow w-4" : "bg-white/50"
-                                                        }`}
-                                                    aria-label={`Ir a imagen ${idx + 1}`}
+                                                    className={`w-2 h-2 rounded-full transition-all duration-300 ${idx === currentImageIndex ? "bg-indigo-to-yellow w-4" : "bg-white/50"}`}
                                                 />
                                             ))}
                                         </div>
@@ -280,13 +258,12 @@ const EventDetailPage = () => {
                                 )}
                             </>
                         ) : (
-                            /* Fallback si no hay imágenes */
                             <div className="absolute inset-0 bg-gradient-to-tr from-indigo-950/40 via-slate-900/20 to-yellow-950/20 flex flex-col items-center justify-center p-8 text-center">
                                 <div className="w-20 h-20 rounded-full bg-indigo-to-yellow/10 flex items-center justify-center mb-4 text-indigo-to-yellow border border-indigo-to-yellow/20">
                                     <FontAwesomeIcon icon={faFileAlt} className="text-4xl" />
                                 </div>
                                 <h3 className="font-Bitcount text-2xl text-indigo-to-yellow mb-2">Maze Event</h3>
-                                <p className="text-sm text-gray-to-yellow max-w-sm">No se han subido imágenes para este evento, pero toda la información importante está disponible debajo.</p>
+                                <p className="text-sm text-gray-to-yellow max-w-sm">No se han subido imágenes para este evento.</p>
                             </div>
                         )}
                     </div>
@@ -340,22 +317,74 @@ const EventDetailPage = () => {
                             )}
                         </div>
                     </div>
-
-
-
-                    <ConfirmationModal
-                        isOpen={showModal}
-                        onClose={() => setShowModal(false)}
-                        onConfirm={handleDelete}
-                        isDeleting={isDeleting}
-                    />
                 </div>
 
                 {/* COLUMNA DERECHA: Ficha técnica del evento (4 columnas) */}
                 <div className="lg:col-span-4 flex flex-col gap-6">
 
+                    {/* CALL TO ACTION: TICKETS / JOIN */}
+                    <div className="bg-lightgray-to-black p-6 rounded-lg border border-indigo-500/40 shadow-[0_0_15px_rgba(90,103,216,0.2)]">
+                        <h3 className="text-xl font-bold text-indigo-to-yellow uppercase border-b border-gray-to-yellow/20 pb-3 mb-4 flex items-center gap-2">
+                            <FontAwesomeIcon icon={isPaidEvent ? faShoppingCart : faPaperPlane} />
+                            {isPaidEvent ? 'Comprar Entrada' : 'Unirse al Evento'}
+                        </h3>
+                        
+                        {status !== 'accepted' ? (
+                            <div className="bg-indigo-to-yellow/5 border border-indigo-to-yellow/10 p-4 rounded-2xl text-center">
+                                <p className="text-sm text-indigo-to-yellow font-medium">
+                                    Este evento está en revisión. Aún no puedes inscribirte.
+                                </p>
+                            </div>
+                        ) : ticketData?.has_ticket ? (
+                            <div className="bg-green-500/10 border border-green-500/20 p-4 rounded-2xl text-center">
+                                {ticketData.status === 'accepted' || ticketData.status === 'paid' ? (
+                                    <>
+                                        <FontAwesomeIcon icon={faCheckCircle} className="text-green-500 text-3xl mb-2" />
+                                        <p className="text-green-500 font-bold text-lg">¡Ya tienes tu entrada!</p>
+                                    </>
+                                ) : ticketData.status === 'pending' ? (
+                                    isPaidEvent ? (
+                                        <>
+                                            <p className="text-indigo-to-yellow font-medium mb-3">Tienes un proceso de pago pendiente.</p>
+                                            <button 
+                                                onClick={handleBuyTicket}
+                                                disabled={ticketLoading}
+                                                className="w-full bg-indigo-to-yellow text-white-to-black py-2 rounded-lg hover:scale-105 transition-all font-bold">
+                                                {ticketLoading ? "Cargando..." : "Continuar Compra"}
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <p className="text-indigo-to-yellow font-medium">Tu solicitud está pendiente de aprobación.</p>
+                                    )
+                                ) : ticketData.status === 'rejected' ? (
+                                    <p className="text-red-500 font-medium">Tu solicitud ha sido denegada.</p>
+                                ) : null}
+                            </div>
+                        ) : (
+                            <div className="flex flex-col items-center">
+                                {isPaidEvent ? (
+                                    <button 
+                                        onClick={handleBuyTicket}
+                                        disabled={ticketLoading}
+                                        className="w-full bg-indigo-to-yellow text-white-to-black font-bold py-3 px-4 rounded-xl hover:scale-105 active:scale-95 transition-all shadow-lg text-lg flex justify-center items-center gap-2">
+                                        <FontAwesomeIcon icon={faShoppingCart} />
+                                        {ticketLoading ? "Procesando..." : `Comprar por ${parseFloat(ticket_price).toFixed(2)} €`}
+                                    </button>
+                                ) : (
+                                    <button 
+                                        onClick={handleRequestJoin}
+                                        disabled={ticketLoading}
+                                        className="w-full bg-indigo-to-yellow text-white-to-black font-bold py-3 px-4 rounded-xl hover:scale-105 active:scale-95 transition-all shadow-lg text-lg flex justify-center items-center gap-2">
+                                        <FontAwesomeIcon icon={faPaperPlane} />
+                                        {ticketLoading ? "Enviando..." : "Solicitar Unirse"}
+                                    </button>
+                                )}
+                            </div>
+                        )}
+                    </div>
+
                     {/* Cuadro de Horarios y Fechas */}
-                    <div className="bg-lightgray-to-black p-6 rounded-lg border border-gray-to-yellow/10 hover:scale-[1.01] transition-transform duration-300">
+                    <div className="bg-lightgray-to-black p-6 rounded-lg border border-gray-to-yellow/10">
                         <h3 className="text-lg font-bold text-indigo-to-yellow uppercase border-b border-gray-to-yellow/20 pb-3 mb-4 flex items-center gap-2">
                             <FontAwesomeIcon icon={faCalendarDays} />
                             ¿Cuándo ocurre?
@@ -389,7 +418,7 @@ const EventDetailPage = () => {
                     </div>
 
                     {/* Ubicación Geográfica */}
-                    <div className="bg-lightgray-to-black p-6 rounded-lg border border-gray-to-yellow/10 hover:scale-[1.01] transition-transform duration-300">
+                    <div className="bg-lightgray-to-black p-6 rounded-lg border border-gray-to-yellow/10">
                         <h3 className="text-lg font-bold text-indigo-to-yellow uppercase border-b border-gray-to-yellow/20 pb-3 mb-4 flex items-center gap-2">
                             <FontAwesomeIcon icon={faMapPin} />
                             ¿Dónde es?
@@ -425,149 +454,11 @@ const EventDetailPage = () => {
                             <p className="text-sm text-gray-to-yellow text-center py-4">No se indicaron temáticas específicas.</p>
                         )}
                     </div>
-
-                    {/* Datos de contacto y asistencia */}
-                    <div className="bg-lightgray-to-black p-6 rounded-lg border border-gray-to-yellow/10">
-                        <h3 className="text-lg font-bold text-indigo-to-yellow uppercase border-b border-gray-to-yellow/20 pb-3 mb-4 flex items-center gap-2">
-                            <FontAwesomeIcon icon={faPhone} />
-                            Contacto y Registro
-                        </h3>
-                        <div className="flex flex-col gap-4">
-                            <div>
-                                <span className="text-xs text-gray-to-yellow uppercase font-semibold">Teléfono de contacto:</span>
-                                <a href={`tel:${phone}`} className="flex items-center gap-2 text-indigo-to-yellow font-bold mt-1 text-lg hover:underline transition-all">
-                                    {phone}
-                                </a>
-                            </div>
-
-                            {status === "accepted" ? (
-                                <div className="border-t border-gray-to-yellow/10 pt-3 mt-1 flex flex-col gap-2">
-                                    <span className="text-xs text-gray-to-yellow uppercase font-semibold flex items-center gap-1">
-                                        <FontAwesomeIcon icon={faUsers} className="text-indigo-to-yellow" />
-                                        Asistentes del evento
-                                    </span>
-                                </div>
-                            ) : (
-                                <div className="bg-indigo-to-yellow/5 border border-indigo-to-yellow/10 p-4 rounded-2xl mt-1">
-                                    <p className="text-xs text-indigo-to-yellow font-medium text-justify">
-                                        Este evento se encuentra en revisión. Los detalles completos de asistencia y reservas estarán disponibles en cuanto el administrador valide la publicación.
-                                    </p>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-
                 </div>
 
-            </div>
-
-
-
-            {/* Asistentes y Solicitudes */}
-            {status === "accepted" && (
-                <div className="max-w-6xl mx-auto mt-12 bg-lightgray-to-black p-6 sm:p-8 rounded-lg border border-gray-to-yellow/10">
-                    <h2 className="text-3xl font-Bitcount text-indigo-to-yellow mb-6 flex items-center gap-3">
-                        <FontAwesomeIcon icon={faUsers} />
-                        Gestión de Asistentes
-                    </h2>
-
-                    {ticketsLoading ? (
-                        <p className="text-gray-to-yellow">Cargando datos de asistentes...</p>
-                    ) : isPaidEvent ? (
-                        <div>
-                            <h3 className="text-xl font-bold text-green-500 mb-4 border-b border-gray-to-yellow/20 pb-2">
-                                Entradas Pagadas ({paidTickets.length})
-                            </h3>
-                            {paidTickets.length > 0 ? (
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                    {paidTickets.map(ticket => (
-                                        <div key={ticket.id} className="bg-white-to-black p-4 rounded-xl border border-green-500/30 flex justify-between items-center">
-                                            <div>
-                                                <p className="font-bold text-black-to-white">{ticket.user_name}</p>
-                                                <p className="text-xs text-gray-to-yellow">{ticket.user_email}</p>
-                                            </div>
-                                            <span className="bg-green-500/10 text-green-500 text-xs font-bold px-2 py-1 rounded">Pagado</span>
-                                        </div>
-                                    ))}
-                                </div>
-                            ) : (
-                                <p className="text-gray-to-yellow text-sm">Aún no hay entradas vendidas para este evento.</p>
-                            )}
-                        </div>
-                    ) : (
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                            {/* Solicitudes Pendientes */}
-                            <div>
-                                <h3 className="text-xl font-bold text-yellow-500 mb-4 border-b border-gray-to-yellow/20 pb-2">
-                                    Solicitudes Pendientes ({pendingTickets.length})
-                                </h3>
-                                {pendingTickets.length > 0 ? (
-                                    <div className="flex flex-col gap-3">
-                                        {pendingTickets.map(ticket => (
-                                            <div key={ticket.id} className="bg-white-to-black p-4 rounded-xl border border-yellow-500/30 flex justify-between items-center">
-                                                <div>
-                                                    <p className="font-bold text-black-to-white">{ticket.user_name}</p>
-                                                    <p className="text-xs text-gray-to-yellow">{ticket.user_email}</p>
-                                                </div>
-                                                <div className="flex gap-2">
-                                                    <button
-                                                        onClick={() => handleUpdateTicketStatus(ticket.id, 'accepted')}
-                                                        className="bg-green-500/20 text-green-500 hover:bg-green-500 hover:text-white p-2 rounded-lg transition-colors"
-                                                        title="Aprobar"
-                                                    >
-                                                        <FontAwesomeIcon icon={faCheck} />
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleUpdateTicketStatus(ticket.id, 'rejected')}
-                                                        className="bg-red-500/20 text-red-500 hover:bg-red-500 hover:text-white p-2 rounded-lg transition-colors"
-                                                        title="Denegar"
-                                                    >
-                                                        <FontAwesomeIcon icon={faTimes} />
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                ) : (
-                                    <p className="text-gray-to-yellow text-sm">No hay solicitudes pendientes.</p>
-                                )}
-                            </div>
-
-                            {/* Usuarios Aceptados */}
-                            <div>
-                                <h3 className="text-xl font-bold text-green-500 mb-4 border-b border-gray-to-yellow/20 pb-2">
-                                    Usuarios Aceptados ({acceptedTickets.length})
-                                </h3>
-                                {acceptedTickets.length > 0 ? (
-                                    <div className="flex flex-col gap-3">
-                                        {acceptedTickets.map(ticket => (
-                                            <div key={ticket.id} className="bg-white-to-black p-4 rounded-xl border border-green-500/30">
-                                                <p className="font-bold text-black-to-white">{ticket.user_name}</p>
-                                                <p className="text-xs text-gray-to-yellow">{ticket.user_email}</p>
-                                            </div>
-                                        ))}
-                                    </div>
-                                ) : (
-                                    <p className="text-gray-to-yellow text-sm">Aún no hay usuarios aceptados.</p>
-                                )}
-                            </div>
-                        </div>
-                    )}
-                </div>
-            )}
-
-            <div className=' flex max-w-6xl mx-auto mt-12 bg-lightgray-to-black p-6 sm:p-8 rounded-lg border border-gray-to-yellow/10'>
-                <button
-                    onClick={() => setShowModal(true)}
-                    disabled={isDeleting}
-                    className={`bg-red-500 p-6 rounded-lg text-white transition-all ${isDeleting ? 'opacity-50 cursor-not-allowed' : 'hover:cursor-pointer hover:scale-110'}`}>Quiero borrar el evento</button>
-                <div className='px-4 text-gray-to-yellow text-justify'>
-                    <p className='font-bold'>*IMPORTANTE: <br /></p>
-                    <p className=''>Si decides cancelar el evento, se eliminará la revisión de la lista de eventos pendientes del administrador. Si el evento estuviera aprobado, se enviará un correo a los asistentes informando del cambio.</p>
-                </div>
             </div>
         </div>
     )
 }
 
-export default EventDetailPage
+export default PublicEventDetailPage

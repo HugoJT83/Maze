@@ -20,6 +20,7 @@ import EventDetailPage from "./pages/Events/EventDetailPage";
 import EventManager from "./pages/Events/EventManager";
 import EventManagementDetailPage from "./pages/Events/EventManagementDetailPage";
 import EventSearchPage from "./pages/Events/EventSearch";
+import PublicEventDetailPage from "./pages/Events/PublicEventDetailPage";
 
 const App = () => {
   return (
@@ -39,6 +40,7 @@ const App = () => {
             <Route path="/manage-events" Component={EventManager} />
             <Route path="/manage-events/:id" Component={EventManagementDetailPage} />
             <Route path="/event-search" Component={EventSearchPage} />
+            <Route path="/events/:id" Component={PublicEventDetailPage} />
           </Route>
 
           {/* Rutas - Legal */}

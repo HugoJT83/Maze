@@ -21,7 +21,8 @@ import {
     faThumbsUp,
     faThumbsDown,
     faEnvelope,
-    faTimesCircle
+    faTimesCircle,
+    faTicket
 } from '@fortawesome/free-solid-svg-icons'
 
 const EventManagementDetailPage = () => {
@@ -178,7 +179,10 @@ const EventManagementDetailPage = () => {
         phone = "+34000000000",
         status = "pending",
         images = [],
-        creator_data = {}
+        creator_data = {},
+        max_capacity,
+        max_tickets_per_person,
+        ticket_price
     } = event
 
     const {
@@ -286,6 +290,44 @@ const EventManagementDetailPage = () => {
                         </div>
                     </div>
 
+                    {/* Información de Acceso y Entradas */}
+                    <div className="bg-lightgray-to-black p-6 rounded-lg border border-gray-to-yellow/10 hover:scale-[1.01] transition-transform duration-300">
+                        <h3 className="text-lg font-bold text-indigo-to-yellow uppercase tracking-wider border-b border-gray-to-yellow/20 pb-3 mb-4 flex items-center gap-2">
+                            <FontAwesomeIcon icon={faTicket} />
+                            Entradas y Aforo
+                        </h3>
+                        <div className="flex flex-col gap-4">
+                            <div>
+                                <span className="text-xs text-gray-to-yellow uppercase font-semibold">Aforo Máximo:</span>
+                                <p className="text-lg text-black-to-white font-bold mt-0.5">{max_capacity ? `${max_capacity} personas` : "No especificado"}</p>
+                            </div>
+
+                            {ticket_price !== null && ticket_price !== undefined ? (
+                                <div className="grid grid-cols-2 gap-4 border-t border-gray-to-yellow/10 pt-3 mt-1">
+                                    <div>
+                                        <span className="text-xs text-gray-to-yellow uppercase font-semibold">Precio por entrada:</span>
+                                        <p className="text-lg text-black-to-white font-bold mt-0.5 text-indigo-to-yellow">
+                                            {ticket_price > 0 ? `${parseFloat(ticket_price).toFixed(2)} €` : "¡Gratis!"}
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <span className="text-xs text-gray-to-yellow uppercase font-semibold">Máx. por persona:</span>
+                                        <p className="text-lg text-black-to-white font-bold mt-0.5">
+                                            {max_tickets_per_person || "Sin límite"}
+                                        </p>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="border-t border-gray-to-yellow/10 pt-3 mt-1">
+                                    <span className="text-xs text-gray-to-yellow uppercase font-semibold">Precio por entrada:</span>
+                                    <p className="text-lg text-black-to-white font-bold mt-0.5 text-indigo-to-yellow">¡Gratis!</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+
+
                     {/* PANEL DE MODERACIÓN (Reemplaza el contenedor de borrado) */}
                     <div className="bg-lightgray-to-black p-6 rounded-lg border border-gray-to-yellow/10 flex flex-col gap-6">
                         <h3 className="text-xl font-bold text-indigo-to-yellow uppercase tracking-wider border-b border-gray-to-yellow/20 pb-3 mb-1">
@@ -351,7 +393,7 @@ const EventManagementDetailPage = () => {
                 {/* COLUMNA DERECHA: Ficha técnica del evento y Datos del Creador */}
                 <div className="lg:col-span-4 flex flex-col gap-6">
 
-                    {/* TARJETA DEL CREADOR (Nuevo requisito #3) */}
+                    {/* TARJETA DEL CREADOR */}
                     <div className="bg-lightgray-to-black p-6 rounded-lg border border-gray-to-yellow/10 hover:scale-[1.01] transition-transform duration-300">
                         <h3 className="text-lg font-bold text-indigo-to-yellow uppercase tracking-wider border-b border-gray-to-yellow/20 pb-3 mb-4 flex items-center gap-2">
                             <FontAwesomeIcon icon={faCircleUser} />
@@ -453,6 +495,8 @@ const EventManagementDetailPage = () => {
                             <p className="text-sm text-gray-to-yellow text-center py-4">No se indicaron temáticas específicas.</p>
                         )}
                     </div>
+
+
 
                     {/* Datos de contacto y asistencia */}
                     <div className="bg-lightgray-to-black p-6 rounded-lg border border-gray-to-yellow/10">

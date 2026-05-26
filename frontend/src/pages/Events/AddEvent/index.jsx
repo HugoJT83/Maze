@@ -85,6 +85,7 @@ const addEvent = () => {
         images: [],
         terms: false,
         max_capacity: '',
+        is_paid: false,
         max_tickets_per_person: '',
         ticket_price: ''
     })
@@ -147,15 +148,27 @@ const addEvent = () => {
             .min(0, "El aforo no puede ser negativo")
             .max(100, "El aforo máximo permitido es 100 personas"),
 
-        max_tickets_per_person: user?.stripe_account_id ? yup.number()
-            .typeError("Debe ser un número válido")
-            .required("El máximo de entradas por persona es obligatorio")
-            .min(1, "Debe ser al menos 1") : yup.number().nullable(),
+        is_paid: yup.boolean(),
 
-        ticket_price: user?.stripe_account_id ? yup.number()
-            .typeError("Debe ser un número válido")
-            .required("El precio de venta es obligatorio")
-            .min(0, "El precio no puede ser negativo") : yup.number().nullable(),
+        max_tickets_per_person: yup.number().nullable()
+            .transform((value, originalValue) => (String(originalValue).trim() === '' ? null : value))
+            .when('is_paid', {
+                is: true,
+                then: (schema) => schema
+                    .typeError("Debe ser un número válido")
+                    .required("El máximo de entradas por persona es obligatorio")
+                    .min(1, "Debe ser al menos 1")
+            }),
+
+        ticket_price: yup.number().nullable()
+            .transform((value, originalValue) => (String(originalValue).trim() === '' ? null : value))
+            .when('is_paid', {
+                is: true,
+                then: (schema) => schema
+                    .typeError("Debe ser un número válido")
+                    .required("El precio de venta es obligatorio")
+                    .min(0.5, "El precio mínimo es de 0.50€")
+            }),
 
         terms: yup.boolean()
             .oneOf([true], "Debes aceptar los términos y condiciones para publicar eventos.")
@@ -217,7 +230,12 @@ const addEvent = () => {
             phone: "+34" + values.phone
         }
 
-        const { images, ...eventData } = cleanValues;
+        if (!cleanValues.is_paid) {
+            cleanValues.ticket_price = null;
+            cleanValues.max_tickets_per_person = null;
+        }
+
+        const { images, is_paid, ...eventData } = cleanValues;
 
         formData.append("data", JSON.stringify(eventData));
 
@@ -583,34 +601,46 @@ const addEvent = () => {
                                         </div>
                                     ) : (
                                         <div className="bg-indigo-50 border-2 border-indigo-200 rounded p-4 mb-4">
-                                            <h1 className='font-Bitcount text-2xl text-indigo-to-yellow mb-2'>Datos de Venta</h1>
-
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                <div>
-                                                    <label htmlFor="max_tickets_per_person" className="block text-indigo-900 font-bold mb-1">Entradas máx. por persona<sup>*</sup></label>
-                                                    <Field
-                                                        type="number"
-                                                        name="max_tickets_per_person"
-                                                        id="max_tickets_per_person"
-                                                        className="bg-white-to-black rounded border-2 p-1 border-indigo-to-yellow w-full"
-                                                        placeholder="Ej: 2"
-                                                    />
-                                                    <ErrorMessage name='max_tickets_per_person' component={'p'} className='text-red-500 text-sm mt-1' />
-                                                </div>
-
-                                                <div>
-                                                    <label htmlFor="ticket_price" className="block text-indigo-900 font-bold mb-1">Precio de venta (€)<sup>*</sup></label>
-                                                    <Field
-                                                        type="number"
-                                                        step="0.01"
-                                                        name="ticket_price"
-                                                        id="ticket_price"
-                                                        className="bg-white-to-black rounded border-2 p-1 border-indigo-to-yellow w-full"
-                                                        placeholder="Ej: 10.50"
-                                                    />
-                                                    <ErrorMessage name='ticket_price' component={'p'} className='text-red-500 text-sm mt-1' />
-                                                </div>
+                                            <div className="flex items-center mb-4">
+                                                <Field
+                                                    type="checkbox"
+                                                    name="is_paid"
+                                                    id="is_paid"
+                                                    className="mr-3 scale-150 accent-indigo-600"
+                                                />
+                                                <label htmlFor="is_paid" className='font-Bitcount text-2xl text-indigo-to-yellow cursor-pointer select-none hover:text-indigo-800 transition-colors'>
+                                                    Hacer este evento de pago
+                                                </label>
                                             </div>
+
+                                            {values.is_paid && (
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 pt-4 border-t border-indigo-200">
+                                                    <div>
+                                                        <label htmlFor="max_tickets_per_person" className="block text-indigo-900 font-bold mb-1">Entradas máx. por persona<sup>*</sup></label>
+                                                        <Field
+                                                            type="number"
+                                                            name="max_tickets_per_person"
+                                                            id="max_tickets_per_person"
+                                                            className="bg-white-to-black rounded border-2 p-1 border-indigo-to-yellow w-full"
+                                                            placeholder="Ej: 2"
+                                                        />
+                                                        <ErrorMessage name='max_tickets_per_person' component={'p'} className='text-red-500 text-sm mt-1' />
+                                                    </div>
+
+                                                    <div>
+                                                        <label htmlFor="ticket_price" className="block text-indigo-900 font-bold mb-1">Precio de venta (€)<sup>*</sup></label>
+                                                        <Field
+                                                            type="number"
+                                                            step="0.01"
+                                                            name="ticket_price"
+                                                            id="ticket_price"
+                                                            className="bg-white-to-black rounded border-2 p-1 border-indigo-to-yellow w-full"
+                                                            placeholder="Ej: 10.50"
+                                                        />
+                                                        <ErrorMessage name='ticket_price' component={'p'} className='text-red-500 text-sm mt-1' />
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
                                     )}
                                 </div>

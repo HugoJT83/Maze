@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrada Aprobada</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background-color: #fff;
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #5A67D8;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            color: #5A67D8;
+            margin: 0;
+        }
+        .content {
+            line-height: 1.6;
+        }
+        .qr-section {
+            text-align: center;
+            margin: 20px 0;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border: 1px dashed #ccc;
+            border-radius: 8px;
+        }
+        .qr-section img {
+            max-width: 250px;
+            border-radius: 8px;
+        }
+        .footer {
+            text-align: center;
+            font-size: 0.9em;
+            color: #888;
+            margin-top: 30px;
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>¡Entrada Confirmada!</h1>
+        </div>
+        <div class="content">
+            <p>Hola <strong>{{ username }}</strong>,</p>
+            <p>Nos complace informarte que tu registro/compra para el evento <strong>"{{ event_title }}"</strong> ha sido confirmado correctamente.</p>
+            
+            {% if is_paid %}
+            <div class="qr-section">
+                <h3>Tu Código de Acceso</h3>
+                <p>Muestra este código QR en la entrada del evento:</p>
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data={{ qr_code }}" alt="Código QR de la Entrada">
+                <p><small>Código de referencia: {{ qr_code }}</small></p>
+            </div>
+            {% else %}
+            <div class="qr-section">
+                <h3>Entrada Gratuita Aprobada</h3>
+                <p>El administrador del evento ha aceptado tu solicitud de asistencia.</p>
+            </div>
+            {% endif %}
+
+            <p>¡Esperamos que disfrutes del evento!</p>
+        </div>
+        <div class="footer">
+            <p>El equipo de MAZE</p>
+        </div>
+    </div>
+</body>
+</html>

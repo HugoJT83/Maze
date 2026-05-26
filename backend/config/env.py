@@ -33,3 +33,5 @@ class ENVConfig:
     GMAIL_PORT = os.getenv("GMAIL_PORT","")
     
     GOOGLEAUTH_CLIENT=os.getenv("GOOGLEAUTH_CLIENT","")
+    
+    STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY", "")

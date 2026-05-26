@@ -58,3 +58,8 @@ Se requieren las siguientes dependencias para ejecutar el entorno virtual de Pyt
     pip install google-auth
     pip install google-auth[requirements]
 ```
+
+9. Integración de Pagos con Stripe
+```
+    pip install stripe
+```

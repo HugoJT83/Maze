@@ -19,19 +19,19 @@ const ProfileUser = () => {
         {/* Navigation Tabs */}
         <div className="flex flex-wrap justify-center gap-4 mt-8 mb-4">
           <button
-            className={`px-4 py-2 rounded-lg font-Bitcount text-xl transition-all hover:scale-110 hover:cursor-pointer ${activeTab === 'informacion' ? 'bg-indigo-to-yellow text-white-to-black  scale-105' : 'bg-white-to-black text-indigo-to-yellow border-2 border-indigo-to-yellow hover:bg-indigo-50'}`}
+            className={`px-4 py-2 rounded-lg font-Bitcount text-xl transition-all hover:scale-105 hover:cursor-pointer ${activeTab === 'informacion' ? 'bg-indigo-to-yellow text-white-to-black  scale-105' : 'bg-white-to-black text-indigo-to-yellow border-2 border-indigo-to-yellow hover:bg-indigo-50'}`}
             onClick={() => setActiveTab('informacion')}
           >
             Información
           </button>
           <button
-            className={`px-4 py-2 rounded-lg font-Bitcount text-xl transition-all hover:scale-110 hover:cursor-pointer ${activeTab === 'facturacion' ? 'bg-indigo-to-yellow text-white-to-black scale-105' : 'bg-white-to-black text-indigo-to-yellow border-2 border-indigo-to-yellow hover:bg-indigo-50'}`}
+            className={`px-4 py-2 rounded-lg font-Bitcount text-xl transition-all hover:scale-105 hover:cursor-pointer ${activeTab === 'facturacion' ? 'bg-indigo-to-yellow text-white-to-black scale-105' : 'bg-white-to-black text-indigo-to-yellow border-2 border-indigo-to-yellow hover:bg-indigo-50'}`}
             onClick={() => setActiveTab('facturacion')}
           >
             Facturación
           </button>
           <button
-            className={`px-4 py-2 rounded-lg font-Bitcount text-xl transition-all hover:scale-110 hover:cursor-pointer ${activeTab === 'historial' ? 'bg-indigo-to-yellow text-white-to-black scale-105' : 'bg-white-to-black text-indigo-to-yellow border-2 border-indigo-to-yellow hover:bg-indigo-50'}`}
+            className={`px-4 py-2 rounded-lg font-Bitcount text-xl transition-all hover:scale-105 hover:cursor-pointer ${activeTab === 'historial' ? 'bg-indigo-to-yellow text-white-to-black scale-105' : 'bg-white-to-black text-indigo-to-yellow border-2 border-indigo-to-yellow hover:bg-indigo-50'}`}
             onClick={() => setActiveTab('historial')}
           >
             Historial de eventos

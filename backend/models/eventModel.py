@@ -1,5 +1,5 @@
 
-from typing import Annotated, Any
+from typing import Annotated, Any, Optional
 from bson import ObjectId
 from pydantic import BeforeValidator, model_validator
 from datetime import datetime
@@ -90,6 +90,15 @@ class EventCreate(EventBase):
             }
             
         return data
+
+    @model_validator(mode="after")
+    def check_monetization(self):
+        if self.ticket_price is not None:
+            if self.ticket_price <= 0:
+                raise ValueError("El precio del evento debe ser mayor que 0.")
+            if self.max_tickets_per_person is None or self.max_tickets_per_person < 1:
+                raise ValueError("Debe especificar un máximo válido de entradas por persona.")
+        return self
 
 PyObjectId = Annotated[str, BeforeValidator(str)]
 
