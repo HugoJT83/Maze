@@ -575,16 +575,16 @@ const addEvent = () => {
                                 {/* Monetización */}
                                 <div className='p-2'>
                                     {!user?.stripe_account_id ? (
-                                        <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4">
-                                            <p className="text-yellow-700 font-bold">¿Quieres Monetizar tu evento?</p>
-                                            <p className="text-sm text-yellow-600">
+                                        <div className="bg-indigo-to-yellow p-4 rounded-xl mb-4">
+                                            <p className="text-white-to-black font-bold">¿Quieres Monetizar tu evento?</p>
+                                            <p className="text-sm text-white-to-black">
                                                 Para vender entradas, configura primero los datos de facturación en tu perfil de usuario.
                                             </p>
                                         </div>
                                     ) : (
                                         <div className="bg-indigo-50 border-2 border-indigo-200 rounded p-4 mb-4">
                                             <h1 className='font-Bitcount text-2xl text-indigo-to-yellow mb-2'>Datos de Venta</h1>
-                                            
+
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                 <div>
                                                     <label htmlFor="max_tickets_per_person" className="block text-indigo-900 font-bold mb-1">Entradas máx. por persona<sup>*</sup></label>
@@ -597,7 +597,7 @@ const addEvent = () => {
                                                     />
                                                     <ErrorMessage name='max_tickets_per_person' component={'p'} className='text-red-500 text-sm mt-1' />
                                                 </div>
-                                                
+
                                                 <div>
                                                     <label htmlFor="ticket_price" className="block text-indigo-900 font-bold mb-1">Precio de venta (€)<sup>*</sup></label>
                                                     <Field
