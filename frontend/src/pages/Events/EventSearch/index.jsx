@@ -438,13 +438,13 @@ const EventSearchPage = () => {
                 if (event.location && event.location.coordinates && event.location.coordinates.length === 2) {
                   const [lng, lat] = event.location.coordinates;
                   return (
-                    <Marker key={event.id} position={[lat, lng]}>
+                    <Marker key={event._id} position={[lat, lng]}>
                       <Popup className="">
                         <div className="text-center">
                           <h3 className="font-Bitcount text-2xl">{event.title}</h3>
                           <p className=" text-black-to-white my-1">{event.location.city}, {event.location.province}</p>
                           <div className="mt-2">
-                            <Link to={`/events/${event.id}`} className="decoration-0 bg-indigo-to-yellow !text-white-to-black px-4 py-2 rounded-lg text-sm hover:bg-indigo-to-yellow/70">Ver Detalles</Link>
+                            <Link to={`/events/${event._id}`} className="decoration-0 bg-indigo-to-yellow !text-white-to-black px-4 py-2 rounded-lg text-sm hover:bg-indigo-to-yellow/70">Ver Detalles</Link>
                           </div>
                         </div>
                       </Popup>
@@ -463,7 +463,7 @@ const EventSearchPage = () => {
               )}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {events.map(event => (
-                  <div key={event.id} className="bg-white-to-black rounded-lg shadow p-5 border border-lightgray-to-yellow flex flex-col justify-between hover:shadow-lg transition">
+                  <div key={event._id} className="bg-white-to-black rounded-lg shadow p-5 border border-lightgray-to-yellow flex flex-col justify-between hover:shadow-lg transition">
                     <div>
                       <h3 className="text-2xl font-Bitcount text-indigo-to-yellow mb-2">{event.title}</h3>
                       <p className="text-sm text-gray-to-yellow mb-2">
@@ -480,7 +480,7 @@ const EventSearchPage = () => {
 
                       </div>
                     </div>
-                    <Link to={`/events/${event.id}`} className="text-center bg-indigo-to-yellow text-white-to-black px-4 py-2 rounded hover:bg-indigo-700 transition">
+                    <Link to={`/events/${event._id}`} className="text-center bg-indigo-to-yellow text-white-to-black px-4 py-2 rounded hover:bg-indigo-700 transition">
                       Ver Detalles
                     </Link>
                   </div>

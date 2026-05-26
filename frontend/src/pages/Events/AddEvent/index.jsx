@@ -600,7 +600,7 @@ const addEvent = () => {
                                             </p>
                                         </div>
                                     ) : (
-                                        <div className="bg-indigo-50 border-2 border-indigo-200 rounded p-4 mb-4">
+                                        <div className="bg-white-to-black border-2 border-indigo-to-yellow rounded p-4 mb-4">
                                             <div className="flex items-center mb-4">
                                                 <Field
                                                     type="checkbox"
@@ -616,7 +616,7 @@ const addEvent = () => {
                                             {values.is_paid && (
                                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 pt-4 border-t border-indigo-200">
                                                     <div>
-                                                        <label htmlFor="max_tickets_per_person" className="block text-indigo-900 font-bold mb-1">Entradas máx. por persona<sup>*</sup></label>
+                                                        <label htmlFor="max_tickets_per_person" className="block text-indigo-to-yellow font-bold mb-1">Entradas máx. por persona<sup>*</sup></label>
                                                         <Field
                                                             type="number"
                                                             name="max_tickets_per_person"
@@ -628,7 +628,7 @@ const addEvent = () => {
                                                     </div>
 
                                                     <div>
-                                                        <label htmlFor="ticket_price" className="block text-indigo-900 font-bold mb-1">Precio de venta (€)<sup>*</sup></label>
+                                                        <label htmlFor="ticket_price" className="block text-indigo-to-yellow font-bold mb-1">Precio de venta (€)<sup>*</sup></label>
                                                         <Field
                                                             type="number"
                                                             step="0.01"

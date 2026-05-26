@@ -148,9 +148,9 @@ const PublicEventDetailPage = () => {
     if (error) {
         return (
             <div className="min-h-screen flex flex-col justify-center items-center bg-white-to-black p-6">
-                <div className="bg-lightgray-to-black p-8 rounded-3xl shadow-xl max-w-md w-full text-center border-2 border-red-500/20">
+                <div className="bg-lightgray-to-black p-8 rounded-3xl max-w-md w-full text-center border-2 border-gray-to-yellow">
                     <FontAwesomeIcon icon={faExclamationTriangle} className="text-red-500 text-5xl mb-4" />
-                    <h2 className="text-2xl font-bold text-white-to-black mb-2">¡Ups! Algo salió mal</h2>
+                    <h2 className="text-2xl font-bold text-indigo-to-yellow mb-2">¡Ups! Algo salió mal</h2>
                     <p className="text-gray-to-yellow mb-6">{error}</p>
                     <button onClick={() => navigate(-1)} className="inline-flex items-center justify-center gap-2 bg-indigo-to-yellow text-white-to-black font-semibold py-3 px-6 rounded-2xl hover:scale-105 active:scale-95 transition-all duration-200 w-full shadow-lg">
                         <FontAwesomeIcon icon={faArrowLeft} />
@@ -323,12 +323,12 @@ const PublicEventDetailPage = () => {
                 <div className="lg:col-span-4 flex flex-col gap-6">
 
                     {/* CALL TO ACTION: TICKETS / JOIN */}
-                    <div className="bg-lightgray-to-black p-6 rounded-lg border border-indigo-500/40 shadow-[0_0_15px_rgba(90,103,216,0.2)]">
+                    <div className="bg-lightgray-to-black p-6 rounded-lg border border-gray-to-yellow/10">
                         <h3 className="text-xl font-bold text-indigo-to-yellow uppercase border-b border-gray-to-yellow/20 pb-3 mb-4 flex items-center gap-2">
                             <FontAwesomeIcon icon={isPaidEvent ? faShoppingCart : faPaperPlane} />
                             {isPaidEvent ? 'Comprar Entrada' : 'Unirse al Evento'}
                         </h3>
-                        
+
                         {status !== 'accepted' ? (
                             <div className="bg-indigo-to-yellow/5 border border-indigo-to-yellow/10 p-4 rounded-2xl text-center">
                                 <p className="text-sm text-indigo-to-yellow font-medium">
@@ -346,7 +346,7 @@ const PublicEventDetailPage = () => {
                                     isPaidEvent ? (
                                         <>
                                             <p className="text-indigo-to-yellow font-medium mb-3">Tienes un proceso de pago pendiente.</p>
-                                            <button 
+                                            <button
                                                 onClick={handleBuyTicket}
                                                 disabled={ticketLoading}
                                                 className="w-full bg-indigo-to-yellow text-white-to-black py-2 rounded-lg hover:scale-105 transition-all font-bold">
@@ -363,18 +363,18 @@ const PublicEventDetailPage = () => {
                         ) : (
                             <div className="flex flex-col items-center">
                                 {isPaidEvent ? (
-                                    <button 
+                                    <button
                                         onClick={handleBuyTicket}
                                         disabled={ticketLoading}
-                                        className="w-full bg-indigo-to-yellow text-white-to-black font-bold py-3 px-4 rounded-xl hover:scale-105 active:scale-95 transition-all shadow-lg text-lg flex justify-center items-center gap-2">
+                                        className="w-full bg-indigo-to-yellow text-white-to-black font-bold py-3 px-4 rounded-xl hover:scale-105 hover:cursor-pointer active:scale-95 transition-all text-lg flex justify-center items-center gap-2">
                                         <FontAwesomeIcon icon={faShoppingCart} />
                                         {ticketLoading ? "Procesando..." : `Comprar por ${parseFloat(ticket_price).toFixed(2)} €`}
                                     </button>
                                 ) : (
-                                    <button 
+                                    <button
                                         onClick={handleRequestJoin}
                                         disabled={ticketLoading}
-                                        className="w-full bg-indigo-to-yellow text-white-to-black font-bold py-3 px-4 rounded-xl hover:scale-105 active:scale-95 transition-all shadow-lg text-lg flex justify-center items-center gap-2">
+                                        className="w-full bg-indigo-to-yellow text-white-to-black font-bold py-3 px-4 rounded-xl hover:scale-105 hover:cursor-pointer active:scale-95 transition-all text-lg flex justify-center items-center gap-2">
                                         <FontAwesomeIcon icon={faPaperPlane} />
                                         {ticketLoading ? "Enviando..." : "Solicitar Unirse"}
                                     </button>
