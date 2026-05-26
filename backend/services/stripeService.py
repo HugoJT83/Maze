@@ -9,6 +9,7 @@ from datetime import datetime
 from config.db import user_collection, events_collection, tickets_collection
 from models.ticketModel import TicketStatus, TicketType
 from services.mailService import sendTicketApprovedNotificationService
+from services.ticketService import generate_unique_ticket_validator
 
 stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 
@@ -169,32 +170,34 @@ async def stripeWebhookService(request, payload, sig_header):
         user_id = session.get('metadata', {}).get('user_id')
         
         if event_id and user_id:
-            # Generate unique QR code UUID
-            qr_code = str(uuid.uuid4())
+            # Generate unique 10-digit ticket validator instead of QR
+            ticket_validator = await generate_unique_ticket_validator()
             
             # Update the ticket
             await tickets_collection.update_one(
                 {"stripe_session_id": session.id},
                 {"$set": {
                     "status": TicketStatus.paid.value,
-                    "qr_code": qr_code,
+                    "ticket_validator": ticket_validator,
                     "payment_intent_id": session.payment_intent,
                     "updated_at": datetime.now()
                 }}
             )
             
-            # Send Email with QR
+            # Send Email with Ticket Validator details
             ticket_user = await user_collection.find_one({"_id": ObjectId(user_id)})
             event_data = await events_collection.find_one({"_id": ObjectId(event_id)})
+            ticket = await tickets_collection.find_one({"stripe_session_id": session.id})
             
-            if ticket_user and event_data:
+            if ticket_user and event_data and ticket:
                 try:
                     await sendTicketApprovedNotificationService(
                         email=ticket_user["email"],
                         username=ticket_user.get("name", "Usuario"),
                         event_title=event_data.get("title", "Evento"),
                         ticket_type="paid",
-                        qr_code=qr_code
+                        ticket_validator=ticket_validator,
+                        ticket_id=str(ticket["_id"])
                     )
                 except Exception as e:
                     print(f"Error sending QR email: {e}")

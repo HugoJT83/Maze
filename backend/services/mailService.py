@@ -107,7 +107,7 @@ async def sendEventApprovalNotificationService(email: str, username: str, event_
     except Exception as e:
         raise HTTPException(status_code=400, detail="Mail Error")
         
-async def sendTicketApprovedNotificationService(email: str, username: str, event_title: str, ticket_type: str, qr_code: str = None, ticket_id: str = None):
+async def sendTicketApprovedNotificationService(email: str, username: str, event_title: str, ticket_type: str, ticket_validator: str = None, ticket_id: str = None):
     template = "ticket_approved_paid.html" if ticket_type == "paid" else "ticket_approved_free.html"
     body = {
         "username": username,
@@ -116,7 +116,7 @@ async def sendTicketApprovedNotificationService(email: str, username: str, event
     
     if ticket_type == "paid":
         body["ticket_id"] = ticket_id
-        body["qr_code"] = qr_code
+        body["ticket_validator"] = ticket_validator
         
     message = MessageSchema(
         subject="MAZE - Entrada Confirmada",
@@ -127,6 +127,22 @@ async def sendTicketApprovedNotificationService(email: str, username: str, event
     try:
         fm = FastMail(conf)
         await fm.send_message(message, template_name=template)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail="Mail Error")
+
+async def sendEventCanceledNotificationService(email: str, username: str, event_title: str):
+    message = MessageSchema(
+        subject="MAZE - Evento Cancelado",
+        recipients=[email],
+        template_body={
+            "username": username,
+            "event_name": event_title,
+        },
+        subtype=MessageType.html
+    )
+    try:
+        fm = FastMail(conf)
+        await fm.send_message(message, template_name="event_canceled.html")
     except Exception as e:
         raise HTTPException(status_code=400, detail="Mail Error")
 

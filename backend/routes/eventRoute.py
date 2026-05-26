@@ -51,8 +51,8 @@ async def getEventById(id: str, userId: str = Depends(verifyToken)):
     return await eventController.getEventByIdController(id)
 
 @router.delete("/delete-event/{id}")
-async def deleteEvent(id:str, userId: str = Depends(verifyToken)):
-    return await eventController.deleteEventController(id, userId)
+async def deleteEvent(id:str, background_tasks: BackgroundTasks, userId: str = Depends(verifyToken)):
+    return await eventController.deleteEventController(id, userId, background_tasks)
     
 
 

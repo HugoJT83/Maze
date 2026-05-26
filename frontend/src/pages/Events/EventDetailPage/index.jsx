@@ -485,6 +485,11 @@ const EventDetailPage = () => {
                                             <div>
                                                 <p className="font-bold text-black-to-white">{ticket.user_name}</p>
                                                 <p className="text-xs text-gray-to-yellow">{ticket.user_email}</p>
+                                                {ticket.ticket_validator && (
+                                                    <p className="text-sm text-indigo-to-yellow font-semibold mt-1">
+                                                        Comprobante: {ticket.ticket_validator}
+                                                    </p>
+                                                )}
                                             </div>
                                             <span className="bg-green-500/10 text-green-500 text-xs font-bold px-2 py-1 rounded">Pagado</span>
                                         </div>
@@ -544,6 +549,11 @@ const EventDetailPage = () => {
                                             <div key={ticket.id} className="bg-white-to-black p-4 rounded-xl border border-green-500/30">
                                                 <p className="font-bold text-black-to-white">{ticket.user_name}</p>
                                                 <p className="text-xs text-gray-to-yellow">{ticket.user_email}</p>
+                                                {ticket.ticket_validator && (
+                                                    <p className="text-sm text-indigo-to-yellow font-semibold mt-1">
+                                                        Comprobante: {ticket.ticket_validator}
+                                                    </p>
+                                                )}
                                             </div>
                                         ))}
                                     </div>

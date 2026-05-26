@@ -24,8 +24,8 @@ async def getEventByIdController(event_id: str):
         res_obj = await eventService.getEventByIdService(event_id)
         return res_obj 
 
-async def deleteEventController(id: str, userId: str):
-        res_obj = await eventService.deleteEventService(id, userId)
+async def deleteEventController(id: str, userId: str, background_tasks: BackgroundTasks):
+        res_obj = await eventService.deleteEventService(id, userId, background_tasks)
         return res_obj 
 
 async def getPendingEventsController(adminUserId: str, page: int = 1, limit: int = 5):

@@ -10,7 +10,7 @@ import cloudinary.uploader
 import config.CloudinaryConfig
 
 import httpx
-from services.mailService import createEventNotificationService, sendEventDenialNotificationService
+from services.mailService import createEventNotificationService, sendEventDenialNotificationService, sendEventApprovalNotificationService, sendEventCanceledNotificationService
 
 async def get_coordinates(city: str, province: str) -> list:
     try:
@@ -123,7 +123,7 @@ async def getEventByIdService(event_id: str):
         
     return EventResponse(**event)
     
-async def deleteEventService(id: str, userId):
+async def deleteEventService(id: str, userId, background_tasks: BackgroundTasks):
     if not bson.ObjectId.is_valid(id):
         raise HTTPException(status_code=400, detail="Identificador del evento no válido")
     
@@ -133,7 +133,24 @@ async def deleteEventService(id: str, userId):
     
     if str(event.get("creator_id")) != str(userId):
         raise HTTPException(status_code=403, detail="No tiene permisos para borrar este evento")
-    
+        
+    # Notify ticket holders before deleting event/tickets
+    from config.db import tickets_collection
+    cursor = tickets_collection.find({"event_id": id})
+    tickets = await cursor.to_list(length=None)
+    for t in tickets:
+        user = await user_collection.find_one({"_id": bson.ObjectId(t["user_id"])})
+        if user and user.get("email"):
+            background_tasks.add_task(
+                sendEventCanceledNotificationService,
+                email=user["email"],
+                username=user.get("name", "Usuario"),
+                event_title=event.get("title", "Evento")
+            )
+            
+    # Delete tickets
+    await tickets_collection.delete_many({"event_id": id})
+
     # Borrar fotos del servidor de Cloudinary
     images = event.get("images", [])
     for img in images:
@@ -236,7 +253,7 @@ async def approveEventService(event_id: str, adminUserId: str, background_tasks:
             raise HTTPException(status_code=404, detail="El Evento no existe")
     
     background_tasks.add_task(
-        sendEventDenialNotificationService,
+        sendEventApprovalNotificationService,
         email=creator["email"],
         username=creator.get("name", "Usuario"),
         event_title=event.get("title", "Sin título"),

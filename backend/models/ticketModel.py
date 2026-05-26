@@ -21,7 +21,7 @@ class TicketBase(BaseModel):
     user_id: str = Field(...)
     status: TicketStatus = Field(default=TicketStatus.pending)
     ticket_type: TicketType = Field(...)
-    qr_code: Optional[str] = None
+    ticket_validator: Optional[str] = None
     stripe_session_id: Optional[str] = None
     payment_intent_id: Optional[str] = None
     created_at: datetime = Field(default_factory=datetime.now)

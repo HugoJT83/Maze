@@ -54,6 +54,15 @@
             line-height: 0;
         }
 
+        #converted-body .list_block ul,
+        #converted-body .list_block ol,
+        .body [class~="x_list_block"] ul,
+        .body [class~="x_list_block"] ol,
+        u+.body .list_block ul,
+        u+.body .list_block ol {
+            padding-left: 20px;
+        }
+
         @media (max-width: 770px) {
             .row-content {
                 width: 100% !important;
@@ -127,10 +136,10 @@
                                                                     <tr>
                                                                         <td class="pad" style="width:100%;"
                                                                             align="center">
-                                                                            <div style="max-width: 150px;"><img
+                                                                            <div style="max-width: 187.5px;"><img
                                                                                     src="https://media.beefree.cloud/pub/bfra/zx260ibw/ba1/y5y/9ro/app_logo.svg"
                                                                                     style="display: block; height: auto; border: 0; width: 100%;"
-                                                                                    width="150" alt="" title=""
+                                                                                    width="187.5" alt="" title=""
                                                                                     height="auto"></div>
                                                                         </td>
                                                                     </tr>
@@ -345,9 +354,9 @@
                                                                                     adquirido para el evento
                                                                                     "{{event_name}}" ha sido tramitada
                                                                                     correctamente; a continuación te
-                                                                                    dejamos el código QR que el usuario
-                                                                                    publicante podrá usar para
-                                                                                    identificarte.</p>
+                                                                                    dejamos los datos necesarios para
+                                                                                    que el usuario publicante pueda
+                                                                                    identificarte:</p>
                                                                             </div>
                                                                         </td>
                                                                     </tr>
@@ -390,14 +399,52 @@
                                                                         <td class="pad">
                                                                             <div
                                                                                 style="color:#101112;direction:ltr;font-family:Cabin, Arial, Helvetica Neue, Helvetica, sans-serif;font-size:16px;font-weight:400;letter-spacing:0px;line-height:1.2;text-align:left;mso-line-height-alt:19px;">
-                                                                                <p style="margin: 0;">Te adjuntamos un
-                                                                                    <strong>ID identificativo
-                                                                                    </strong>para asegurar que no tienes
-                                                                                    problemas con el reconocimiento de
-                                                                                    la entrada:
-                                                                                    <strong>{{ticket_id}}&nbsp;</strong>
+                                                                                <p style="margin: 0;">ID DE LA ENTRADA
                                                                                 </p>
                                                                             </div>
+                                                                        </td>
+                                                                    </tr>
+                                                                </table>
+                                                                <table class="list_block block-2" width="100%"
+                                                                    border="0" cellpadding="10" cellspacing="0"
+                                                                    role="presentation"
+                                                                    style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; word-break: break-word; color: #101112; direction: ltr; font-family: Cabin, Arial, Helvetica Neue, Helvetica, sans-serif; font-size: 16px; font-weight: 400; letter-spacing: 0px; line-height: 1.2; text-align: left; mso-line-height-alt: 19px;">
+                                                                    <tr>
+                                                                        <td class="pad">
+                                                                            <div style="margin-left:-20px">
+                                                                                <ul
+                                                                                    style="margin-top: 0; margin-bottom: 0; list-style-type: revert;">
+                                                                                    <li style="Margin: 0 0 0 0;">
+                                                                                        <strong>ID DE LA
+                                                                                            ENTRADA:&nbsp;</strong>{{ticket_id}}
+                                                                                    </li>
+                                                                                    <li style="Margin: 0 0 0 0;">
+                                                                                        <strong>IDENTIFICADOR
+                                                                                            NUMÉRICO:&nbsp;</strong>{{ticket_validator}}
+                                                                                    </li>
+                                                                                </ul>
+                                                                            </div>
+                                                                        </td>
+                                                                    </tr>
+                                                                </table>
+                                                                <table class="divider_block block-3" width="100%"
+                                                                    border="0" cellpadding="10" cellspacing="0"
+                                                                    role="presentation"
+                                                                    style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+                                                                    <tr>
+                                                                        <td class="pad" align="center">
+                                                                            <table border="0" cellpadding="0"
+                                                                                cellspacing="0" role="presentation"
+                                                                                width="100%"
+                                                                                style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+                                                                                <tr>
+                                                                                    <td class="divider_inner"
+                                                                                        style="font-size: 1px; line-height: 1px; border-top: 1px solid #dddddd;">
+                                                                                        <span
+                                                                                            style="word-break: break-word;">&#8202;</span>
+                                                                                    </td>
+                                                                                </tr>
+                                                                            </table>
                                                                         </td>
                                                                     </tr>
                                                                 </table>
@@ -423,7 +470,7 @@
                                         width="750">
                                         <tbody>
                                             <tr>
-                                                <td class="column column-1" width="100%"
+                                                <td class="column column-1" width="50%"
                                                     style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; vertical-align: top;">
                                                     <table width="100%" border="0" cellpadding="0" cellspacing="0"
                                                         role="presentation"
@@ -438,9 +485,39 @@
                                                                     <tr>
                                                                         <td class="pad">
                                                                             <div
-                                                                                style="color:#101112;direction:ltr;font-family:Cabin, Arial, Helvetica Neue, Helvetica, sans-serif;font-size:16px;font-weight:400;letter-spacing:0px;line-height:1.2;text-align:left;mso-line-height-alt:19px;">
-                                                                                <p style="margin: 0;">{{qr_code}}</p>
+                                                                                style="color:#101112;direction:ltr;font-family:Cabin, Arial, Helvetica Neue, Helvetica, sans-serif;font-size:16px;font-weight:400;letter-spacing:0px;line-height:1.2;text-align:justify;mso-line-height-alt:19px;">
+                                                                                <p style="margin: 0;">¡Tan solo queda lo
+                                                                                    más importante! Esperamos que
+                                                                                    disfrutes y crees experiencias
+                                                                                    inolvidables.</p>
                                                                             </div>
+                                                                        </td>
+                                                                    </tr>
+                                                                </table>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                                <td class="column column-2" width="50%"
+                                                    style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; vertical-align: top;">
+                                                    <table width="100%" border="0" cellpadding="0" cellspacing="0"
+                                                        role="presentation"
+                                                        style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+                                                        <tr>
+                                                            <td class="col-pad"
+                                                                style="padding-bottom:5px;padding-top:5px;">
+                                                                <table class="heading_block block-1" width="100%"
+                                                                    border="0" cellpadding="10" cellspacing="0"
+                                                                    role="presentation"
+                                                                    style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+                                                                    <tr>
+                                                                        <td class="pad" style="width:100%;"
+                                                                            align="center">
+                                                                            <h1
+                                                                                style="margin: 0; color: #818cf8; direction: ltr; font-family: Cabin, Arial, Helvetica Neue, Helvetica, sans-serif; font-size: 38px; font-weight: 700; letter-spacing: normal; line-height: 1.2; text-align: center; margin-top: 0; margin-bottom: 0; mso-line-height-alt: 46px;">
+                                                                                <span class="tinyMce-placeholder"
+                                                                                    style="word-break: break-word;">Y
+                                                                                    ahora...</span></h1>
                                                                         </td>
                                                                     </tr>
                                                                 </table>

@@ -1,10 +1,18 @@
 from fastapi import HTTPException
 from bson import ObjectId
 from datetime import datetime
+import random
 
 from config.db import tickets_collection, events_collection, user_collection
 from models.ticketModel import TicketCreate, TicketStatus, TicketType
-from services.mailService import sendTicketApprovedNotificationService
+from services.mailService import sendTicketApprovedNotificationService, sendTicketDeniedNotificationService
+
+async def generate_unique_ticket_validator() -> str:
+    while True:
+        val = "".join(str(random.randint(0, 9)) for _ in range(10))
+        exists = await tickets_collection.find_one({"ticket_validator": val})
+        if not exists:
+            return val
 
 async def request_free_ticket(event_id: str, user_id: str):
     # Verify event exists
@@ -58,7 +66,7 @@ async def get_tickets_for_event(event_id: str, user_id: str):
             "user_id": t["user_id"],
             "status": t["status"],
             "ticket_type": t["ticket_type"],
-            "qr_code": t.get("qr_code"),
+            "ticket_validator": t.get("ticket_validator"),
             "stripe_session_id": t.get("stripe_session_id"),
             "created_at": t["created_at"],
             "updated_at": t["updated_at"],
@@ -82,9 +90,15 @@ async def update_ticket_status(ticket_id: str, status: str, user_id: str):
         raise HTTPException(status_code=403, detail="No tienes permisos para modificar este ticket")
         
     # Update status
+    update_data = {"status": status, "updated_at": datetime.now()}
+    ticket_validator = None
+    if status == "accepted":
+        ticket_validator = await generate_unique_ticket_validator()
+        update_data["ticket_validator"] = ticket_validator
+
     await tickets_collection.update_one(
         {"_id": ObjectId(ticket_id)},
-        {"$set": {"status": status, "updated_at": datetime.now()}}
+        {"$set": update_data}
     )
     
     if status == "accepted":
@@ -95,10 +109,23 @@ async def update_ticket_status(ticket_id: str, status: str, user_id: str):
                     email=ticket_user["email"],
                     username=ticket_user.get("name", "Usuario"),
                     event_title=event.get("title", "Evento"),
-                    ticket_type="free"
+                    ticket_type="free",
+                    ticket_validator=ticket_validator,
+                    ticket_id=ticket_id
                 )
             except Exception as e:
                 print(f"Error sending approval email: {e}")
+    elif status == "rejected":
+        ticket_user = await user_collection.find_one({"_id": ObjectId(ticket["user_id"])})
+        if ticket_user and "email" in ticket_user:
+            try:
+                await sendTicketDeniedNotificationService(
+                    email=ticket_user["email"],
+                    username=ticket_user.get("name", "Usuario"),
+                    event_title=event.get("title", "Evento")
+                )
+            except Exception as e:
+                print(f"Error sending rejection email: {e}")
     
     return {"message": "Estado actualizado", "status": status}
 
