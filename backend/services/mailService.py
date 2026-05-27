@@ -1,5 +1,6 @@
 from fastapi import HTTPException
 from fastapi_mail import ConnectionConfig, FastMail, MessageSchema, MessageType
+import traceback
 
 from config.env import ENVConfig
 
@@ -14,6 +15,24 @@ conf = ConnectionConfig(
     USE_CREDENTIALS= True,
     TEMPLATE_FOLDER= './templates'
 )
+
+async def send_mail_safe(message: MessageSchema, template_name: str):
+    """
+    Helper para enviar correos con logging robusto en consola
+    y traza completa de errores en caso de fallo.
+    """
+    try:
+        fm = FastMail(conf)
+        await fm.send_message(message, template_name=template_name)
+    except Exception as e:
+        print(f"\n--- [MAIL ERROR] Falló el envío del correo ---", flush=True)
+        print(f"Plantilla: {template_name}", flush=True)
+        print(f"Destinatario(s): {message.recipients}", flush=True)
+        print(f"Detalle del error: {str(e)}", flush=True)
+        print("Traceback completo del error:", flush=True)
+        traceback.print_exc()
+        print("---------------------------------------------\n", flush=True)
+        raise HTTPException(status_code=400, detail="Mail Error")
 
 async def createEventNotificationService (event_data: dict, user_data: dict):
     message = MessageSchema(
@@ -34,11 +53,7 @@ async def createEventNotificationService (event_data: dict, user_data: dict):
         },
         subtype=MessageType.html
     )
-    try:
-        fm = FastMail(conf)
-        await fm.send_message(message, template_name="event_created.html")
-    except Exception as e:
-        raise HTTPException(status_code=400, detail="Mail Error")
+    await send_mail_safe(message, "event_created.html")
 
 async def createAccountNotificationService (user_data: dict):
     message = MessageSchema(
@@ -49,11 +64,7 @@ async def createAccountNotificationService (user_data: dict):
         },
         subtype=MessageType.html
     )
-    try:
-        fm = FastMail(conf)
-        await fm.send_message(message, template_name="account_created.html")
-    except Exception as e:
-        raise HTTPException(status_code=400, detail="Mail Error")
+    await send_mail_safe(message, "account_created.html")
     
 async def send2FACodeNotificationService (email: str, otp_code: str):
     message = MessageSchema(
@@ -65,13 +76,7 @@ async def send2FACodeNotificationService (email: str, otp_code: str):
         },
         subtype= MessageType.html
     )
-    try:
-        fm = FastMail(conf)
-        await fm.send_message(message,template_name="2fa_verification.html")
-        
-    except Exception as e:
-        
-        raise HTTPException(status_code=400, detail="Mail Error")
+    await send_mail_safe(message, "2fa_verification.html")
 
 async def sendEventDenialNotificationService(email: str, username: str, event_title: str, justification: str):
     message = MessageSchema(
@@ -84,14 +89,9 @@ async def sendEventDenialNotificationService(email: str, username: str, event_ti
         },
         subtype=MessageType.html
     )
-    try:
-        fm = FastMail(conf)
-        await fm.send_message(message, template_name="event_denied.html")
-    except Exception as e:
-        raise HTTPException(status_code=400, detail="Mail Error")
+    await send_mail_safe(message, "event_denied.html")
     
 async def sendEventApprovalNotificationService(email: str, username: str, event_title: str):
-   
     message = MessageSchema(
         subject="MAZE - Evento Aprobado",
         recipients=[email],
@@ -101,11 +101,7 @@ async def sendEventApprovalNotificationService(email: str, username: str, event_
         },
         subtype=MessageType.html
     )
-    try:
-        fm = FastMail(conf)
-        await fm.send_message(message, template_name="event_approved.html")
-    except Exception as e:
-        raise HTTPException(status_code=400, detail="Mail Error")
+    await send_mail_safe(message, "event_approved.html")
         
 async def sendTicketApprovedNotificationService(email: str, username: str, event_title: str, ticket_type: str, ticket_validator: str = None, ticket_id: str = None):
     template = "ticket_approved_paid.html" if ticket_type == "paid" else "ticket_approved_free.html"
@@ -124,11 +120,7 @@ async def sendTicketApprovedNotificationService(email: str, username: str, event
         template_body=body,
         subtype=MessageType.html
     )
-    try:
-        fm = FastMail(conf)
-        await fm.send_message(message, template_name=template)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail="Mail Error")
+    await send_mail_safe(message, template)
 
 async def sendEventCanceledNotificationService(email: str, username: str, event_title: str):
     message = MessageSchema(
@@ -140,11 +132,7 @@ async def sendEventCanceledNotificationService(email: str, username: str, event_
         },
         subtype=MessageType.html
     )
-    try:
-        fm = FastMail(conf)
-        await fm.send_message(message, template_name="event_canceled.html")
-    except Exception as e:
-        raise HTTPException(status_code=400, detail="Mail Error")
+    await send_mail_safe(message, "event_canceled.html")
 
 async def sendTicketDeniedNotificationService(email: str, username: str, event_title: str):
     message = MessageSchema(
@@ -156,11 +144,7 @@ async def sendTicketDeniedNotificationService(email: str, username: str, event_t
         },
         subtype=MessageType.html
     )
-    try:
-        fm = FastMail(conf)
-        await fm.send_message(message, template_name="ticket_denied_free.html")
-    except Exception as e:
-        raise HTTPException(status_code=400, detail="Mail Error")
+    await send_mail_safe(message, "ticket_denied_free.html")
 
 async def sendEventUpdateNotificationService(email: str, username: str, event_title: str, message_text: str):
     message = MessageSchema(
@@ -173,8 +157,4 @@ async def sendEventUpdateNotificationService(email: str, username: str, event_ti
         },
         subtype=MessageType.html
     )
-    try:
-        fm = FastMail(conf)
-        await fm.send_message(message, template_name="event_update.html")
-    except Exception as e:
-        raise HTTPException(status_code=400, detail="Mail Error")
+    await send_mail_safe(message, "event_update.html")
