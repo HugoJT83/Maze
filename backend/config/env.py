@@ -2,11 +2,12 @@ from dotenv import load_dotenv
 import os
 load_dotenv()
 
-# Evitar que el SDK de Cloudinary falle si CLOUDINARY_URL no tiene el esquema de URL esperado.
-_cloudinary_url_val = os.getenv("CLOUDINARY_URL", "")
-if _cloudinary_url_val and not _cloudinary_url_val.startswith("cloudinary://"):
+# Evitar que el SDK de Cloudinary falle si CLOUDINARY_URL no tiene el esquema de URL esperado o está vacío.
+_cloudinary_url_val = os.getenv("CLOUDINARY_URL", "").strip()
+if not _cloudinary_url_val.startswith("cloudinary://"):
     if "CLOUDINARY_URL" in os.environ:
         del os.environ["CLOUDINARY_URL"]
+    _cloudinary_url_val = ""
 
 class ENVConfig:
     
@@ -25,12 +26,16 @@ class ENVConfig:
     MAILMUG_USERNAME= os.getenv("MAILMUG_USERNAME","")
     MAILMUG_PASSWORD= os.getenv("MAILMUG_PASSWORD","")
     MAILMUG_HOST= os.getenv("MAILMUG_HOST","")
-    MAILMUG_PORT = os.getenv("MAILMUG_PORT","")
+    
+    _mailmug_port_env = os.getenv("MAILMUG_PORT", "").strip()
+    MAILMUG_PORT = int(_mailmug_port_env) if _mailmug_port_env.isdigit() else 2525
     
     GMAIL_USERAME = os.getenv("GMAIL_USERNAME","")
     GMAIL_PASSWORD = os.getenv("GMAIL_PASSWORD","")
     GMAIL_FROM = os.getenv("GMAIL_FROM","")
-    GMAIL_PORT = os.getenv("GMAIL_PORT","")
+    
+    _gmail_port_env = os.getenv("GMAIL_PORT", "").strip()
+    GMAIL_PORT = int(_gmail_port_env) if _gmail_port_env.isdigit() else 587
     
     GOOGLEAUTH_CLIENT=os.getenv("GOOGLEAUTH_CLIENT","")
     
