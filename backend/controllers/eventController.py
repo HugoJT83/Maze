@@ -47,3 +47,7 @@ async def denyEventController(event_id: str, justification: str, adminUserId: st
 async def searchEventsController(lat: float = None, lng: float = None, radius: float = None, start_date: str = None, end_date: str = None, interests: str = None, city: str = None, province: str = None, page: int = 1, limit: int = 10):
         res_obj = await eventService.searchEventsService(lat, lng, radius, start_date, end_date, interests, city, province, page, limit)
         return res_obj
+
+async def messageGuestsController(event_id: str, message: str, userId: str, background_tasks: BackgroundTasks):
+        res_obj = await eventService.messageGuestsService(event_id, message, userId, background_tasks)
+        return res_obj

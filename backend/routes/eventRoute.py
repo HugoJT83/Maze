@@ -70,3 +70,8 @@ async def denyEvent(id: str, data: dict, background_tasks: BackgroundTasks, user
 @router.get("/public-events/{id}")
 async def getUserPublicEvents(id:str):
     return await eventController.getEventsByUserController(id)
+
+@router.post("/{id}/message-guests")
+async def messageGuests(id: str, data: dict, background_tasks: BackgroundTasks, userId: str = Depends(verifyToken)):
+    message = data.get("message", "")
+    return await eventController.messageGuestsController(id, message, userId, background_tasks)

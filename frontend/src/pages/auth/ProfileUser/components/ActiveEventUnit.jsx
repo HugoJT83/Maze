@@ -1,18 +1,28 @@
-import React from 'react'
-import StaticInterest from '../../../Events/MyEvents/components/StaticInterest'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCalendarDays, faUsers, faTicket } from '@fortawesome/free-solid-svg-icons'
+import { faCalendarDays, faUsers, faTicket, faLocationDot } from '@fortawesome/free-solid-svg-icons'
+import React from 'react'
+import StaticInterest from '../../../Events/MyEvents/components/StaticInterest';
 
-const HistoricEventUnit = ({ event }) => {
+const ActiveEventUnit = ({ event }) => {
+
+
     const {
         title = "Sin título disponible",
         description = "Sin descripción disponible",
         starting_event_date,
+        finish_event_date,
         interests = [],
+        location = {},
         ticket_price = null,
         accepted_users = 0,
         purchased_tickets = 0
     } = event || {};
+
+    const {
+        province = "Sin provincia disponible",
+        city = "Sin ciudad disponible",
+        direction = "Sin dirección disponible"
+    } = location || {};
 
     const isPaidEvent = ticket_price !== null && ticket_price !== undefined && ticket_price > 0;
 
@@ -31,8 +41,8 @@ const HistoricEventUnit = ({ event }) => {
             <div className="flex-1 flex flex-col gap-3">
                 <div className="flex items-center gap-3">
                     <h2 className="text-2xl text-indigo-to-yellow font-Bitcount">"{title}"</h2>
-                    <span className="bg-gray-500/10 text-gray-500 text-xs font-bold px-2.5 py-1 rounded-lg border border-gray-500/20 uppercase tracking-wider">
-                        Finalizado
+                    <span className="bg-gray-500/10 text-green-500 text-xs font-bold px-2.5 py-1 rounded-lg border border-gray-500/20 uppercase tracking-wider">
+                        Activo
                     </span>
                 </div>
 
@@ -41,12 +51,35 @@ const HistoricEventUnit = ({ event }) => {
                 </p>
 
                 {/* Day it occurred */}
-                <div className="flex items-center gap-2 text-sm text-black-to-white mt-1">
-                    <FontAwesomeIcon icon={faCalendarDays} className="text-indigo-to-yellow" />
-                    <span className="font-semibold">Ocurrió el:</span>
-                    <span className="capitalize">{formattedDate(starting_event_date)}</span>
-                </div>
+                <div className='flex gap-5'>
+                    <div>
+                        <div className="flex items-center gap-2 text-sm text-black-to-white mt-1">
+                            <FontAwesomeIcon icon={faCalendarDays} className="text-indigo-to-yellow" />
+                            <span className="font-semibold">Fecha de inicio:</span>
+                            <span className="capitalize">{formattedDate(starting_event_date)}</span>
+                        </div>
 
+                        <div className="flex items-center gap-2 text-sm text-black-to-white mt-1">
+                            <FontAwesomeIcon icon={faCalendarDays} className="text-indigo-to-yellow" />
+                            <span className="font-semibold">Fecha de fin:</span>
+                            <span className="capitalize">{formattedDate(finish_event_date)}</span>
+                        </div>
+                    </div>
+                    <div>
+                        <div className="flex flex-col text-left gap-2 text-sm text-black-to-white mt-1">
+                            <div>
+                                <FontAwesomeIcon icon={faLocationDot} className="text-indigo-to-yellow" />
+                                <span className="font-semibold">Ubicación:</span>
+                            </div>
+                            <p>Provincia: {province}</p>
+                            <p>Ciudad: {city}</p>
+                            <p>Calle: {direction}</p>
+                            <div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 {/* Interests / Temáticas */}
                 {interests.length > 0 && (
                     <div className="mt-2">
@@ -89,4 +122,4 @@ const HistoricEventUnit = ({ event }) => {
     )
 }
 
-export default HistoricEventUnit
+export default ActiveEventUnit

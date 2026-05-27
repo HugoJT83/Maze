@@ -25,6 +25,7 @@ import {
 import LoaderComponent from '../../../components/ui/LoaderComponent';
 import PublicActiveEventDetails from './components/PublicActiveEventDetails';
 import { toast } from 'react-toastify';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const PublicProfile = () => {
 
@@ -110,10 +111,13 @@ const PublicProfile = () => {
                     <FontAwesomeIcon icon={faExclamationTriangle} className="text-red-500 text-5xl mb-4" />
                     <h2 className="text-2xl font-bold text-white-to-black mb-2">¡Ups! Algo salió mal</h2>
                     <p className="text-gray-to-yellow mb-6">{error}</p>
-                    <Link to="/my-events" className="inline-flex items-center justify-center gap-2 bg-indigo-to-yellow text-white-to-black font-semibold py-3 px-6 rounded-2xl hover:scale-105 active:scale-95 transition-all duration-200 w-full shadow-lg">
-                        <FontAwesomeIcon icon={faArrowLeft} />
-                        Volver a mis eventos
-                    </Link>
+                    <button
+                        className={`inline-flex items-center justify-center gap-2 bg-indigo-to-yellow text-white-to-black font-semibold py-3 px-6 rounded-2xl hover:scale-105 active:scale-95 transition-all duration-200 w-full shadow-lg`}
+                        onClick={() => navigate(-1)}
+                    >
+                        <FontAwesomeIcon icon={faArrowLeft} className='' />
+                        Volver a los datos de evento
+                    </button>
                 </div>
             </div>);
     }
@@ -128,6 +132,13 @@ const PublicProfile = () => {
 
                 {/* Navigation Tabs */}
                 <div className="flex flex-wrap justify-center gap-4 mt-8 mb-4">
+                    <button
+                        className={`px-4 py-2 rounded-lg font-Bitcount text-xl transition-all hover:scale-105 hover:cursor-pointer bg-indigo-to-yellow text-white-to-black`}
+                        onClick={() => navigate(-1)}
+                    >
+                        <FontAwesomeIcon icon={faArrowLeft} className='' />
+                        Volver
+                    </button>
                     <button
                         className={`px-4 py-2 rounded-lg font-Bitcount text-xl transition-all hover:scale-105 hover:cursor-pointer ${activeTab === 'informacion' ? 'bg-indigo-to-yellow text-white-to-black  scale-105' : 'bg-white-to-black text-indigo-to-yellow border-2 border-indigo-to-yellow hover:bg-indigo-50'}`}
                         onClick={() => setActiveTab('informacion')}

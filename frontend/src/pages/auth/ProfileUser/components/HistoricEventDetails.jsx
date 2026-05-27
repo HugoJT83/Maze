@@ -9,6 +9,9 @@ const HistoricEventDetails = () => {
     const [eventsFetched, setEventsFetched] = useState(false)
 
     const fetchUserEvents = async () => {
+
+
+
         try {
             setEventsLoading(true)
             const response = await axiosClient.get("/events/my-events", {
@@ -29,12 +32,17 @@ const HistoricEventDetails = () => {
         if (!eventsFetched) {
             fetchUserEvents()
         }
+
+
     }, [eventsFetched])
+
+
 
     const historicEvents = events.filter(event => {
         const eventDate = event.finish_event_date || event.starting_event_date
         return eventDate ? new Date(eventDate) < new Date() : false
     })
+
 
     return (
         <div className="flex flex-col items-center w-full min-h-[200px]">

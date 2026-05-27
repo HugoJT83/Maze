@@ -12,13 +12,13 @@ export const About = () => {
     return (
         <>
             <div className='w-full  flex justify-around bg-lightgray-to-yellow py-10 flex-wrap text-center'>
-                <div className='flex flex-col'>
+                <div className='flex flex-col my-auto'>
                     <h1 className='font-bold text-5xl text-black'>Qué es MAZE</h1>
                     <h2 className='italic text-2xl my-2 text-black'>Conoce más sobre nosotros</h2>
                 </div>
 
                 <div className='items-center align-middle flex'>
-                    <img src={'/imgs/app_logo.ico'} />
+                    <img src={'/imgs/icono_transparent.png'} className='w-40 h-40' />
                 </div>
             </div>
 

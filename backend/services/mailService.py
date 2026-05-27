@@ -160,4 +160,21 @@ async def sendTicketDeniedNotificationService(email: str, username: str, event_t
         fm = FastMail(conf)
         await fm.send_message(message, template_name="ticket_denied_free.html")
     except Exception as e:
+        raise HTTPException(status_code=400, detail="Mail Error")
+
+async def sendEventUpdateNotificationService(email: str, username: str, event_title: str, message_text: str):
+    message = MessageSchema(
+        subject="MAZE - Actualización del evento",
+        recipients=[email],
+        template_body={
+            "username": username,
+            "event_name": event_title,
+            "event_update": message_text,
+        },
+        subtype=MessageType.html
+    )
+    try:
+        fm = FastMail(conf)
+        await fm.send_message(message, template_name="event_update.html")
+    except Exception as e:
         raise HTTPException(status_code=400, detail="Mail Error")

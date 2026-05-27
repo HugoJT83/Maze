@@ -389,4 +389,59 @@ async def searchEventsService(lat: float = None, lng: float = None, radius_km: f
         "limit": limit,
         "total_pages": total_pages
     }
+
+async def messageGuestsService(event_id: str, message_text: str, userId: str, background_tasks: BackgroundTasks):
+    if not bson.ObjectId.is_valid(event_id):
+        raise HTTPException(status_code=400, detail="Identificador de evento no válido")
+    
+    event = await events_collection.find_one({"_id": bson.ObjectId(event_id)})
+    if not event:
+        raise HTTPException(status_code=404, detail="El evento no existe")
+        
+    if str(event.get("creator_id")) != str(userId):
+        raise HTTPException(status_code=403, detail="No tiene permisos para enviar mensajes a los invitados de este evento")
+        
+    if not message_text or not message_text.strip():
+        raise HTTPException(status_code=400, detail="El mensaje no puede estar vacío")
+        
+    # Word count validation: max 500 words
+    word_count = len(message_text.strip().split())
+    if word_count > 500:
+        raise HTTPException(status_code=400, detail="El mensaje no puede exceder las 500 palabras")
+        
+    ticket_price = event.get("ticket_price")
+    is_paid_event = ticket_price is not None and ticket_price > 0
+    target_status = "paid" if is_paid_event else "accepted"
+    
+    from config.db import tickets_collection
+    cursor = tickets_collection.find({"event_id": event_id, "status": target_status})
+    tickets = await cursor.to_list(length=None)
+    
+    if not tickets:
+        return {
+            "msg": "No hay invitados registrados para recibir este mensaje",
+            "status": "success",
+            "count": 0
+        }
+        
+    from services.mailService import sendEventUpdateNotificationService
+    
+    sent_count = 0
+    for t in tickets:
+        user = await user_collection.find_one({"_id": bson.ObjectId(t["user_id"])})
+        if user and user.get("email"):
+            background_tasks.add_task(
+                sendEventUpdateNotificationService,
+                email=user["email"],
+                username=user.get("name", "Usuario"),
+                event_title=event.get("title", "Evento"),
+                message_text=message_text
+            )
+            sent_count += 1
+            
+    return {
+        "msg": f"Mensaje enviado con éxito a {sent_count} invitados",
+        "status": "success",
+        "count": sent_count
+    }
     

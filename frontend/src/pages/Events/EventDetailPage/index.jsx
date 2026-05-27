@@ -35,10 +35,16 @@ const EventDetailPage = () => {
 
     const [tickets, setTickets] = useState([])
     const [ticketsLoading, setTicketsLoading] = useState(false)
-
-
     const [isDeleting, setIsDeleting] = useState(false);
     const [showModal, setShowModal] = useState(false);
+    const [guestMessage, setGuestMessage] = useState("");
+    const [isSendingMessage, setIsSendingMessage] = useState(false);
+
+    const getWordCount = (text) => {
+        const trimmed = text.trim();
+        return trimmed === "" ? 0 : trimmed.split(/\s+/).length;
+    };
+
     const handleDelete = async () => {
         try {
             setIsDeleting(true);
@@ -63,7 +69,41 @@ const EventDetailPage = () => {
         finally {
             setIsDeleting(false);
         }
-    }
+    };
+
+    const handleSendMessageToGuests = async (e) => {
+        e.preventDefault();
+        const wordCount = getWordCount(guestMessage);
+        if (wordCount === 0) {
+            toast.error("El mensaje no puede estar vacío");
+            return;
+        }
+        if (wordCount > 500) {
+            toast.error("El mensaje no puede superar las 500 palabras");
+            return;
+        }
+        try {
+            setIsSendingMessage(true);
+            const token = localStorage.getItem("token");
+            const response = await axiosClient.post(`/events/${id}/message-guests`,
+                { message: guestMessage },
+                {
+                    headers: {
+                        Authorization: 'Bearer ' + token
+                    }
+                }
+            );
+            if (response.data.status === "success") {
+                toast.success(response.data.message || response.data.msg || "Mensaje enviado a los invitados con éxito");
+                setGuestMessage("");
+            }
+        } catch (error) {
+            console.error("Error al enviar mensaje a invitados:", error);
+            toast.error(error.response?.data?.detail || "No se pudo enviar el mensaje a los invitados");
+        } finally {
+            setIsSendingMessage(false);
+        }
+    };
 
     const fetchEventDetails = async () => {
         try {
@@ -163,11 +203,11 @@ const EventDetailPage = () => {
     if (error) {
         return (
             <div className="min-h-screen flex flex-col justify-center items-center bg-white-to-black p-6">
-                <div className="bg-lightgray-to-black p-8 rounded-3xl shadow-xl max-w-md w-full text-center border-2 border-red-500/20">
+                <div className="bg-lightgray-to-black p-8 rounded-3xl max-w-md w-full text-center border-2 border-red-500/20">
                     <FontAwesomeIcon icon={faExclamationTriangle} className="text-red-500 text-5xl mb-4" />
                     <h2 className="text-2xl font-bold text-white-to-black mb-2">¡Ups! Algo salió mal</h2>
                     <p className="text-gray-to-yellow mb-6">{error}</p>
-                    <Link to="/my-events" className="inline-flex items-center justify-center gap-2 bg-indigo-to-yellow text-white-to-black font-semibold py-3 px-6 rounded-2xl hover:scale-105 active:scale-95 transition-all duration-200 w-full shadow-lg">
+                    <Link to="/my-events" className="inline-flex items-center justify-center gap-2 bg-indigo-to-yellow text-white-to-black font-semibold py-3 px-6 rounded-2xl hover:scale-105 active:scale-95 transition-all duration-200 w-full">
                         <FontAwesomeIcon icon={faArrowLeft} />
                         Volver a mis eventos
                     </Link>
@@ -237,7 +277,7 @@ const EventDetailPage = () => {
                 <div className="lg:col-span-8 flex flex-col gap-6">
 
                     {/* Contenedor del Carrusel de imágenes */}
-                    <div className="relative bg-lightgray-to-black rounded-lg overflow-hidden group border border-gray-to-yellow/10 aspect-video flex items-center justify-center">
+                    <div className="relative bg-lightgray-to-black rounded-lg overflow-hidden group border border-lightgray-to-yellow aspect-video flex items-center justify-center">
                         {images && images.length > 0 ? (
                             <>
                                 <img
@@ -292,11 +332,11 @@ const EventDetailPage = () => {
                     </div>
 
                     {/* Ficha de Detalles y Descripción */}
-                    <div className="bg-lightgray-to-black p-6 sm:p-8 rounded-lg border border-gray-to-yellow/10">
+                    <div className="bg-lightgray-to-black p-6 sm:p-8 rounded-lg border border-lightgray-to-yellow">
                         <h1 className="text-4xl sm:text-5xl font-Bitcount text-indigo-to-yellow mb-6 leading-tight">
                             "{title}"
                         </h1>
-                        <div className="border-t border-gray-to-yellow/20 pt-6">
+                        <div className="border-t border-lightgray-to-yellow pt-6">
                             <h3 className="text-lg font-bold text-indigo-to-yellow uppercase mb-3">
                                 Descripción del evento
                             </h3>
@@ -306,8 +346,8 @@ const EventDetailPage = () => {
                         </div>
                     </div>
 
-                    <div className="bg-lightgray-to-black p-6 rounded-lg border border-gray-to-yellow/10 hover:scale-[1.01] transition-transform duration-300">
-                        <h3 className="text-lg font-bold text-indigo-to-yellow uppercase border-b border-gray-to-yellow/20 pb-3 mb-4 flex items-center gap-2">
+                    <div className="bg-lightgray-to-black p-6 rounded-lg border border-lightgray-to-yellow hover:scale-[1.01] transition-transform duration-300">
+                        <h3 className="text-lg font-bold text-indigo-to-yellow uppercase border-b border-lightgray-to-yellow pb-3 mb-4 flex items-center gap-2">
                             <FontAwesomeIcon icon={faTicket} />
                             Entradas y Aforo
                         </h3>
@@ -318,7 +358,7 @@ const EventDetailPage = () => {
                             </div>
 
                             {ticket_price !== null && ticket_price !== undefined ? (
-                                <div className="grid grid-cols-2 gap-4 border-t border-gray-to-yellow/10 pt-3 mt-1">
+                                <div className="grid grid-cols-2 gap-4 border-t border-lightgray-to-yellow pt-3 mt-1">
                                     <div>
                                         <span className="text-xs text-gray-to-yellow uppercase font-semibold">Precio por entrada:</span>
                                         <p className="text-lg text-black-to-white font-bold mt-0.5 text-indigo-to-yellow">
@@ -333,7 +373,7 @@ const EventDetailPage = () => {
                                     </div>
                                 </div>
                             ) : (
-                                <div className="border-t border-gray-to-yellow/10 pt-3 mt-1">
+                                <div className="border-t border-lightgray-to-yellow pt-3 mt-1">
                                     <span className="text-xs text-gray-to-yellow uppercase font-semibold">Precio por entrada:</span>
                                     <p className="text-lg text-black-to-white font-bold mt-0.5 text-indigo-to-yellow">¡Gratis!</p>
                                 </div>
@@ -355,8 +395,8 @@ const EventDetailPage = () => {
                 <div className="lg:col-span-4 flex flex-col gap-6">
 
                     {/* Cuadro de Horarios y Fechas */}
-                    <div className="bg-lightgray-to-black p-6 rounded-lg border border-gray-to-yellow/10 hover:scale-[1.01] transition-transform duration-300">
-                        <h3 className="text-lg font-bold text-indigo-to-yellow uppercase border-b border-gray-to-yellow/20 pb-3 mb-4 flex items-center gap-2">
+                    <div className="bg-lightgray-to-black p-6 rounded-lg border border-lightgray-to-yellow hover:scale-[1.01] transition-transform duration-300">
+                        <h3 className="text-lg font-bold text-indigo-to-yellow uppercase border-b border-lightgray-to-yellow pb-3 mb-4 flex items-center gap-2">
                             <FontAwesomeIcon icon={faCalendarDays} />
                             ¿Cuándo ocurre?
                         </h3>
@@ -369,7 +409,7 @@ const EventDetailPage = () => {
                                 <span className="text-xs text-gray-to-yellow uppercase font-semibold">Fecha de Fin:</span>
                                 <p className="text-sm text-black-to-white font-semibold capitalize mt-0.5">{formattedDate(finish_event_date)}</p>
                             </div>
-                            <div className="grid grid-cols-2 gap-4 border-t border-gray-to-yellow/10 pt-3 mt-1">
+                            <div className="grid grid-cols-2 gap-4 border-t border-lightgray-to-yellow pt-3 mt-1">
                                 <div>
                                     <span className="text-xs text-gray-to-yellow uppercase font-semibold flex items-center gap-1">
                                         <FontAwesomeIcon icon={faClock} className="text-indigo-to-yellow text-xs" />
@@ -389,8 +429,8 @@ const EventDetailPage = () => {
                     </div>
 
                     {/* Ubicación Geográfica */}
-                    <div className="bg-lightgray-to-black p-6 rounded-lg border border-gray-to-yellow/10 hover:scale-[1.01] transition-transform duration-300">
-                        <h3 className="text-lg font-bold text-indigo-to-yellow uppercase border-b border-gray-to-yellow/20 pb-3 mb-4 flex items-center gap-2">
+                    <div className="bg-lightgray-to-black p-6 rounded-lg border border-lightgray-to-yellow hover:scale-[1.01] transition-transform duration-300">
+                        <h3 className="text-lg font-bold text-indigo-to-yellow uppercase border-b border-lightgray-to-yellow pb-3 mb-4 flex items-center gap-2">
                             <FontAwesomeIcon icon={faMapPin} />
                             ¿Dónde es?
                         </h3>
@@ -411,8 +451,8 @@ const EventDetailPage = () => {
                     </div>
 
                     {/* Temáticas asociadas */}
-                    <div className="bg-lightgray-to-black p-6 rounded-lg border border-gray-to-yellow/10">
-                        <h3 className="text-lg font-bold text-indigo-to-yellow uppercase border-b border-gray-to-yellow/20 pb-3 mb-4 flex items-center gap-2">
+                    <div className="bg-lightgray-to-black p-6 rounded-lg border border-lightgray-to-yellow">
+                        <h3 className="text-lg font-bold text-indigo-to-yellow uppercase border-b border-lightgray-to-yellow pb-3 mb-4 flex items-center gap-2">
                             Temáticas indicadas
                         </h3>
                         {interests && interests.length > 0 ? (
@@ -427,8 +467,8 @@ const EventDetailPage = () => {
                     </div>
 
                     {/* Datos de contacto y asistencia */}
-                    <div className="bg-lightgray-to-black p-6 rounded-lg border border-gray-to-yellow/10">
-                        <h3 className="text-lg font-bold text-indigo-to-yellow uppercase border-b border-gray-to-yellow/20 pb-3 mb-4 flex items-center gap-2">
+                    <div className="bg-lightgray-to-black p-6 rounded-lg border border-lightgray-to-yellow">
+                        <h3 className="text-lg font-bold text-indigo-to-yellow uppercase border-b border-lightgray-to-yellow pb-3 mb-4 flex items-center gap-2">
                             <FontAwesomeIcon icon={faPhone} />
                             Contacto y Registro
                         </h3>
@@ -441,14 +481,14 @@ const EventDetailPage = () => {
                             </div>
 
                             {status === "accepted" ? (
-                                <div className="border-t border-gray-to-yellow/10 pt-3 mt-1 flex flex-col gap-2">
+                                <div className="border-t border-lightgray-to-yellow pt-3 mt-1 flex flex-col gap-2">
                                     <span className="text-xs text-gray-to-yellow uppercase font-semibold flex items-center gap-1">
                                         <FontAwesomeIcon icon={faUsers} className="text-indigo-to-yellow" />
                                         Asistentes del evento
                                     </span>
                                 </div>
                             ) : (
-                                <div className="bg-indigo-to-yellow/5 border border-indigo-to-yellow/10 p-4 rounded-2xl mt-1">
+                                <div className="bg-indigo-to-yellow/5 border border-lightgray-to-yellow p-4 rounded-2xl mt-1">
                                     <p className="text-xs text-indigo-to-yellow font-medium text-justify">
                                         Este evento se encuentra en revisión. Los detalles completos de asistencia y reservas estarán disponibles en cuanto el administrador valide la publicación.
                                     </p>
@@ -465,7 +505,7 @@ const EventDetailPage = () => {
 
             {/* Asistentes y Solicitudes */}
             {status === "accepted" && (
-                <div className="max-w-6xl mx-auto mt-12 bg-lightgray-to-black p-6 sm:p-8 rounded-lg border border-gray-to-yellow/10">
+                <div className="max-w-6xl mx-auto mt-12 bg-lightgray-to-black p-6 sm:p-8 rounded-lg border border-lightgray-to-yellow">
                     <h2 className="text-3xl font-Bitcount text-indigo-to-yellow mb-6 flex items-center gap-3">
                         <FontAwesomeIcon icon={faUsers} />
                         Gestión de Asistentes
@@ -475,7 +515,7 @@ const EventDetailPage = () => {
                         <p className="text-gray-to-yellow">Cargando datos de asistentes...</p>
                     ) : isPaidEvent ? (
                         <div>
-                            <h3 className="text-xl font-bold text-green-500 mb-4 border-b border-gray-to-yellow/20 pb-2">
+                            <h3 className="text-xl font-bold text-green-500 mb-4 border-b border-lightgray-to-yellow pb-2">
                                 Entradas Pagadas ({paidTickets.length})
                             </h3>
                             {paidTickets.length > 0 ? (
@@ -503,13 +543,13 @@ const EventDetailPage = () => {
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                             {/* Solicitudes Pendientes */}
                             <div>
-                                <h3 className="text-xl font-bold text-yellow-500 mb-4 border-b border-gray-to-yellow/20 pb-2">
+                                <h3 className="text-xl font-bold text-yellow-500 mb-4 border-b border-lightgray-to-yellow pb-2">
                                     Solicitudes Pendientes ({pendingTickets.length})
                                 </h3>
                                 {pendingTickets.length > 0 ? (
                                     <div className="flex flex-col gap-3">
                                         {pendingTickets.map(ticket => (
-                                            <div key={ticket.id} className="bg-white-to-black p-4 rounded-xl border border-yellow-500/30 flex justify-between items-center">
+                                            <div key={ticket.id} className="bg-white-to-black p-4 rounded-xl border border-lightgray-to-yellow flex justify-between items-center">
                                                 <div>
                                                     <p className="font-bold text-black-to-white">{ticket.user_name}</p>
                                                     <p className="text-xs text-gray-to-yellow">{ticket.user_email}</p>
@@ -540,7 +580,7 @@ const EventDetailPage = () => {
 
                             {/* Usuarios Aceptados */}
                             <div>
-                                <h3 className="text-xl font-bold text-green-500 mb-4 border-b border-gray-to-yellow/20 pb-2">
+                                <h3 className="text-xl font-bold text-green-500 mb-4 border-b border-lightgray-to-yellow pb-2">
                                     Usuarios Aceptados ({acceptedTickets.length})
                                 </h3>
                                 {acceptedTickets.length > 0 ? (
@@ -566,7 +606,59 @@ const EventDetailPage = () => {
                 </div>
             )}
 
-            <div className=' flex max-w-6xl mx-auto mt-12 bg-lightgray-to-black p-6 sm:p-8 rounded-lg border border-gray-to-yellow/10'>
+            {/*Enviar un mensaje a los invitados */}
+            <div className="max-w-6xl mx-auto mt-12 bg-lightgray-to-black p-6 sm:p-8 rounded-lg border border-lightgray-to-yellow">
+                <h2 className="text-3xl font-Bitcount text-indigo-to-yellow mb-6 flex items-center gap-3">
+                    <FontAwesomeIcon icon={faFileAlt} className="text-indigo-to-yellow" />
+                    Enviar un mensaje a los invitados
+                </h2>
+                <p className="text-sm text-gray-to-yellow mb-4 leading-relaxed text-justify">
+                    Utiliza este espacio para compartir cualquier información importante o actualizaciones del evento con tus invitados.
+                    El mensaje se enviará directamente por correo electrónico a aquellos usuarios que estén admitidos (en eventos gratuitos) o hayan pagado su entrada (en eventos de pago).
+                </p>
+                <form onSubmit={handleSendMessageToGuests} className="flex flex-col gap-4">
+                    <div className="relative">
+                        <textarea
+                            value={guestMessage}
+                            onChange={(e) => setGuestMessage(e.target.value)}
+                            placeholder="Escribe aquí el mensaje para tus invitados..."
+                            rows={6}
+                            maxLength={3000}
+                            className="w-full bg-white-to-black border border-lightgray-to-yellow rounded-2xl p-4 text-white-to-black placeholder-gray-500/50 focus:outline-none focus:ring-2 focus:ring-indigo-to-yellow transition-all resize-y"
+                        />
+                        <div className={`absolute bottom-3 right-4 text-xs font-semibold ${getWordCount(guestMessage) > 500 ? "text-red-500" : "text-gray-to-yellow"}`}>
+                            {getWordCount(guestMessage)} / 500 palabras
+                        </div>
+                    </div>
+                    <div className="flex justify-end">
+                        <button
+                            type="submit"
+                            disabled={isSendingMessage || getWordCount(guestMessage) === 0 || getWordCount(guestMessage) > 500}
+                            className={`flex items-center gap-2 font-semibold py-3 px-8 rounded-2xl  transition-all duration-200 ${isSendingMessage || getWordCount(guestMessage) === 0 || getWordCount(guestMessage) > 500
+                                ? 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-50'
+                                : 'bg-indigo-to-yellow text-white-to-black hover:scale-105 active:scale-95 hover:cursor-pointer'
+                                }`}
+                        >
+                            {isSendingMessage ? (
+                                <>
+                                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white-to-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    <span>Enviando...</span>
+                                </>
+                            ) : (
+                                <>
+                                    <FontAwesomeIcon icon={faCheckCircle} />
+                                    <span>Enviar mensaje</span>
+                                </>
+                            )}
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div className=' flex max-w-6xl mx-auto mt-12 bg-lightgray-to-black p-6 sm:p-8 rounded-lg border border-lightgray-to-yellow'>
                 <button
                     onClick={() => setShowModal(true)}
                     disabled={isDeleting}

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import logo from '../assets/app_logo.svg'
+import logo from '../assets/icono_transparent.png'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
