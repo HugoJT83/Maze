@@ -128,7 +128,18 @@ async def getEventByIdService(event_id: str):
     if not event:
         raise HTTPException(status_code=404, detail="El evento solicitado no existe")
         
-    return EventResponse(**event)
+    creator = await user_collection.find_one({"_id": bson.ObjectId(event.get("creator_id"))})
+    creator_profile = await profile_collection.find_one({"user_id":event.get("creator_id")})
+    
+    event_data = dict(event)
+    
+    event_data["creator_data"] = {
+        "name": creator.get("name") if creator else "Desconocido",
+        "email": creator.get("email") if creator else "Sin email",
+        "avatar": creator_profile.get("avatar", {}).get("image_uri") if creator_profile and creator_profile.get("avatar") else None
+    }
+    
+    return EventResponse(**event_data)
     
 async def deleteEventService(id: str, userId, background_tasks: BackgroundTasks):
     if not bson.ObjectId.is_valid(id):

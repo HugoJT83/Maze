@@ -20,7 +20,9 @@ import {
     faExclamationTriangle,
     faTicket,
     faShoppingCart,
-    faPaperPlane
+    faPaperPlane,
+    faCircleUser,
+    faEnvelope
 } from '@fortawesome/free-solid-svg-icons'
 
 const PublicEventDetailPage = () => {
@@ -175,6 +177,7 @@ const PublicEventDetailPage = () => {
         phone = "+34000000000",
         status = "pending",
         images = [],
+        creator_data = {},
         max_capacity,
         max_tickets_per_person,
         ticket_price
@@ -321,6 +324,32 @@ const PublicEventDetailPage = () => {
 
                 {/* COLUMNA DERECHA: Ficha técnica del evento (4 columnas) */}
                 <div className="lg:col-span-4 flex flex-col gap-6">
+
+                    {/* TARJETA DEL CREADOR */}
+                    <div className="bg-lightgray-to-black p-6 rounded-lg border border-gray-to-yellow/10 hover:scale-[1.01] transition-transform duration-300">
+                        <h3 className="text-lg font-bold text-indigo-to-yellow uppercase tracking-wider border-b border-gray-to-yellow/20 pb-3 mb-4 flex items-center gap-2">
+                            <FontAwesomeIcon icon={faCircleUser} />
+                            Creador del Evento
+                        </h3>
+                        <div className="flex flex-col gap-4">
+                            <div className="flex items-center gap-4">
+                                <div className="w-16 h-16 rounded-full overflow-hidden bg-indigo-to-yellow/10 flex items-center justify-center border border-indigo-to-yellow/20 shadow-inner flex-shrink-0">
+                                    {creator_data?.avatar ? (
+                                        <img src={creator_data.avatar} alt={creator_data.name} className="w-full h-full object-cover" />
+                                    ) : (
+                                        <FontAwesomeIcon icon={faCircleUser} className="text-indigo-to-yellow text-4xl" />
+                                    )}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-base font-bold text-black-to-white truncate">{creator_data?.name || "Cargando..."}</p>
+                                    <p className="text-xs text-gray-to-yellow truncate flex items-center gap-1.5 mt-0.5">
+                                        <FontAwesomeIcon icon={faEnvelope} className="text-indigo-to-yellow/70" />
+                                        {creator_data?.email || "Sin email"}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                     {/* CALL TO ACTION: TICKETS / JOIN */}
                     <div className="bg-lightgray-to-black p-6 rounded-lg border border-gray-to-yellow/10">

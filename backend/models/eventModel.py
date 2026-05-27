@@ -102,12 +102,18 @@ class EventCreate(EventBase):
 
 PyObjectId = Annotated[str, BeforeValidator(str)]
 
+class CreatorDataResponse(BaseModel):
+    name:str
+    email:str
+    avatar: Optional[str] = None
+
 class EventResponse(EventBase):
     id: PyObjectId = Field(alias="_id")
     starting_event_date: datetime
     finish_event_date: datetime
     images: List[EventImage] = Field(default=[])
     creator_id: str = Field(default="")
+    creator_data: Optional[CreatorDataResponse] = None
     accepted_users: Optional[int] = 0
     pending_users: Optional[int] = 0
     purchased_tickets: Optional[int] = 0

@@ -442,7 +442,7 @@ const EventSearchPage = () => {
                       <Popup className="">
                         <div className="text-center">
                           <h3 className="font-Bitcount text-2xl">{event.title}</h3>
-                          <p className=" text-black-to-white my-1">{event.location.city}, {event.location.province}</p>
+                          <p className=" text-black my-1">{event.location.city}, {event.location.province}</p>
                           <div className="mt-2">
                             <Link to={`/events/${event._id}`} className="decoration-0 bg-indigo-to-yellow !text-white-to-black px-4 py-2 rounded-lg text-sm hover:bg-indigo-to-yellow/70">Ver Detalles</Link>
                           </div>
