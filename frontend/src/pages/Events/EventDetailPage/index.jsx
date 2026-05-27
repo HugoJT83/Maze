@@ -517,14 +517,14 @@ const EventDetailPage = () => {
                                                 <div className="flex gap-2">
                                                     <button
                                                         onClick={() => handleUpdateTicketStatus(ticket.id, 'accepted')}
-                                                        className="bg-green-500/20 text-green-500 hover:bg-green-500 hover:text-white p-2 rounded-lg transition-colors"
+                                                        className="bg-green-500/20 text-green-500 hover:bg-green-500 hover:cursor-pointer hover:text-white p-2 rounded-lg transition-colors"
                                                         title="Aprobar"
                                                     >
                                                         <FontAwesomeIcon icon={faCheck} />
                                                     </button>
                                                     <button
                                                         onClick={() => handleUpdateTicketStatus(ticket.id, 'rejected')}
-                                                        className="bg-red-500/20 text-red-500 hover:bg-red-500 hover:text-white p-2 rounded-lg transition-colors"
+                                                        className="bg-red-500/20 text-red-500 hover:bg-red-500 hover:text-white hover:cursor-pointer p-2 rounded-lg transition-colors"
                                                         title="Denegar"
                                                     >
                                                         <FontAwesomeIcon icon={faTimes} />

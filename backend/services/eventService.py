@@ -111,6 +111,13 @@ async def getEventsByUserService (creator_id: str):
     events = events_collection.find({"creator_id":creator_id})
     events_docs = await events.to_list(length=None)
     
+    from config.db import tickets_collection
+    for doc in events_docs:
+        event_id_str = str(doc["_id"])
+        doc["accepted_users"] = await tickets_collection.count_documents({"event_id": event_id_str, "status": "accepted"})
+        doc["pending_users"] = await tickets_collection.count_documents({"event_id": event_id_str, "status": "pending"})
+        doc["purchased_tickets"] = await tickets_collection.count_documents({"event_id": event_id_str, "status": "paid"})
+        
     return [EventResponse(**doc) for doc in events_docs]
 
 async def getEventByIdService(event_id: str):

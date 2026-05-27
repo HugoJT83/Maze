@@ -24,8 +24,13 @@ const EventUnit = ({ eventData, customNavigatePath }) => {
         phone = "+34000000000",
         status = "sin estado asignado",
         accepted_users = 0,
-        interested_users = 0
+        interested_users = 0,
+        pending_users = 0,
+        purchased_tickets = 0,
+        ticket_price = null
     } = eventData || {};
+
+    const isPaidEvent = ticket_price !== null && ticket_price !== undefined && ticket_price > 0;
 
     const eventId = eventData?.id || eventData?._id || _id;
 
@@ -84,13 +89,19 @@ const EventUnit = ({ eventData, customNavigatePath }) => {
                             <span className={`${status == "accepted" ? "text-green-500" : "text-indigo-to-yellow"} font-bold`}>
                                 {status == "pending" ? " Pendiente" : " Aceptado"}</span>
                         </h2>
+                        <h2>Tipo: <span className='font-semibold'>{isPaidEvent ? `Pago (${parseFloat(ticket_price).toFixed(2)} €)` : "Gratuito"}</span></h2>
                         {status == "accepted" ?
+                            (isPaidEvent ?
+                                <>
+                                    <h2>Entradas compradas: <span className='font-bold text-indigo-to-yellow'>{purchased_tickets}</span></h2>
+                                </> :
+                                <>
+                                    <h2>Usuarios pendientes: <span className='font-bold text-indigo-to-yellow'>{pending_users}</span></h2>
+                                    <h2>Usuarios aprobados: <span className='font-bold text-green-500'>{accepted_users}</span></h2>
+                                </>
+                            ) :
                             <>
-                                <h2>Usuarios aceptados: {accepted_users}</h2>
-                                <h2>Usuarios interesados: {interested_users}</h2>
-                            </> :
-                            <>
-                                <p className='text-center text-gray-to-yellow my-2'>Cuando se apruebe, verás los usuarios aquí.</p>
+                                <p className='text-center text-gray-to-yellow my-2 text-xs'>Cuando se apruebe, verás los usuarios aquí.</p>
                             </>
                         }
                     </div>

@@ -108,4 +108,7 @@ class EventResponse(EventBase):
     finish_event_date: datetime
     images: List[EventImage] = Field(default=[])
     creator_id: str = Field(default="")
+    accepted_users: Optional[int] = 0
+    pending_users: Optional[int] = 0
+    purchased_tickets: Optional[int] = 0
     
