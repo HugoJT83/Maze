@@ -20,6 +20,9 @@ async def request_free_ticket(event_id: str, user_id: str):
     if not event:
         raise HTTPException(status_code=404, detail="Evento no encontrado")
         
+    if str(event.get("creator_id")) == str(user_id):
+        raise HTTPException(status_code=400, detail="No puedes unirte a tu propio evento")
+        
     # Check if the user already requested a ticket
     existing_ticket = await tickets_collection.find_one({
         "event_id": event_id,

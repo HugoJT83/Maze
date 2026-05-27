@@ -4,6 +4,7 @@ import { toast } from 'react-toastify'
 import { axiosClient } from '../../../utils/axiosClient'
 import LoaderComponent from '../../../components/ui/LoaderComponent'
 import StaticInterest from '../MyEvents/components/StaticInterest'
+import { useAuthContext } from '../../../context/AuthContext'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
     faArrowLeft,
@@ -28,6 +29,7 @@ import {
 const PublicEventDetailPage = () => {
     const { id } = useParams()
     const navigate = useNavigate()
+    const { user } = useAuthContext()
 
     const [event, setEvent] = useState(null)
     const [loading, setLoading] = useState(true)
@@ -364,6 +366,12 @@ const PublicEventDetailPage = () => {
                             <div className="bg-indigo-to-yellow/5 border border-indigo-to-yellow/10 p-4 rounded-2xl text-center">
                                 <p className="text-sm text-indigo-to-yellow font-medium">
                                     Este evento está en revisión. Aún no puedes inscribirte.
+                                </p>
+                            </div>
+                        ) : user && event.creator_id === user.id ? (
+                            <div className="bg-indigo-to-yellow/5 border border-indigo-to-yellow/10 p-4 rounded-2xl text-center">
+                                <p className="text-sm text-indigo-to-yellow font-medium">
+                                    Este es tu propio evento.
                                 </p>
                             </div>
                         ) : ticketData?.has_ticket ? (

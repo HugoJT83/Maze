@@ -10,11 +10,19 @@ from config.db import user_collection, events_collection, tickets_collection
 from models.ticketModel import TicketStatus, TicketType
 from services.mailService import sendTicketApprovedNotificationService
 from services.ticketService import generate_unique_ticket_validator
+from dotenv import load_dotenv
 
 stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 
 async def createAccountLinkService(user_id:str):
-    
+    load_dotenv(override=True)
+    if os.getenv("SIMULATE_PAYMENTS") == "True":
+        await user_collection.update_one(
+            {"_id": ObjectId(user_id)},
+            {"$set": {"stripe_account_id": "acct_simulado_12345"}}
+        )
+        return {"url": "http://localhost:5173/profile?stripe_success=true"}
+        
     if not stripe.api_key:
         stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
         
@@ -66,6 +74,7 @@ async def createAccountLinkService(user_id:str):
         raise HTTPException(status_code=500, detail=str(e))
 
 async def createCheckoutSessionService(event_id: str, user_id: str):
+    load_dotenv(override=True)
     # 1. Verify user and event
     user = await user_collection.find_one({"_id": ObjectId(user_id)})
     if not user:
@@ -74,6 +83,9 @@ async def createCheckoutSessionService(event_id: str, user_id: str):
     event = await events_collection.find_one({"_id": ObjectId(event_id)})
     if not event:
         raise HTTPException(status_code=404, detail="Evento no encontrado")
+        
+    if str(event.get("creator_id")) == str(user_id):
+        raise HTTPException(status_code=400, detail="No puedes unirte a tu propio evento")
         
     if event.get("ticket_price", 0) <= 0:
         raise HTTPException(status_code=400, detail="El evento es gratuito, usa la ruta normal de solicitud")
@@ -87,6 +99,47 @@ async def createCheckoutSessionService(event_id: str, user_id: str):
     
     if existing_ticket and existing_ticket["status"] == "paid":
         raise HTTPException(status_code=400, detail="Ya tienes una entrada comprada para este evento")
+        
+    if os.getenv("SIMULATE_PAYMENTS") == "True":
+        ticket_validator = await generate_unique_ticket_validator()
+        
+        if existing_ticket:
+            await tickets_collection.update_one(
+                {"_id": existing_ticket["_id"]},
+                {"$set": {
+                    "status": TicketStatus.paid.value,
+                    "ticket_validator": ticket_validator,
+                    "updated_at": datetime.now()
+                }}
+            )
+            ticket_id = str(existing_ticket["_id"])
+        else:
+            new_ticket = {
+                "event_id": event_id,
+                "user_id": user_id,
+                "status": TicketStatus.paid.value,
+                "ticket_type": TicketType.paid.value,
+                "stripe_session_id": "session_mock_" + str(uuid.uuid4()),
+                "ticket_validator": ticket_validator,
+                "created_at": datetime.now(),
+                "updated_at": datetime.now()
+            }
+            res = await tickets_collection.insert_one(new_ticket)
+            ticket_id = str(res.inserted_id)
+            
+        try:
+            await sendTicketApprovedNotificationService(
+                email=user["email"],
+                username=user.get("name", "Usuario"),
+                event_title=event.get("title", "Evento"),
+                ticket_type="paid",
+                ticket_validator=ticket_validator,
+                ticket_id=ticket_id
+            )
+        except Exception as e:
+            print(f"Error sending simulated checkout email: {e}")
+            
+        return {"checkout_url": "http://localhost:5173/my-events?success=true"}
         
     creator = await user_collection.find_one({"_id": ObjectId(event["creator_id"])})
     if not creator or not creator.get("stripe_account_id"):

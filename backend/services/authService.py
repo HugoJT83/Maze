@@ -240,7 +240,11 @@ async def profileService(userId: str):
     else:
         profile['avatar'] = None
         
-    return check_exist | profile
+    merged = check_exist | profile
+    if check_exist.get("stripe_account_id"):
+        merged["stripe_account_id"] = check_exist["stripe_account_id"]
+        
+    return merged
 
 async def updateAvatarService(avatar: Annotated[UploadFile,File()], userId: str):
     exist = await profile_collection.find_one({"user_id":userId})

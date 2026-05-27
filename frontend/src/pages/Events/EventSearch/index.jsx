@@ -226,7 +226,9 @@ const EventSearchPage = () => {
         params.append('page', page);
         params.append('limit', currentLimit);
 
-        const response = await axiosClient.get(`/events/search?${params.toString()}`);
+        const token = localStorage.getItem("token");
+        const headers = token ? { Authorization: 'Bearer ' + token } : {};
+        const response = await axiosClient.get(`/events/search?${params.toString()}`, { headers });
         setEvents(response.data.events || []);
         setTotalPages(response.data.total_pages || 1);
       } catch (error) {

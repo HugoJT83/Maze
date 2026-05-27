@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { toast } from 'react-toastify'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useAuthContext } from '../../../../context/AuthContext'
@@ -7,6 +7,13 @@ import { axiosClient } from '../../../../utils/axiosClient'
 const BillingDetails = () => {
     const { user, fetchUserProfile } = useAuthContext()
     const [isLoading, setIsLoading] = useState(false)
+
+    useEffect(() => {
+        if (window.location.search.includes("stripe_success=true")) {
+            fetchUserProfile();
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+    }, [fetchUserProfile]);
 
     const handleStripeConnect = async () => {
         setIsLoading(true)
@@ -18,8 +25,13 @@ const BillingDetails = () => {
             });
             const data = await response.data;
             if (data.url) {
-                // Redirect to Stripe Onboarding
-                window.location.href = data.url;
+                if (data.url.includes("stripe_success=true")) {
+                    toast.success("¡Modo Simulación! Cuenta vinculada con éxito.");
+                    await fetchUserProfile();
+                } else {
+                    // Redirect to Stripe Onboarding
+                    window.location.href = data.url;
+                }
             } else {
                 toast.error("No se pudo obtener la URL de Stripe.");
             }

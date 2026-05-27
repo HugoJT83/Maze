@@ -523,7 +523,11 @@ const EventDetailPage = () => {
                                     {paidTickets.map(ticket => (
                                         <div key={ticket.id} className="bg-white-to-black p-4 rounded-xl border border-green-500/30 flex justify-between items-center">
                                             <div>
-                                                <p className="font-bold text-black-to-white">{ticket.user_name}</p>
+                                                <p className="font-bold text-black-to-white">
+                                                    <Link to={`/public-profile/${ticket.user_id}`} className="hover:text-indigo-to-yellow hover:underline transition-colors">
+                                                        {ticket.user_name}
+                                                    </Link>
+                                                </p>
                                                 <p className="text-xs text-gray-to-yellow">{ticket.user_email}</p>
                                                 {ticket.ticket_validator && (
                                                     <p className="text-sm text-indigo-to-yellow font-semibold mt-1">
@@ -551,7 +555,11 @@ const EventDetailPage = () => {
                                         {pendingTickets.map(ticket => (
                                             <div key={ticket.id} className="bg-white-to-black p-4 rounded-xl border border-lightgray-to-yellow flex justify-between items-center">
                                                 <div>
-                                                    <p className="font-bold text-black-to-white">{ticket.user_name}</p>
+                                                    <p className="font-bold text-black-to-white">
+                                                        <Link to={`/public-profile/${ticket.user_id}`} className="hover:text-indigo-to-yellow hover:underline transition-colors">
+                                                            {ticket.user_name}
+                                                        </Link>
+                                                    </p>
                                                     <p className="text-xs text-gray-to-yellow">{ticket.user_email}</p>
                                                 </div>
                                                 <div className="flex gap-2">
@@ -587,7 +595,11 @@ const EventDetailPage = () => {
                                     <div className="flex flex-col gap-3">
                                         {acceptedTickets.map(ticket => (
                                             <div key={ticket.id} className="bg-white-to-black p-4 rounded-xl border border-green-500/30">
-                                                <p className="font-bold text-black-to-white">{ticket.user_name}</p>
+                                                <p className="font-bold text-black-to-white">
+                                                    <Link to={`/public-profile/${ticket.user_id}`} className="hover:text-indigo-to-yellow hover:underline transition-colors">
+                                                        {ticket.user_name}
+                                                    </Link>
+                                                </p>
                                                 <p className="text-xs text-gray-to-yellow">{ticket.user_email}</p>
                                                 {ticket.ticket_validator && (
                                                     <p className="text-sm text-indigo-to-yellow font-semibold mt-1">
@@ -624,7 +636,7 @@ const EventDetailPage = () => {
                             placeholder="Escribe aquí el mensaje para tus invitados..."
                             rows={6}
                             maxLength={3000}
-                            className="w-full bg-white-to-black border border-lightgray-to-yellow rounded-2xl p-4 text-white-to-black placeholder-gray-500/50 focus:outline-none focus:ring-2 focus:ring-indigo-to-yellow transition-all resize-y"
+                            className="w-full bg-white-to-black border border-lightgray-to-yellow rounded-2xl p-4 text-black-to-white placeholder-gray-500/50 focus:outline-none focus:ring-2 focus:ring-indigo-to-yellow transition-all resize-y"
                         />
                         <div className={`absolute bottom-3 right-4 text-xs font-semibold ${getWordCount(guestMessage) > 500 ? "text-red-500" : "text-gray-to-yellow"}`}>
                             {getWordCount(guestMessage)} / 500 palabras

@@ -34,6 +34,14 @@ async def createEventService(data: EventCreate, images: List[Annotated[UploadFil
     })
     if not check_exist:
         raise HTTPException(status_code=404,detail="Creator User Not Found")
+        
+    # Validar que si el evento es de pago, el creador tenga configurada su cuenta Stripe
+    if data.ticket_price is not None and data.ticket_price > 0:
+        if not check_exist.get("stripe_account_id"):
+            raise HTTPException(
+                status_code=400,
+                detail="Para crear un evento de pago, primero debes configurar tus datos de facturación en tu perfil."
+            )
     
     event_id_obj = bson.ObjectId()
     event_id_str = str(event_id_obj)
@@ -336,10 +344,12 @@ async def denyEventService(event_id: str, justification: str, adminUserId: str, 
     }
     
 
-async def searchEventsService(lat: float = None, lng: float = None, radius_km: float = None, start_date: str = None, end_date: str = None, interests: str = None, city: str = None, province: str = None, page: int = 1, limit: int = 10):
+async def searchEventsService(lat: float = None, lng: float = None, radius_km: float = None, start_date: str = None, end_date: str = None, interests: str = None, city: str = None, province: str = None, page: int = 1, limit: int = 10, userId: str = None):
     await events_collection.create_index([("location.coordinates", "2dsphere")])
     
     query = {"status": "accepted"}
+    if userId:
+        query["creator_id"] = {"$ne": userId}
     
     if lat is not None and lng is not None and radius_km is not None:
         query["location.coordinates"] = {

@@ -3,7 +3,7 @@
 import json
 from typing import Annotated, List
 
-from fastapi import APIRouter, BackgroundTasks, Depends, File, Form, HTTPException, UploadFile
+from fastapi import APIRouter, BackgroundTasks, Depends, File, Form, HTTPException, UploadFile, Request
 
 from controllers import eventController
 from controllers.eventController import createEventController
@@ -43,8 +43,31 @@ async def getPendingEvents(page: int = 1, limit: int = 5, userId: str = Depends(
     return await eventController.getPendingEventsController(userId, page, limit)
 
 @router.get("/search")
-async def searchEvents(lat: float = None, lng: float = None, radius: float = None, start_date: str = None, end_date: str = None, interests: str = None, city: str = None, province: str = None, page: int = 1, limit: int = 10):
-    return await eventController.searchEventsController(lat, lng, radius, start_date, end_date, interests, city, province, page, limit)
+async def searchEvents(
+    req: Request,
+    lat: float = None, 
+    lng: float = None, 
+    radius: float = None, 
+    start_date: str = None, 
+    end_date: str = None, 
+    interests: str = None, 
+    city: str = None, 
+    province: str = None, 
+    page: int = 1, 
+    limit: int = 10
+):
+    userId = None
+    authorization = req.headers.get("Authorization", "")
+    if authorization and authorization.startswith("Bearer "):
+        token = authorization.split(" ")[1]
+        if token:
+            try:
+                from config.env import ENVConfig
+                payload = jwt.decode(token, ENVConfig.JWT_AUTH_SCREATE, algorithms=[ENVConfig.ALGORITHMS])
+                userId = payload.get('user_id')
+            except Exception:
+                pass
+    return await eventController.searchEventsController(lat, lng, radius, start_date, end_date, interests, city, province, page, limit, userId)
 
 @router.get("/{id}")
 async def getEventById(id: str, userId: str = Depends(verifyToken)):
