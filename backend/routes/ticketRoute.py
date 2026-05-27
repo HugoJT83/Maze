@@ -20,6 +20,10 @@ async def get_tickets_for_event(event_id: str, userId=Depends(verifyToken)):
 async def update_ticket_status(ticket_id: str, data: StatusUpdate, userId=Depends(verifyToken)):
     return await ticketController.updateTicketStatusController(ticket_id, data.status, userId)
 
+@router.get("/my-tickets")
+async def get_my_tickets(userId=Depends(verifyToken)):
+    return await ticketController.getMyTicketsController(userId)
+
 @router.get("/my-ticket/{event_id}")
 async def get_user_ticket(event_id: str, userId=Depends(verifyToken)):
     return await ticketController.getUserTicketController(event_id, userId)

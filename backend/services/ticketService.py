@@ -145,3 +145,34 @@ async def get_user_ticket(event_id: str, user_id: str):
         "ticket_type": ticket["ticket_type"],
         "id": str(ticket["_id"])
     }
+
+async def get_user_tickets(user_id: str):
+    cursor = tickets_collection.find({"user_id": user_id})
+    tickets = await cursor.to_list(length=1000)
+    
+    enriched_tickets = []
+    for t in tickets:
+        event = await events_collection.find_one({"_id": ObjectId(t["event_id"])})
+        if not event:
+            continue
+            
+        t_data = {
+            "id": str(t["_id"]),
+            "event_id": t["event_id"],
+            "user_id": t["user_id"],
+            "status": t["status"],
+            "ticket_type": t["ticket_type"],
+            "ticket_validator": t.get("ticket_validator"),
+            "created_at": t["created_at"],
+            "updated_at": t["updated_at"],
+            "event_title": event.get("title", "Evento sin título"),
+            "event_ticket_price": event.get("ticket_price"),
+            "event_location": event.get("location"),
+            "event_starting_date": event.get("starting_event_date"),
+            "event_finish_date": event.get("finish_event_date"),
+            "event_start_hour": event.get("start_hour"),
+            "event_finish_hour": event.get("finish_hour"),
+        }
+        enriched_tickets.append(t_data)
+        
+    return {"tickets": enriched_tickets}
