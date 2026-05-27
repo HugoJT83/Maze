@@ -23,11 +23,16 @@ import {
     faTimes
 } from '@fortawesome/free-solid-svg-icons'
 import LoaderComponent from '../../../components/ui/LoaderComponent';
+import PublicActiveEventDetails from './components/PublicActiveEventDetails';
+import { toast } from 'react-toastify';
 
 const PublicProfile = () => {
 
     const { config, setConfig } = useAccessibility();
     const [activeTab, setActiveTab] = useState('informacion');
+
+    const [events, setEvents] = useState([])
+    const [eventsFetched, setEventsFetched] = useState(false)
 
     const [profileData, setProfileData] = useState(null)
     const [loading, setLoading] = useState(false)
@@ -60,6 +65,22 @@ const PublicProfile = () => {
         }
     }
 
+    const fetchPublicEvents = async () => {
+        try {
+            const response = await axiosClient.get(`/events/public-events/${id}`, {
+                headers: {
+                    Authorization: 'Bearer ' + localStorage.getItem("token")
+                }
+            })
+            console.log(response.data);
+
+            setEvents(response.data)
+            setEventsFetched(true)
+        } catch (error) {
+            toast.error(error.response?.data?.detail || error?.message || "Error al obtener el historial de eventos")
+        }
+    }
+
     useEffect(() => {
         if (id) {
             fetchPublicProfileDetails()
@@ -67,7 +88,11 @@ const PublicProfile = () => {
             setError("ID de perfil de usuario no encontrado")
             setLoading(false)
         }
-    }, [id])
+
+        if (!eventsFetched) {
+            fetchPublicEvents()
+        }
+    }, [id, eventsFetched])
 
     if (loading) {
         return (
@@ -115,12 +140,20 @@ const PublicProfile = () => {
                     >
                         Historial de eventos
                     </button>
+                    <button
+                        className={`px-4 py-2 rounded-lg font-Bitcount text-xl transition-all hover:scale-105 hover:cursor-pointer ${activeTab === 'activos' ? 'bg-indigo-to-yellow text-white-to-black scale-105' : 'bg-white-to-black text-indigo-to-yellow border-2 border-indigo-to-yellow hover:bg-indigo-50'}`}
+                        onClick={() => setActiveTab('activos')}
+                    >
+                        Eventos Activos
+                    </button>
                 </div>
 
                 <div className="flex flex-wrap w-full items-center justify-center pb-8">
                     <PublicAvatarComponent avatar={profileData.avatar} />
                     {activeTab === 'informacion' && <PublicDetails name={profileData.name} description={profileData.description} address={profileData.address} interests={profileData.interests} />}
-                    {activeTab === 'historial' && <PublicHistoricEventDetails created_events={profileData.created_events} />}
+                    {activeTab === 'historial' && <PublicHistoricEventDetails created_events={events} />}
+                    {activeTab === 'activos' && <PublicActiveEventDetails created_events={events} />}
+
                 </div>
 
             </div>

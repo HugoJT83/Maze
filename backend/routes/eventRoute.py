@@ -66,4 +66,7 @@ async def approveEvent(id: str, background_tasks: BackgroundTasks, userId: str =
 async def denyEvent(id: str, data: dict, background_tasks: BackgroundTasks, userId: str = Depends(verifyToken)):
     justification = data.get("justification", "")
     return await eventController.denyEventController(id, justification, userId, background_tasks)
-    
+
+@router.get("/public-events/{id}")
+async def getUserPublicEvents(id:str):
+    return await eventController.getEventsByUserController(id)

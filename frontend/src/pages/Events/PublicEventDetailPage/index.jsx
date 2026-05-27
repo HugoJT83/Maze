@@ -341,7 +341,7 @@ const PublicEventDetailPage = () => {
                                     )}
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <Link to={`/public-profile/${event.creator_id}`}> {/* HARDCODEADO PARA PRUEBAS */}
+                                    <Link to={`/public-profile/${event.creator_id}`}>
                                         <p className="text-base font-bold text-black-to-white truncate hover:underline hover:scale-105 transform-all duration-200 hover:text-indigo-to-yellow">{creator_data?.name || "Cargando..."}</p>
                                     </Link>
                                     <p className="text-xs text-gray-to-yellow truncate flex items-center gap-1.5 mt-0.5">
