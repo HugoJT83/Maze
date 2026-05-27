@@ -12,6 +12,7 @@ app.add_middleware(CORSMiddleware,
     allow_headers=["*"],
     allow_methods=['GET','POST','PATCH','PUT','DELETE'],
     allow_origins=[
+        "http://maze-jade-tau.vercel.app"
         "http://localhost:5173",
         "http://127.0.0.1:5173"
     ],
