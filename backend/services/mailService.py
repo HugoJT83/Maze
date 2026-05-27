@@ -10,8 +10,8 @@ conf = ConnectionConfig(
     MAIL_FROM= ENVConfig.GMAIL_FROM,
     MAIL_PORT= ENVConfig.MAILMUG_PORT,
     MAIL_SERVER= ENVConfig.MAILMUG_HOST,
-    MAIL_SSL_TLS= False,
-    MAIL_STARTTLS= True,
+    MAIL_SSL_TLS= True if ENVConfig.MAILMUG_PORT == 465 else False,
+    MAIL_STARTTLS= False if ENVConfig.MAILMUG_PORT == 465 else True,
     USE_CREDENTIALS= True,
     TEMPLATE_FOLDER= './templates'
 )
@@ -32,7 +32,11 @@ async def send_mail_safe(message: MessageSchema, template_name: str):
         print("Traceback completo del error:", flush=True)
         traceback.print_exc()
         print("---------------------------------------------\n", flush=True)
-        raise HTTPException(status_code=400, detail="Mail Error")
+        # NO levantar HTTPException aquí porque al ejecutarse en BackgroundTasks,
+        # provoca "RuntimeError: Caught handled exception, but response already started."
+        # En su lugar, el error ya queda registrado en el log.
+        return False
+    return True
 
 async def createEventNotificationService (event_data: dict, user_data: dict):
     message = MessageSchema(
