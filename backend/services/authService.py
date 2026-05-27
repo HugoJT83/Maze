@@ -319,6 +319,7 @@ async def getPublicProfileService(userId:str):
         "id": str(user["_id"]),
         "name": profile.get("name", user.get("name")),
         "description": profile.get("description", "Sin descripción disponible."),
+        "address": profile.get("address", "Sin ubicacion disponible"),
         "interests": profile.get("interests", []),
         "avatar": avatar_uri,
         "created_events": profile.get("created_events", [])

@@ -117,7 +117,7 @@ const PublicProfile = () => {
                     </button>
                 </div>
 
-                <div className="flex flex-wrap w-full items-start justify-center pb-8">
+                <div className="flex flex-wrap w-full items-center justify-center pb-8">
                     <PublicAvatarComponent avatar={profileData.avatar} />
                     {activeTab === 'informacion' && <PublicDetails name={profileData.name} description={profileData.description} address={profileData.address} interests={profileData.interests} />}
                     {activeTab === 'historial' && <PublicHistoricEventDetails created_events={profileData.created_events} />}
