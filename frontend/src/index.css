@@ -6,12 +6,17 @@
     --font-Bitcount: 'Bitcount Prop Double';
 
     --color-indigo-to-yellow: #818cf8; /* Indigo 400 por defecto */
-    --color-white-to-black: #ffffff; /* Blanco por defecto */
-    --color-gray-to-yellow: #e5e7eb; /* Gray 200 por defecto */
-    --color-black-to-white: #000000; /* Negro por defecto */
     --color-indigo-to-black: #818cf8; /* Indigo 400 por defecto */
+
+    --color-white-to-black: #ffffff; /* Blanco por defecto */
+    --color-black-to-white: #000000; /* Negro por defecto */
+
+    --color-gray-to-yellow: #9ca3af; /* Gray 400 por defecto */
     --color-gray-to-black: #9ca3af; /* Gray 400 por defecto */
-    --color-lightgray-to-black:#e5e7eb;
+
+    --color-lightgray-to-black:#e5e7eb; /* Gray 200 por defecto */
+    --color-lightgray-to-yellow:#e5e7eb; /* Gray 200 por defecto */
+
     --font-main: 'Poppins', ui-sans-serif, system-ui;
     --font-Dyslexic: 'OpenDyslexic',sans-serif;    
 
@@ -28,17 +33,21 @@
 }
 
 .high-contrast {
-    --color-indigo-to-yellow: #ffff00;
     --color-white-to-black: #000000;
-    --color-gray-to-yellow: #ffff00;
     --color-black-to-white: #ffffff;
+
+    --color-indigo-to-yellow: #ffff00;
     --color-indigo-to-black: #000000; 
+
+    --color-gray-to-yellow: #ffff00;
     --color-gray-to-black: #000000;
+
     --color-lightgray-to-black:#000000;
+    --color-lightgray-to-yellow:#ffff00;
+
     background-color: #000000 !important;
     color: #ffffff !important;
 }
-
 
 
 body {
@@ -57,4 +66,9 @@ body {
     src: url('./fonts/OpenDyslexic-Bold.otf') format('opentype');
     font-weight: bold;
     font-style: normal;
+}
+
+/* Correcciones de estilo e idoneidad para Leaflet */
+.leaflet-container {
+    font-family: var(--font-main) !important;
 }

@@ -1,5 +1,5 @@
 import bson
-from pydantic import BaseModel,Field, EmailStr,field_validator
+from pydantic import BaseModel,Field, EmailStr,field_validator, model_validator
 from datetime import datetime, timezone
 from typing import List, Optional, Union
 from enum import Enum
@@ -27,25 +27,17 @@ class InterestsEnum(str, Enum):
     
 class ProfileImage(BaseModel):
     image_uri:str
-    public_id:str
+    public_id:Optional[str] = None
 
 class User(BaseModel):
     
     name: str = Field(...)
     email: EmailStr = Field(...)
-    password: str = Field(...,min_length=6)
+    password: Optional[str] = None
+    auth_method: Optional[str] = None
     role: Optional[RolesEnum]  = Field(default = RolesEnum.user)
     created_at:datetime = Field(default_factory=datetime.now)
     update_at:datetime = Field(default_factory=datetime.now)
-    
-    """  Opcional   
-        created_at: datetime = Field(
-        default_factory=lambda: datetime.now(timezone.utc))
-    
-    updated_at: datetime = Field(
-        default_factory=lambda: datetime.now(timezone.utc),
-        sa_column_kwargs={"onupdate": lambda: datetime.now(timezone.utc)}) 
-    """
 
     @field_validator('name')
     def validate_name(cls,value):
@@ -53,10 +45,19 @@ class User(BaseModel):
             raise ValueError("El nombre debe ser mayor de 3 caracteres")
         return value
     
+    @model_validator(mode='after')
+    def verify_password_by_auth(self) -> "User":
+        if self.auth_method != "google":
+            if not self.password:
+                raise ValueError("Password is obligatory for non-Google Accounts")
+            if len(self.password) <8:
+                raise ValueError("Password must be at least 6 characters")
+        return self
+    
 
 class Address(BaseModel):
-    country:str
-    state:str
+    province:str
+    city:str
    
 
 class UserProfile(BaseModel):
@@ -69,6 +70,7 @@ class UserProfile(BaseModel):
     address: Optional[Address] = None
     created_events: List[str] = Field(default=[])
     joined_events: List[str] = Field(default = [])
+    stripe_account_id: Optional[str] = None
     
     created_at:datetime = Field(default_factory=datetime.now)
     update_at:datetime = Field(default_factory=datetime.now)
@@ -95,6 +97,7 @@ class UpdateDetails(BaseModel):
     description: Optional[str] = ""
     interests: List[InterestsEnum] = Field(default=[], max_items=4)
     address: Optional[Address] = None
+    stripe_account_id: Optional[str] = None
     
     @field_validator('interests')
     @classmethod

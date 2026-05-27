@@ -1,33 +1,63 @@
-import React from 'react'
+import React, { useEffect } from 'react'
+import logo from '../assets/icono_transparent.png'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { fas } from '@fortawesome/free-solid-svg-icons'
 import { far } from '@fortawesome/free-regular-svg-icons'
-library.add(fas,far)
+import { Link, useLocation } from 'react-router-dom'
+library.add(fas, far)
 
 const Footer = () => {
+
+  const scrollToTop = () => {
+    window.scrollTo(0, 0);
+  }
+
   return (
     <>
-      <footer className="text-gray-600 body-font">
-        <div className="container text-black-to-white px-5 py-8 mx-auto flex items-center sm:flex-row flex-col">
-          <a className="flex title-font  font-medium items-center md:justify-start justify-center" href='https://github.com/HugoJT83'>
-            <FontAwesomeIcon icon="fa-solid fa-code-branch" className='text-2xl'></FontAwesomeIcon>
-            <p className="ml-3 text-xl font-Bitcount ">HugoJT83</p>
-          </a>
-          <p className="text-sm sm:ml-4 sm:pl-4 sm:border-l-2 sm:border-gray-200 sm:py-2 sm:mt-0 mt-4">
-            Mis movidas
-          </p>
-
-          <span className="inline-flex sm:ml-auto sm:mt-0 mt-4 justify-center sm:justify-start">
-            
-            <a className="ml-3 text-black-to-white" href='www.linkedin.com/in/hugo-jariod-tomás-15a39b3b2'>
-              <svg fill="currentColor" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="0" className="w-5 h-5" viewBox="0 0 24 24">
-                <path stroke="none" d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"></path>
-                <circle cx="4" cy="4" r="2" stroke="none"></circle>
-              </svg>
-            </a>
-          </span>
+      <footer>
+        <div className="container py-24 mx-auto flex justify-between md:items-center lg:items-start md:flex-row md:flex-nowrap flex-wrap flex-col">
+          <div className="w-80 md:mx-10 mx-auto text-center md:text-left">
+            <Link to={'/'} className='flex items-center'>
+              <img src={logo} alt="" className='w-15 h-15' />
+              <span className='text-3xl font-Bitcount mt-2 ml-2 text-black-to-white'>Maze</span>
+            </Link>
+            <p className="mt-2 text-sm text-gray-to-yellow">©{new Date().getFullYear()}, MAZE. Todos los derechos reservados.</p>
+          </div>
+          <div className="flex grow justify-end flex-wrap md:pl-20 -mb-10 md:mt-0 mt-10 md:text-left text-center">
+            <div className="lg:w-1/4 md:w-1/2 w-full px-4">
+              <h2 className="tracking-widest text-sm mb-3">NAVEGACIÓN</h2>
+              <nav className="list-none mb-10">
+                <li className='my-1'>
+                  <Link to={'/register'} className=' text-gray-to-yellow hover:text-indigo-to-yellow'>Registrarse</Link>
+                </li>
+                <li className='my-1'>
+                  <Link to={'/login'} className=' text-gray-to-yellow hover:text-indigo-to-yellow'>Iniciar Sesión</Link>
+                </li>
+                <li className='my-1'>
+                  <Link to={'/event-search'} className=' text-gray-to-yellow hover:text-indigo-to-yellow'>Eventos</Link>
+                </li>
+                <li className='my-1'>
+                  <Link to={'/about'} className=' text-gray-to-yellow hover:text-indigo-to-yellow'>Sobre nosotros</Link>
+                </li>
+              </nav>
+            </div>
+            <div className="lg:w-1/4 md:w-1/2 w-full px-4">
+              <h2 className="tracking-widest text-sm mb-3">LEGAL</h2>
+              <nav className="list-none mb-10">
+                <li className='my-1'>
+                  <Link to={'/legal'} onClick={scrollToTop()} className=' text-gray-to-yellow hover:text-indigo-to-yellow'>Aviso Legal</Link>
+                </li>
+                <li className='my-1'>
+                  <Link to={'/privacy-policy'} onClick={scrollToTop()} className=' text-gray-to-yellow hover:text-indigo-to-yellow'>Política de privacidad</Link>
+                </li>
+                <li className='my-1'>
+                  <Link to={'/accessibility'} onClick={scrollToTop()} className=' text-gray-to-yellow hover:text-indigo-to-yellow'>Accesibilidad</Link>
+                </li>
+              </nav>
+            </div>
+          </div>
         </div>
       </footer>
     </>

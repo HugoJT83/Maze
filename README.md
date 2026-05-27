@@ -43,24 +43,24 @@ La aplicación se puede ejecutar de forma local considerando las siguientes anot
 
 - Se requieren cuentas en los respectivos servicios en la nube como MongoDB o Cloudinary; en el caso de MongoDB, se puede utilizar de forma local a través de MongoDB Community Server.
 
-- La aplicación utiliza variables de entorno para el almacenamiento de credenciales; fuese a utilizarse, debiérase renombrarse el archivo ".env.example" existente en la carpeta "backend" a ".env", introduciendo en ella las credenciales propias.
+- La aplicación utiliza variables de entorno para el almacenamiento de credenciales; fuese a utilizarse, debiérase renombrarse el archivo ".env.example" existente en la carpeta [backend](./backend) a ".env", introduciendo en ella las credenciales propias.
 
-- Todas las dependencias utilizadas en el backend quedan especificadas en el archivo "requirements.md" del directorio "backend"; estas deben ejecutarse en consola desde el directorio indicado.
+- Todas las dependencias utilizadas en el backend quedan especificadas en el archivo [requirements.md](./backend/requirements.md) del directorio [backend](./backend); estas deben ejecutarse en consola desde el directorio indicado.
 
-- Todas las dependendias utilizadas en el frontend se pueden descargar utilizando el siguiente comando desde una terminal en el directorio "frontend":
+- Todas las dependendias utilizadas en el frontend se pueden descargar utilizando el siguiente comando desde una terminal en el directorio [frontend](./frontend):
 ```
     npm install
 ```
 
 - Los siguientes comandos deben ser ejecutados desde sus respectivos directorios para levantar los servicios:
 
-    - directorio "frontend":
+    - directorio [frontend](./frontend); el servicio actúa en el **puerto 5173**:
 
     ```
         npm run dev
-    ```  
+    ```
 
-    - directorio "backend":
+    - directorio [backend](./backend); el servicio actúa en el **puerto 8000**:
 
     ```
         uvicorn app:app --reload
