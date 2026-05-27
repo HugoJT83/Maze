@@ -3,6 +3,7 @@ import AvatarComponent from './components/AvatarComponent'
 import Details from './components/Details'
 import BillingDetails from './components/BillingDetails'
 import { useAccessibility } from '../../../context/AccessibilityContext'
+import HistoricEventDetails from './components/HistoricEventDetails'
 
 const ProfileUser = () => {
 
@@ -42,11 +43,7 @@ const ProfileUser = () => {
           <AvatarComponent />
           {activeTab === 'informacion' && <Details />}
           {activeTab === 'facturacion' && <BillingDetails />}
-          {activeTab === 'historial' && (
-            <div className="lg:w-1/2 sm:w-1/3 m-5 p-5 bg-slate-50 rounded-lg text-center shadow">
-              <p className="text-xl text-gray-500 font-Bitcount">Historial de eventos (Próximamente)</p>
-            </div>
-          )}
+          {activeTab === 'historial' && <HistoricEventDetails />}
         </div>
 
       </div>

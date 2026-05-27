@@ -97,7 +97,7 @@ const EventUnit = ({ eventData, customNavigatePath }) => {
                                 </> :
                                 <>
                                     <h2>Usuarios pendientes: <span className='font-bold text-indigo-to-yellow'>{pending_users}</span></h2>
-                                    <h2>Usuarios aprobados: <span className='font-bold text-green-500'>{accepted_users}</span></h2>
+                                    <h2>Usuarios aprobados: <span className='font-bold text-indigo-to-yellow'>{accepted_users}</span></h2>
                                 </>
                             ) :
                             <>
