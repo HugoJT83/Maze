@@ -21,6 +21,7 @@ import EventManager from "./pages/Events/EventManager";
 import EventManagementDetailPage from "./pages/Events/EventManagementDetailPage";
 import EventSearchPage from "./pages/Events/EventSearch";
 import PublicEventDetailPage from "./pages/Events/PublicEventDetailPage";
+import PublicProfile from "./pages/auth/PublicProfile";
 
 const App = () => {
   return (
@@ -48,6 +49,7 @@ const App = () => {
           <Route path="/privacy-policy" Component={PrivacyPolicy} />
           <Route path="/accessibility" Component={Accesibility} />
           <Route path="/about" Component={About} />
+          <Route path="/public-profile/:id" Component={PublicProfile} />
         </Route>
 
 

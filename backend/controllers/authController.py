@@ -33,3 +33,7 @@ async def updateAvatarController(avatar, userId):
 async def updateDetailsController(data,userId):
         res_obj = await authService.UpdateDetailsService(data, userId)
         return res_obj
+
+async def getPublicProfileController(id):
+        res_obj = await authService.getPublicProfileService(id)
+        return res_obj

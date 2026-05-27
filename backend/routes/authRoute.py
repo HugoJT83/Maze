@@ -43,3 +43,7 @@ async def updateAvatar(avatar: Annotated[UploadFile,File()], userId = Depends(ve
 @router.put("/update-details")
 async def updateDetails(data:UpdateDetails, userId = Depends(verifyToken)):
     return await authController.updateDetailsController(data,userId)
+
+@router.get("/public-profile/{id}")
+async def getPublicProfileDetails(id: str):
+    return await authController.getPublicProfileController(id)

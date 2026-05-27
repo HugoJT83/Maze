@@ -134,6 +134,7 @@ async def getEventByIdService(event_id: str):
     event_data = dict(event)
     
     event_data["creator_data"] = {
+        "creator_id": event.get("creator_id"),
         "name": creator.get("name") if creator else "Desconocido",
         "email": creator.get("email") if creator else "Sin email",
         "avatar": creator_profile.get("avatar", {}).get("image_uri") if creator_profile and creator_profile.get("avatar") else None

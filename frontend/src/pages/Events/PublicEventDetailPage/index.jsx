@@ -326,7 +326,7 @@ const PublicEventDetailPage = () => {
                 <div className="lg:col-span-4 flex flex-col gap-6">
 
                     {/* TARJETA DEL CREADOR */}
-                    <div className="bg-lightgray-to-black p-6 rounded-lg border border-gray-to-yellow/10 hover:scale-[1.01] transition-transform duration-300">
+                    <div className="bg-lightgray-to-black p-6 rounded-lg border border-gray-to-yellow/10">
                         <h3 className="text-lg font-bold text-indigo-to-yellow uppercase tracking-wider border-b border-gray-to-yellow/20 pb-3 mb-4 flex items-center gap-2">
                             <FontAwesomeIcon icon={faCircleUser} />
                             Creador del Evento
@@ -341,7 +341,9 @@ const PublicEventDetailPage = () => {
                                     )}
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <p className="text-base font-bold text-black-to-white truncate">{creator_data?.name || "Cargando..."}</p>
+                                    <Link to={`/public-profile/${event.creator_id}`}> {/* HARDCODEADO PARA PRUEBAS */}
+                                        <p className="text-base font-bold text-black-to-white truncate hover:underline hover:scale-105 transform-all duration-200 hover:text-indigo-to-yellow">{creator_data?.name || "Cargando..."}</p>
+                                    </Link>
                                     <p className="text-xs text-gray-to-yellow truncate flex items-center gap-1.5 mt-0.5">
                                         <FontAwesomeIcon icon={faEnvelope} className="text-indigo-to-yellow/70" />
                                         {creator_data?.email || "Sin email"}

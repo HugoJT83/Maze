@@ -293,3 +293,35 @@ async def UpdateDetailsService(data: UpdateDetails, userId:str):
         "msg":"Details Update Success"
 
     }
+    
+async def getPublicProfileService(userId:str):
+    if not bson.ObjectId.is_valid(userId):
+        raise HTTPException(status_code=400, detail="Identificador de usuario no válido")
+    
+    user = await user_collection.find_one(
+        {"_id": bson.ObjectId(userId)},
+        {"name": 1}
+    )
+    
+    if not user:
+        raise HTTPException(status_code=404, detail="El usuario no existe")
+        
+    # 2. Obtener los detalles del perfil público
+    profile = await profile_collection.find_one({"user_id": userId})
+    if not profile:
+        raise HTTPException(status_code=404, detail="Perfil no encontrado")
+    
+    avatar_uri = None
+    if profile.get('avatar') and 'image_uri' in profile['avatar']:
+        avatar_uri = profile['avatar']['image_uri']
+    
+    profile_data = {
+        "id": str(user["_id"]),
+        "name": profile.get("name", user.get("name")),
+        "description": profile.get("description", "Sin descripción disponible."),
+        "interests": profile.get("interests", []),
+        "avatar": avatar_uri,
+        "created_events": profile.get("created_events", [])
+    }
+    
+    return profile_data
