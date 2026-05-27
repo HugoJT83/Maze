@@ -70,6 +70,7 @@ const Home = () => {
           <h1 className='text-5xl font-Bitcount text-center md:text-left text-white-to-black'>Busca por temáticas...</h1>
           <h2 className='mb-8 text-2xl text-center md:text-left text-lightgray-to-black'>Elige un tema de tu interés y busca eventos a tu gusto</h2>
           <p className='my-2 text-lg  text-white-to-black lg:w-2/3 text-center md:text-left'>Desde MAZE te ofrecemos un filtrado rápido y efectivo de experiencias según tus intereses personales; ya sea tecnología, arte o deportes, conecta directamente con comunidades y actividades que te importan.  </p>
+          
         </div>
 
         <div className='flex justify-center'>
