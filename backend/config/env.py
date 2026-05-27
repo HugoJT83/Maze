@@ -26,12 +26,16 @@ class ENVConfig:
     MAILMUG_USERNAME= os.getenv("MAILMUG_USERNAME","")
     MAILMUG_PASSWORD= os.getenv("MAILMUG_PASSWORD","")
     MAILMUG_HOST= os.getenv("MAILMUG_HOST","")
-    MAILMUG_PORT = os.getenv("MAILMUG_PORT","")
+    
+    _mailmug_port_env = os.getenv("MAILMUG_PORT", "").strip()
+    MAILMUG_PORT = int(_mailmug_port_env) if _mailmug_port_env.isdigit() else 2525
     
     GMAIL_USERAME = os.getenv("GMAIL_USERNAME","")
     GMAIL_PASSWORD = os.getenv("GMAIL_PASSWORD","")
     GMAIL_FROM = os.getenv("GMAIL_FROM","")
-    GMAIL_PORT = os.getenv("GMAIL_PORT","")
+    
+    _gmail_port_env = os.getenv("GMAIL_PORT", "").strip()
+    GMAIL_PORT = int(_gmail_port_env) if _gmail_port_env.isdigit() else 587
     
     GOOGLEAUTH_CLIENT=os.getenv("GOOGLEAUTH_CLIENT","")
     
