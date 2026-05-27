@@ -14,6 +14,7 @@ class Location(BaseModel):
     direction: str = Field(...)
     city: str = Field(...)
     province: str = Field(...)
+    postal_code: Optional[str] = Field(default=None)
     coordinates: List[float] = Field(default=[], description="[longitude, latitude]")
 
     @field_validator('direction','city','province')
@@ -21,6 +22,15 @@ class Location(BaseModel):
     def check_not_empty_whitespace(cls,value):
         if not value.strip():
             raise ValueError("El campo no puede estar vacío o solo contener espacios en blanco.")
+        return value
+
+    @field_validator('postal_code')
+    @classmethod
+    def check_postal_code_format(cls, value):
+        if value is not None:
+            import re
+            if not re.match(r'^\d{5}$', value):
+                raise ValueError("El código postal debe ser exactamente de 5 dígitos numéricos.")
         return value
     
     
@@ -48,6 +58,15 @@ class EventBase(BaseModel):
     max_capacity: int = Field(...)
     max_tickets_per_person: Optional[int] = None
     ticket_price: Optional[float] = None
+
+    @field_validator('phone')
+    @classmethod
+    def validate_phone_format(cls, value):
+        import re
+        pattern = r'^(\+?34)?(6\d{2}|7[1-9]\d{1})\d{6}$'
+        if not re.match(pattern, value):
+            raise ValueError("el número de teléfono debe contener 9 dígitos únicamente y poseer un formato válido")
+        return value
     
     
 class EventCreate(EventBase):
