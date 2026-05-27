@@ -24,38 +24,53 @@ const InterestCarousel = () => {
         }
     };
 
-
     return (
         <>
-            <div className='flex items-center gap-5 lg:gap-20'>
+            <style>{`
+                .no-scrollbar::-webkit-scrollbar {
+                    display: none;
+                }
+                .no-scrollbar {
+                    -ms-overflow-style: none;
+                    scrollbar-width: none;
+                }
+            `}</style>
+            <div className='flex items-center justify-center w-full max-w-full gap-2 sm:gap-5 md:gap-10 lg:gap-20 px-2 sm:px-4'>
+
+                {/* Arrow Left (Desktop only) */}
                 <button
                     onClick={() => scroll('left')}
-                    className='flex items-center align-middle justify-center bg-white-to-black w-10 h-10  rounded-full hover:cursor-pointer hover:scale-110 transition-all ease-in-out  '
+                    className='hidden md:flex items-center align-middle justify-center bg-white-to-black w-12 h-12 shrink-0 rounded-full hover:cursor-pointer hover:scale-110 transition-all ease-in-out dark:border-gray-800'
+                    aria-label="Anterior"
                 >
-                    <FontAwesomeIcon icon={'fa-solid fa-arrow-left'} className='text-3xl text-indigo-to-yellow'></FontAwesomeIcon>
+                    <FontAwesomeIcon icon={'fa-solid fa-arrow-left'} className='text-2xl text-indigo-to-yellow'></FontAwesomeIcon>
                 </button>
+
+                {/* Carousel Container */}
                 <div
                     ref={scrollRef}
-                    className='flex md:w-150  lg:w-250  gap-50 overflow-hidden px-20'>
-
+                    className='flex w-full md:w-150 lg:w-250 gap-8 sm:gap-16 md:gap-32 lg:gap-50 overflow-x-auto md:overflow-hidden px-4 md:px-10 no-scrollbar scroll-smooth snap-x snap-mandatory'
+                >
                     {Object.entries(INTERESTS_CONFIG).map(([key, config]) => {
-
                         return (
-                            <InterestFilter
-                                key={key}
-                                interestKey={key}
-                                interest={config.icon}
-                                label={config.label}
-                            />
+                            <div key={key} className="snap-center shrink-0">
+                                <InterestFilter
+                                    interestKey={key}
+                                    interest={config.icon}
+                                    label={config.label}
+                                />
+                            </div>
                         )
                     })}
-
                 </div>
+
+                {/* Arrow Right (Desktop only) */}
                 <button
                     onClick={() => scroll('right')}
-                    className=' flex items-center align-middle justify-center bg-white-to-black w-10 h-10 rounded-full hover:cursor-pointer hover:scale-110 transition-all ease-in-out'
+                    className='hidden md:flex items-center align-middle justify-center bg-white-to-black w-12 h-12 shrink-0 rounded-full hover:cursor-pointer hover:scale-110 transition-all ease-in-out dark:border-gray-800'
+                    aria-label="Siguiente"
                 >
-                    <FontAwesomeIcon icon={'fa-solid fa-arrow-right'} className='text-3xl text-indigo-to-yellow'></FontAwesomeIcon>
+                    <FontAwesomeIcon icon={'fa-solid fa-arrow-right'} className='text-2xl text-indigo-to-yellow'></FontAwesomeIcon>
                 </button>
             </div>
         </>
