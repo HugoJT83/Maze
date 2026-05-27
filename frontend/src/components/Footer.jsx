@@ -36,7 +36,7 @@ const Footer = () => {
                   <Link to={'/login'} className=' text-gray-to-yellow hover:text-indigo-to-yellow'>Iniciar Sesión</Link>
                 </li>
                 <li className='my-1'>
-                  <Link to={'/events'} className=' text-gray-to-yellow hover:text-indigo-to-yellow'>Eventos</Link>
+                  <Link to={'/event-search'} className=' text-gray-to-yellow hover:text-indigo-to-yellow'>Eventos</Link>
                 </li>
                 <li className='my-1'>
                   <Link to={'/about'} className=' text-gray-to-yellow hover:text-indigo-to-yellow'>Sobre nosotros</Link>

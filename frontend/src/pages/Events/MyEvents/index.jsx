@@ -61,11 +61,11 @@ const myEvents = () => {
                 <h1 className='text-indigo-to-yellow text-6xl font-Bitcount text-center'>Tus eventos:</h1>
 
                 {/* Selector de modo de vista */}
-                <div className='flex gap-4 bg-lightgray-to-black p-2 px-4 rounded-lg border border-gray-to-yellow/10'>
+                <div className='flex gap-4 bg-lightgray-to-black p-2 px-4 rounded-lg border border-lightgray-to-yellow'>
                     <button
                         onClick={() => setViewMode('publicados')}
                         className={`px-6 py-2.5 rounded-lg font-Bitcount text-xl transition-all duration-300 hover:cursor-pointer ${viewMode === 'publicados'
-                            ? 'bg-indigo-to-yellow text-white-to-black scale-105 shadow-md'
+                            ? 'bg-indigo-to-yellow text-white-to-black scale-105'
                             : 'text-gray-to-yellow hover:text-indigo-to-yellow'
                             }`}
                     >
@@ -74,7 +74,7 @@ const myEvents = () => {
                     <button
                         onClick={() => setViewMode('apuntados')}
                         className={`px-6 py-2.5 rounded-lg font-Bitcount text-xl transition-all duration-300 hover:cursor-pointer ${viewMode === 'apuntados'
-                            ? 'bg-indigo-to-yellow text-white-to-black scale-105 shadow-md'
+                            ? 'bg-indigo-to-yellow text-white-to-black scale-105'
                             : 'text-gray-to-yellow hover:text-indigo-to-yellow'
                             }`}
                     >
@@ -90,14 +90,14 @@ const myEvents = () => {
                             <EventUnit key={event.id || event._id} eventData={event} />
                         ))
                     ) : (
-                        <div className='flex flex-col text-center my-20 max-w-md bg-lightgray-to-black p-8 rounded-3xl border border-gray-to-yellow/10'>
-                            <h1 className='mx-auto my-2 text-4xl font-Bitcount text-black-to-white'>Nada por aquí...</h1>
+                        <div className='flex flex-col text-center my-20 max-w-md bg-lightgray-to-black p-8 rounded-3xl border border-lightgray-to-yellow'>
+                            <h1 className='mx-auto my-2 text-4xl font-Bitcount text-indigo-to-yellow'>Nada por aquí...</h1>
                             <p className='text-gray-to-yellow text-sm'>
                                 Parece que no tienes eventos creados. ¡Prueba a publicar un evento y empieza a conocer gente!
                             </p>
                             <div className='flex justify-center hover:cursor-pointer mt-4'>
                                 <Link to={"/events/create-event"}>
-                                    <p className='bg-indigo-to-yellow text-white-to-black px-6 py-2.5 rounded-xl hover:scale-105 transition-all font-semibold shadow-md'>Crear un evento</p>
+                                    <p className='bg-indigo-to-yellow text-white-to-black px-6 py-2.5 rounded-xl hover:scale-105 transition-all font-semibold'>Crear un evento</p>
                                 </Link>
                             </div>
                         </div>
@@ -112,8 +112,8 @@ const myEvents = () => {
                             <TicketUnit key={ticket.id} ticketData={ticket} />
                         ))
                     ) : (
-                        <div className='flex flex-col text-center my-20 max-w-md bg-lightgray-to-black p-8 rounded-3xl border border-gray-to-yellow/10'>
-                            <h1 className='mx-auto my-2 text-4xl font-Bitcount text-black-to-white'>¿Sin planes?</h1>
+                        <div className='flex flex-col text-center my-20 max-w-md bg-lightgray-to-black p-8 rounded-3xl border border-lightgray-to-yellow'>
+                            <h1 className='mx-auto my-2 text-4xl font-Bitcount text-indigo-to-yellow'>¿Sin planes?</h1>
                             <p className='text-gray-to-yellow text-sm'>
                                 Aún no te has apuntado a ningún evento. ¡Explora los eventos disponibles en el buscador y apúntate!
                             </p>
