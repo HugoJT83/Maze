@@ -2,11 +2,12 @@ from dotenv import load_dotenv
 import os
 load_dotenv()
 
-# Evitar que el SDK de Cloudinary falle si CLOUDINARY_URL no tiene el esquema de URL esperado.
-_cloudinary_url_val = os.getenv("CLOUDINARY_URL", "")
-if _cloudinary_url_val and not _cloudinary_url_val.startswith("cloudinary://"):
+# Evitar que el SDK de Cloudinary falle si CLOUDINARY_URL no tiene el esquema de URL esperado o está vacío.
+_cloudinary_url_val = os.getenv("CLOUDINARY_URL", "").strip()
+if not _cloudinary_url_val.startswith("cloudinary://"):
     if "CLOUDINARY_URL" in os.environ:
         del os.environ["CLOUDINARY_URL"]
+    _cloudinary_url_val = ""
 
 class ENVConfig:
     
