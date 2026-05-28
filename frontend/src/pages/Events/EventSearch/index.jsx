@@ -70,6 +70,7 @@ const EventSearchPage = () => {
   const [limit] = useState(10); // Items per page in list view
 
   const [loading, setLoading] = useState(true);
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
 
   // Parse URL Params & Setup Location Data
   useEffect(() => {
@@ -249,146 +250,158 @@ const EventSearchPage = () => {
     <div className="flex flex-col md:flex-row h-[calc(100vh-64px)]">
       {/* Sidebar Filters */}
       <div className="w-full md:w-1/3 lg:w-1/4 p-6 bg-white-to-black shadow-lg overflow-y-auto">
-        <h2 className="text-2xl text-indigo-to-yellow mb-6 font-Bitcount">Filtros de Búsqueda</h2>
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl text-indigo-to-yellow font-Bitcount">Filtros</h2>
+          {/* Botón para expandir/colapsar en móviles */}
+          <button
+            onClick={() => setShowMobileFilters(!showMobileFilters)}
+            className="md:hidden bg-indigo-to-yellow text-white-to-black font-semibold py-2 px-4 rounded-xl flex items-center gap-2 text-sm hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
+          >
+            <FontAwesomeIcon icon={showMobileFilters ? "fa-solid fa-chevron-up" : "fa-solid fa-sliders"} />
+            <span>{showMobileFilters ? "Ocultar" : "Filtrar"}</span>
+          </button>
+        </div>
 
-        <div className="mb-6">
-          <label className="block font-medium text-indigo-to-yellow mb-2">Búsqueda por palabra clave</label>
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Ej. concierto, rock, festival..."
-              value={searchQuery}
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                setPage(1);
-              }}
-              className="w-full p-2.5 pl-9 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all bg-white-to-black text-indigo-to-yellow placeholder-gray-400"
-            />
-            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-              <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-              </svg>
-            </div>
-            {searchQuery && (
-              <button
-                type="button"
-                onClick={() => {
-                  setSearchQuery('');
+        <div className={`${showMobileFilters ? 'block' : 'hidden'} md:block space-y-6`}>
+          <div className="mb-6">
+            <label className="block font-medium text-indigo-to-yellow mb-2">Búsqueda por palabra clave</label>
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Ej. concierto, rock, festival..."
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
                   setPage(1);
                 }}
-                className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 transition-colors"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                className="w-full p-2.5 pl-9 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all bg-white-to-black text-indigo-to-yellow placeholder-gray-400"
+              />
+              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                 </svg>
-              </button>
-            )}
-          </div>
-        </div>
-
-        <div className="mb-6">
-          <label className="block font-medium text-indigo-to-yellow mb-2">Ubicación</label>
-          <select
-            className="w-full mb-3 p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-sm bg-white-to-black"
-            onChange={handleStateChange}
-            value={selectedProvinceName}
-          >
-            <option value="">Selecciona una provincia</option>
-            {states.map((item) => (
-              <option key={item.id} value={item.name}>{item.name}</option>
-            ))}
-          </select>
-          <select
-            className="w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-sm bg-white-to-black"
-            onChange={handleCityChange}
-            disabled={cities.length === 0}
-            value={selectedCityName}
-          >
-            <option value="">Selecciona una ciudad</option>
-            {cities.map((item) => (
-              <option key={item.id} value={item.name}>{item.name}</option>
-            ))}
-          </select>
-
-          <div className="mt-4 border-t border-gray-100 pt-3">
-            <div className="flex items-center justify-between mb-2">
-              <label className="font-medium text-indigo-to-yellow text-sm">
-                Buscar por cercanía (GPS)
-              </label>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={useRadius}
-                  onChange={handleUseRadiusChange}
-                  className="sr-only peer"
-                />
-                <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600"></div>
-              </label>
-            </div>
-
-            {useRadius && (
-              <div className="mt-2 transition-all duration-300 ease-in-out">
-                <div className="flex justify-between text-xs text-gray-500 mb-1">
-                  <span>Distancia máxima</span>
-                  <span className="font-semibold text-indigo-600">{radius} km</span>
-                </div>
-                <input
-                  type="range"
-                  min="1"
-                  max="500"
-                  value={radius}
-                  onChange={(e) => { setRadius(e.target.value); setPage(1); }}
-                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
-                />
               </div>
-            )}
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearchQuery('');
+                    setPage(1);
+                  }}
+                  className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                  </svg>
+                </button>
+              )}
+            </div>
+          </div>
+
+          <div className="mb-6">
+            <label className="block font-medium text-indigo-to-yellow mb-2">Ubicación</label>
+            <select
+              className="w-full mb-3 p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-sm bg-white-to-black"
+              onChange={handleStateChange}
+              value={selectedProvinceName}
+            >
+              <option value="">Selecciona una provincia</option>
+              {states.map((item) => (
+                <option key={item.id} value={item.name}>{item.name}</option>
+              ))}
+            </select>
+            <select
+              className="w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-sm bg-white-to-black"
+              onChange={handleCityChange}
+              disabled={cities.length === 0}
+              value={selectedCityName}
+            >
+              <option value="">Selecciona una ciudad</option>
+              {cities.map((item) => (
+                <option key={item.id} value={item.name}>{item.name}</option>
+              ))}
+            </select>
+
+            <div className="mt-4 border-t border-gray-100 pt-3">
+              <div className="flex items-center justify-between mb-2">
+                <label className="font-medium text-indigo-to-yellow text-sm">
+                  Buscar por cercanía (GPS)
+                </label>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={useRadius}
+                    onChange={handleUseRadiusChange}
+                    className="sr-only peer"
+                  />
+                  <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600"></div>
+                </label>
+              </div>
+
+              {useRadius && (
+                <div className="mt-2 transition-all duration-300 ease-in-out">
+                  <div className="flex justify-between text-xs text-gray-500 mb-1">
+                    <span>Distancia máxima</span>
+                    <span className="font-semibold text-indigo-600">{radius} km</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="1"
+                    max="500"
+                    value={radius}
+                    onChange={(e) => { setRadius(e.target.value); setPage(1); }}
+                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="mb-4">
+            <label className="block font-medium text-indigo-to-yellow mb-2">Fecha Inicio</label>
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => { setStartDate(e.target.value); setPage(1); }}
+              className="w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+            />
+          </div>
+
+          <div className="mb-4">
+            <label className="block font-medium text-indigo-to-yellow mb-2">Fecha Fin</label>
+            <input
+              type="date"
+              value={endDate}
+              onChange={(e) => { setEndDate(e.target.value); setPage(1); }}
+              className="w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+            />
+          </div>
+
+          <div className="mb-6">
+            <label className="block font-medium text-indigo-to-yellow mb-2">
+              Temáticas (Indica un máximo de 3)
+            </label>
+            <div className="grid grid-cols-3 gap-4 mt-2 p-5">
+              {Object.keys(INTERESTS_CONFIG).map((key) => {
+                const interest = INTERESTS_CONFIG[key];
+                const isSelected = selectedInterests.includes(key);
+                return (
+                  <Interest
+                    key={key}
+                    icon={interest.icon}
+                    label={interest.label}
+                    selectable={true}
+                    isSelected={isSelected}
+                    onClick={() => handleInterestClick(key)}
+                  />
+                );
+              })}
+            </div>
           </div>
         </div>
 
-        <div className="mb-4">
-          <label className="block font-medium text-indigo-to-yellow mb-2">Fecha Inicio</label>
-          <input
-            type="date"
-            value={startDate}
-            onChange={(e) => { setStartDate(e.target.value); setPage(1); }}
-            className="w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-          />
-        </div>
-
-        <div className="mb-4">
-          <label className="block font-medium text-indigo-to-yellow mb-2">Fecha Fin</label>
-          <input
-            type="date"
-            value={endDate}
-            onChange={(e) => { setEndDate(e.target.value); setPage(1); }}
-            className="w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-          />
-        </div>
-
-        <div className="mb-6">
-          <label className="block font-medium text-indigo-to-yellow mb-2">
-            Temáticas (Indica un máximo de 3)
-          </label>
-          <div className="grid grid-cols-3 gap-4 mt-2 p-5">
-            {Object.keys(INTERESTS_CONFIG).map((key) => {
-              const interest = INTERESTS_CONFIG[key];
-              const isSelected = selectedInterests.includes(key);
-              return (
-                <Interest
-                  key={key}
-                  icon={interest.icon}
-                  label={interest.label}
-                  selectable={true}
-                  isSelected={isSelected}
-                  onClick={() => handleInterestClick(key)}
-                />
-              );
-            })}
-          </div>
-        </div>
-
-        {loading && <p className="text-indigo-600 font-semibold">Buscando eventos...</p>}
-        {!loading && <p className="text-gray-600 text-center">{events.length} eventos en esta página.</p>}
+        {loading && <p className="text-indigo-600 font-semibold mt-4">Buscando eventos...</p>}
+        {!loading && <p className="text-gray-600 text-center mt-4">{events.length} eventos en esta página.</p>}
       </div>
 
       {/* Main Content Area (Tabs + Map/List) */}
