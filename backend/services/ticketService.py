@@ -175,6 +175,7 @@ async def get_user_tickets(user_id: str):
             "event_finish_date": event.get("finish_event_date"),
             "event_start_hour": event.get("start_hour"),
             "event_finish_hour": event.get("finish_hour"),
+            "event_interests": event.get("interests", []),
         }
         enriched_tickets.append(t_data)
         
