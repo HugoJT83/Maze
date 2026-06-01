@@ -293,6 +293,15 @@ async def UpdateDetailsService(data: UpdateDetails, userId:str):
     if not check_exist:
         raise HTTPException(status_code=404,detail="User Details not Found")
     
+    # Sincronizar el nombre en la colección de usuarios
+    await user_collection.update_one(
+        {"_id": bson.ObjectId(userId)},
+        {"$set": {
+            "name": data.name,
+            "update_at": datetime.now()
+        }}
+    )
+    
     return{
         "msg":"Details Update Success"
 
