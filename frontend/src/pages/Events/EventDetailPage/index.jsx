@@ -262,10 +262,12 @@ const EventDetailPage = () => {
                     <span className="text-xs uppercase text-gray-to-yellow font-semibold">Estado:</span>
                     <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold ${status === "accepted"
                         ? "bg-green-500/10 text-green-500 border border-green-500/20"
+                        : status === "expired"
+                        ? "bg-red-500/10 text-red-500 border border-red-500/20"
                         : "bg-indigo-to-yellow/10 text-indigo-to-yellow border border-indigo-to-yellow/20"
                         }`}>
-                        <FontAwesomeIcon icon={status === "accepted" ? faCheckCircle : faInfoCircle} />
-                        {status === "accepted" ? "Aceptado" : "Pendiente de Aprobación"}
+                        <FontAwesomeIcon icon={status === "accepted" ? faCheckCircle : status === "expired" ? faExclamationTriangle : faInfoCircle} />
+                        {status === "accepted" ? "Aceptado" : status === "expired" ? "Pasado" : "Pendiente de Aprobación"}
                     </span>
                 </div>
             </div>

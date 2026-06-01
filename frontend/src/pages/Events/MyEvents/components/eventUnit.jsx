@@ -86,8 +86,8 @@ const EventUnit = ({ eventData, customNavigatePath }) => {
                         <h1 className='font-bold border-b-2 py-1 border-gray-to-yellow'>Datos de publicación</h1>
                         <h2>Estado:
                             {/* Condicional de color */}
-                            <span className={`${status == "accepted" ? "text-green-500" : "text-indigo-to-yellow"} font-bold`}>
-                                {status == "pending" ? " Pendiente" : " Aceptado"}</span>
+                            <span className={`${status === "accepted" ? "text-green-500" : status === "expired" ? "text-red-500" : "text-indigo-to-yellow"} font-bold`}>
+                                {status === "pending" ? " Pendiente" : status === "expired" ? " Pasado" : " Aceptado"}</span>
                         </h2>
                         <h2>Tipo: <span className='font-semibold'>{isPaidEvent ? `Pago (${parseFloat(ticket_price).toFixed(2)} €)` : "Gratuito"}</span></h2>
                         {status == "accepted" ?

@@ -13,8 +13,8 @@ async def createEventController(event_data: EventCreate, images:List[Annotated[U
         res_obj = await eventService.createEventService(event_data,images, userId, background_tasks)
         return res_obj
     
-async def getEventsByUserController(user_id: str):
-        res_obj = await eventService.getEventsByUserService(user_id)
+async def getEventsByUserController(user_id: str, public: bool = False):
+        res_obj = await eventService.getEventsByUserService(user_id, public)
         if res_obj and len(res_obj) > 0:
                 return res_obj
         

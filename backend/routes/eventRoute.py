@@ -36,7 +36,7 @@ async def createEvent(
     
 @router.get("/my-events")
 async def getUserEvents(userId: str = Depends(verifyToken)):
-    return await eventController.getEventsByUserController(userId)
+    return await eventController.getEventsByUserController(userId, public=False)
 
 @router.get("/pending")
 async def getPendingEvents(page: int = 1, limit: int = 5, userId: str = Depends(verifyToken)):
@@ -92,7 +92,7 @@ async def denyEvent(id: str, data: dict, background_tasks: BackgroundTasks, user
 
 @router.get("/public-events/{id}")
 async def getUserPublicEvents(id:str):
-    return await eventController.getEventsByUserController(id)
+    return await eventController.getEventsByUserController(id, public=True)
 
 @router.post("/{id}/message-guests")
 async def messageGuests(id: str, data: dict, background_tasks: BackgroundTasks, userId: str = Depends(verifyToken)):

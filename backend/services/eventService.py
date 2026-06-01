@@ -1,4 +1,5 @@
 from typing import Annotated, List
+from datetime import datetime
 
 import bson
 from fastapi import BackgroundTasks, File, HTTPException, UploadFile
@@ -11,6 +12,31 @@ import config.CloudinaryConfig
 
 import httpx
 from services.mailService import createEventNotificationService, sendEventDenialNotificationService, sendEventApprovalNotificationService, sendEventCanceledNotificationService
+
+async def check_and_update_pending_events():
+    """
+    Busca eventos pendientes ('pending') cuya fecha y hora de inicio ya hayan pasado
+    y actualiza su estado en la base de datos a 'expired'.
+    """
+    cursor = events_collection.find({"status": "pending"})
+    pending_events = await cursor.to_list(length=None)
+    now = datetime.now()
+    
+    for event in pending_events:
+        start_date = event.get("starting_event_date")
+        if start_date:
+            start_hour_str = event.get("start_hour", "00:00")
+            try:
+                hh, mm = map(int, start_hour_str.split(":"))
+                start_dt = start_date.replace(hour=hh, minute=mm, second=0, microsecond=0)
+            except Exception:
+                start_dt = start_date
+            
+            if now > start_dt:
+                await events_collection.update_one(
+                    {"_id": event["_id"]},
+                    {"$set": {"status": "expired"}}
+                )
 
 async def get_coordinates(city: str, province: str) -> list:
     try:
@@ -111,12 +137,18 @@ async def createEventService(data: EventCreate, images: List[Annotated[UploadFil
         raise HTTPException(status_code=500,detail="Event Creation error:"+f"{e}")
     
     
-async def getEventsByUserService (creator_id: str):
+async def getEventsByUserService (creator_id: str, public: bool = False):
     check_user_exist = await user_collection.find_one({"_id":bson.ObjectId(creator_id)})
     if not check_user_exist:
         raise HTTPException(status_code=404, detail="user not found")
     
-    events = events_collection.find({"creator_id":creator_id})
+    await check_and_update_pending_events()
+    
+    query = {"creator_id": creator_id}
+    if public:
+        query["status"] = {"$in": ["accepted", "expired"]}
+        
+    events = events_collection.find(query)
     events_docs = await events.to_list(length=None)
     
     from config.db import tickets_collection
@@ -131,6 +163,8 @@ async def getEventsByUserService (creator_id: str):
 async def getEventByIdService(event_id: str):
     if not bson.ObjectId.is_valid(event_id):
         raise HTTPException(status_code=400, detail="Identificador de evento no válido")
+    
+    await check_and_update_pending_events()
     
     event = await events_collection.find_one({"_id": bson.ObjectId(event_id)})
     if not event:
@@ -205,6 +239,8 @@ async def getPendingEventsService(adminUserId: str, page: int = 1, limit: int = 
     if not admin_user or admin_user.get("role") != "ADMIN":
         raise HTTPException(status_code=403, detail="No tiene permisos de administrador")
         
+    await check_and_update_pending_events()
+    
     skip = (page - 1) * limit
     cursor = events_collection.find({"status": "pending"}).skip(skip).limit(limit)
     events_docs = await cursor.to_list(length=None)
@@ -234,6 +270,8 @@ async def getEventManagementDetailService(event_id: str, adminUserId: str):
     if not bson.ObjectId.is_valid(event_id):
         raise HTTPException(status_code=400, detail="Identificador de evento no válido")
         
+    await check_and_update_pending_events()
+    
     event = await events_collection.find_one({"_id": bson.ObjectId(event_id)})
     if not event:
         raise HTTPException(status_code=404, detail="El evento solicitado no existe")
