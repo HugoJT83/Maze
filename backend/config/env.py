@@ -3,11 +3,17 @@ import os
 load_dotenv()
 
 # Evitar que el SDK de Cloudinary falle si CLOUDINARY_URL no tiene el esquema de URL esperado o está vacío.
-_cloudinary_url_val = os.getenv("CLOUDINARY_URL", "").strip()
-if not _cloudinary_url_val.startswith("cloudinary://"):
+_raw_cloudinary_url = os.getenv("CLOUDINARY_URL", "").strip()
+_cloudinary_url_val = ""
+_cloud_name_val = os.getenv("CLOUD_NAME_CLOUDINARY", "").strip()
+
+if _raw_cloudinary_url.startswith("cloudinary://"):
+    _cloudinary_url_val = _raw_cloudinary_url
+else:
+    if _raw_cloudinary_url and not _cloud_name_val:
+        _cloud_name_val = _raw_cloudinary_url
     if "CLOUDINARY_URL" in os.environ:
         del os.environ["CLOUDINARY_URL"]
-    _cloudinary_url_val = ""
 
 class ENVConfig:
     
@@ -20,6 +26,7 @@ class ENVConfig:
     
     API_KEY_CLOUDINARY=os.getenv("API_KEY_CLOUDINARY","")
     API_SECRET_CLOUDINARY=os.getenv("API_SECRET_CLOUDINARY","")
+    CLOUD_NAME_CLOUDINARY=_cloud_name_val
     CLOUDINARY_URL=_cloudinary_url_val
     
     

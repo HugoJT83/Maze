@@ -246,13 +246,15 @@ const LoginUser = () => {
                     </Field>
                   </div> */}
               </div>
-              <div className='flex items-center justify-center content-center flex-col rounded-lg text-center bg-lightgray-to-yellow p-5 my-3'>
-                <p className='my-2'><span className='font-bold'>Puedes iniciar sesión con Google:</span><br />(Si no tienes cuenta, podrás crear una):</p>
-                <GoogleLogin
-                  onSuccess={(response) => onGoogleSubmitHandler(response)}
-                  onError={() => toast.error("Error al conectar con Google")}
-                />
-              </div>
+              {!is2FA && (
+                <div className='flex items-center justify-center content-center flex-col rounded-lg text-center bg-lightgray-to-yellow p-5 my-3'>
+                  <p className='my-2'><span className='font-bold'>Puedes iniciar sesión con Google:</span><br />(Si no tienes cuenta, podrás crear una):</p>
+                  <GoogleLogin
+                    onSuccess={(response) => onGoogleSubmitHandler(response)}
+                    onError={() => toast.error("Error al conectar con Google")}
+                  />
+                </div>
+              )}
             </Form>
           )}
         </Formik >

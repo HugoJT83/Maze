@@ -12,7 +12,7 @@ if ENVConfig.CLOUDINARY_URL:
 else:
     # De lo contrario, se configuran las credenciales individuales
     cloudinary.config(
-        cloud_name="", 
+        cloud_name=ENVConfig.CLOUD_NAME_CLOUDINARY, 
         api_key=ENVConfig.API_KEY_CLOUDINARY,
         api_secret=ENVConfig.API_SECRET_CLOUDINARY
     )
