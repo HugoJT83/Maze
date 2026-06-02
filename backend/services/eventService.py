@@ -382,7 +382,7 @@ async def denyEventService(event_id: str, justification: str, adminUserId: str, 
     }
     
 
-async def searchEventsService(lat: float = None, lng: float = None, radius_km: float = None, start_date: str = None, end_date: str = None, interests: str = None, city: str = None, province: str = None, page: int = 1, limit: int = 10, userId: str = None):
+async def searchEventsService(lat: float = None, lng: float = None, radius_km: float = None, start_date: str = None, end_date: str = None, interests: str = None, city: str = None, province: str = None, page: int = 1, limit: int = 10, userId: str = None, keywords: str = None):
     await events_collection.create_index([("location.coordinates", "2dsphere")])
     
     query = {"status": "accepted"}
@@ -416,6 +416,12 @@ async def searchEventsService(lat: float = None, lng: float = None, radius_km: f
         if end_date:
             date_query["$lte"] = end_date
         query["starting_event_date"] = date_query
+
+    if keywords:
+        query["$or"] = [
+            {"title": {"$regex": keywords, "$options": "i"}},
+            {"description": {"$regex": keywords, "$options": "i"}}
+        ]
         
     total_events = await events_collection.count_documents(query)
     total_pages = (total_events + limit - 1) // limit

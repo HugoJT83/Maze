@@ -54,7 +54,8 @@ async def searchEvents(
     city: str = None, 
     province: str = None, 
     page: int = 1, 
-    limit: int = 10
+    limit: int = 10,
+    keywords: str = None
 ):
     userId = None
     authorization = req.headers.get("Authorization", "")
@@ -67,7 +68,7 @@ async def searchEvents(
                 userId = payload.get('user_id')
             except Exception:
                 pass
-    return await eventController.searchEventsController(lat, lng, radius, start_date, end_date, interests, city, province, page, limit, userId)
+    return await eventController.searchEventsController(lat, lng, radius, start_date, end_date, interests, city, province, page, limit, userId, keywords)
 
 @router.get("/{id}")
 async def getEventById(id: str, userId: str = Depends(verifyToken)):
