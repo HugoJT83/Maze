@@ -47,3 +47,4 @@ class ENVConfig:
     GOOGLEAUTH_CLIENT=os.getenv("GOOGLEAUTH_CLIENT","")
     
     STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY", "")
+    FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")

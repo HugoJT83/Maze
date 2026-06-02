@@ -11,6 +11,7 @@ from models.ticketModel import TicketStatus, TicketType
 from services.mailService import sendTicketApprovedNotificationService
 from services.ticketService import generate_unique_ticket_validator
 from dotenv import load_dotenv
+from config.env import ENVConfig
 
 stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 
@@ -21,7 +22,7 @@ async def createAccountLinkService(user_id:str):
             {"_id": ObjectId(user_id)},
             {"$set": {"stripe_account_id": "acct_simulado_12345"}}
         )
-        return {"url": "http://localhost:5173/profile?stripe_success=true"}
+        return {"url": f"{ENVConfig.FRONTEND_URL}/profile?stripe_success=true"}
         
     if not stripe.api_key:
         stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
@@ -57,7 +58,7 @@ async def createAccountLinkService(user_id:str):
             )
 
         # 3. Generamos el Account Link para redirigir al Onboarding
-        base_url = "http://localhost:5173"
+        base_url = ENVConfig.FRONTEND_URL
         
         account_link = stripe.AccountLink.create(
             account=stripe_account_id,
@@ -139,7 +140,7 @@ async def createCheckoutSessionService(event_id: str, user_id: str):
         except Exception as e:
             print(f"Error sending simulated checkout email: {e}")
             
-        return {"checkout_url": "http://localhost:5173/my-events?success=true"}
+        return {"checkout_url": f"{ENVConfig.FRONTEND_URL}/my-events?success=true"}
         
     creator = await user_collection.find_one({"_id": ObjectId(event["creator_id"])})
     if not creator or not creator.get("stripe_account_id"):
@@ -147,7 +148,7 @@ async def createCheckoutSessionService(event_id: str, user_id: str):
         
     creator_stripe_account = creator["stripe_account_id"]
     
-    base_url = "http://localhost:5173"
+    base_url = ENVConfig.FRONTEND_URL
     
     try:
         # 2. Create Stripe Checkout Session
