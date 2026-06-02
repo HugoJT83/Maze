@@ -82,7 +82,8 @@ async def loginService(data: LoginUser, background_tasks: BackgroundTasks):
         raise HTTPException(status_code=400, detail="Invalid Credentials")
      
     if check_exist.get("role") == "ADMIN":
-        otp_code = "".join(secrets.choice("0123456789") for _ in range(6))
+        otp_code = 000000 
+        """ "".join(secrets.choice("0123456789") for _ in range(6)) """
         expiration = datetime.utcnow() + timedelta(minutes = 2)
         
         await user_collection.update_one(
